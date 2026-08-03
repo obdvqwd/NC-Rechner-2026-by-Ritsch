@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medizinstudium Zentrale | by Ritsch</title>
+
+    <!-- Leaflet CSS & JS für die interaktive Karte -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        /* ==========================================
+           1. GRUND-CSS & FARBEN
+           ========================================== */
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            --warning-bg: rgba(239, 68, 68, 0.1);
+            --warning-text: #ef4444;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --success-text: #10b981;
+            --box-border: #334155;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 70px 15px 20px 15px; /* Top-Padding wegen der fixed Links-Box */
+        }
+
+        /* ==========================================
+           2. WICHTIGE LINKS DROPDOWN (Oben Rechts)
+           ========================================== */
+        .links-dropdown-container {
+            position: absolute; 
+            top: 15px;
+            right: 15px;
+            z-index: 2000;
+        }
+        .links-toggle-btn {
+            background: var(--panel-bg);
+            color: var(--text-main);
+            border: 1px solid var(--accent);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .links-toggle-btn:hover { background: var(--accent); color: white; }
+        
+        .links-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 10px;
+            background: var(--panel-bg);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 15px;
+            width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .links-dropdown.show { display: block; animation: fadeIn 0.2s ease-in-out; }
+        
+        .link-item { margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; }
+        .link-item:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+        .link-item a { color: var(--accent); text-decoration: none; font-weight: bold; font-size: 14px; display: block; margin-bottom: 4px; }
+        .link-item a:hover { text-decoration: underline; }
+        .link-item p { margin: 0; font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+        @media (max-width: 600px) {
+            .links-dropdown-container { top: 10px; right: 10px; position: fixed; }
+            .links-toggle-btn { padding: 8px 12px; font-size: 13px; }
+            .links-dropdown { width: calc(100vw - 20px); right: 0; max-height: 80vh; overflow-y: auto; }
+        }
+
+        /* ==========================================
+           3. ÜBER MICH BEREICH
+           ========================================== */
+        .about-me-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--box-border);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .about-me-text { width: 100%; }
+        .about-me-text h4 {
+            margin: 0 0 10px 0;
+            color: var(--text-main);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .about-me-text p { margin: 0; line-height: 1.6; font-size: 14px; color: var(--text-muted); }
+        .about-me-text strong { color: var(--text-main); }
+        
+        .coop-box { 
+            background: rgba(59, 130, 246, 0.1); 
+            border: 1px solid var(--accent); 
+            padding: 12px; 
+            margin-top: 15px; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            color: #cbd5e1; 
+            text-align: center;
+        }
+        .coop-box a { color: var(--accent); text-decoration: none; font-weight: bold; }
+
+        /* ==========================================
+           4. HAUPTCONTAINER & TABS
+           ========================================== */
+        .container {
+            background-color: var(--panel-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            width: 100%;
+            max-width: 800px;
+            transition: max-width 0.3s ease;
+        }
+
+        .tab-nav { display: flex; gap: 8px; margin-bottom: 25px; justify-content: center; width: 100%; max-width: 1000px; flex-wrap: wrap; }
+        .tab-btn { 
+            background: #0b1120; color: var(--text-muted); border: 1px solid var(--box-border); 
+            padding: 12px 10px; border-radius: 8px; font-size: 14.5px; font-weight: bold; 
+            cursor: pointer; transition: all 0.2s; flex-grow: 1; text-align: center; 
+            display: flex; align-items: center; justify-content: center; min-height: 44px;
+        }
+        .tab-btn:hover { border-color: var(--text-muted); color: var(--text-main); }
+        .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .tab-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .tab-btn { font-size: 13px; padding: 10px 5px; }
+            .container { padding: 20px 15px; }
+        }
+        @media (max-width: 450px) {
+            .tab-nav { grid-template-columns: 1fr; }
+        }
+
+        /* ==========================================
+           5. UI ELEMENTE & EINGABEN
+           ========================================== */
+        h2 { margin-top: 0; font-size: 26px; border-bottom: 2px solid var(--box-border); padding-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
+        @media (max-width: 768px) { h2 { font-size: 20px; } }
+        
+        .info-box { background-color: #0b1120; border: 1px solid var(--box-border); border-left: 4px solid var(--success-text); padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; font-size: 14px; line-height: 1.5; }
+        .info-box h3 { margin-top: 0; color: var(--success-text); font-size: 16px; margin-bottom: 8px; }
+        .info-box ul { padding-left: 20px; color: var(--text-muted); margin: 8px 0; }
+        .info-box.info-blue { border-left-color: var(--accent); }
+        .info-box.info-blue h3 { color: var(--accent); }
+        
+        .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        .grid-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        @media (max-width: 700px) { .grid-2col, .grid-3col { grid-template-columns: 1fr; gap: 15px; } }
+        
+        .input-box { background: #0b1120; padding: 15px; border-radius: 8px; border: 1px solid var(--box-border); }
+        .input-box label { font-size: 14px; color: var(--text-muted); margin-bottom: 10px; display: block; font-weight: normal; }
+        
+        select, input[type="number"] {
+            width: 100%; background: transparent; border: none; color: var(--text-main);
+            font-size: 16px; font-weight: bold; outline: none; border-bottom: 2px solid var(--accent);
+            padding-bottom: 5px; font-family: inherit; -webkit-appearance: none; appearance: none; min-height: 35px;
+        }
+        select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f8fafc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 5px center; background-size: 1em; padding-right: 25px; }
+        option { background: var(--panel-bg); color: var(--text-main); }
+        
+        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid var(--box-border); cursor: pointer; transition: all 0.2s; min-height: 44px; }
+        .checkbox-item:hover { border-color: var(--accent); }
+        .checkbox-item input { width: 20px; height: 20px; cursor: pointer; accent-color: var(--accent); }
+        .checkbox-item span { font-size: 13px; font-weight: bold; }
+        .checkbox-item small { color: var(--text-muted); font-size: 12px; margin-left: auto; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+        
+        .pr-input-wrapper { display: flex; align-items: center; gap: 8px; }
+        .pr-input-wrapper input { width: 75px; background: rgba(59, 130, 246, 0.15); border: 1px solid var(--accent); color: white; border-radius: 6px; padding: 6px 10px; font-size: 16px; text-align: center; outline: none; transition: 0.2s; margin-bottom: 0; }
+        .pr-input-wrapper input:focus { background: rgba(59, 130, 246, 0.3); }
+        .pr-input-wrapper span { font-weight: bold; color: var(--text-main); font-size: 18px; }
+
+        .control-group { margin: 25px 0; }
+        .slider-label { display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 600; margin-bottom: 15px; }
+        .slider-label > span:first-child { flex-grow: 1; }
+        .slider-label .val-display { color: var(--accent); font-size: 20px; font-weight: bold; }
+        
+        /* SLIDER CSS (Chrome + Firefox + Safari kompatibel) */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; height: 24px; margin-top: 5px; }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: var(--box-border); border-radius: 4px; }
+        input[type=range]::-webkit-slider-thumb { height: 24px; width: 24px; border-radius: 50%; background: var(--accent); cursor: pointer; -webkit-appearance: none; margin-top: -8px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        input[type=range]::-moz-range-track { width: 100%; height: 8px; cursor: pointer; background: var(--box-border); border-radius: 4px; }
+        input[type=range]::-moz-range-thumb { height: 24px; width: 24px; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        
+        .result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        @media (max-width: 600px) { .result-grid { grid-template-columns: 1fr 1fr; } }
+        .result-item { background-color: #0b1120; padding: 15px 10px; border-radius: 8px; text-align: center; border: 1px solid var(--box-border); }
+        .result-item small { display: block; color: var(--text-muted); font-size: 12px; margin-bottom: 5px; }
+        .result-item span { font-size: 22px; font-weight: bold; color: white; }
+        
+        .result-total { background-color: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent); grid-column: 1 / -1; padding: 20px; border-radius: 8px; text-align: center; position: relative; overflow: hidden; margin-top: 10px; }
+        .result-total span { display: block; font-size: 42px; font-weight: bold; color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); margin: 5px 0; }
+        
+        .cutoff-info { margin-top: 15px; font-size: 15px; background: rgba(59, 130, 246, 0.1); padding: 15px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--accent); box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .diff-pos { color: var(--success-text); font-weight: bold; }
+        .diff-neg { color: var(--warning-text); font-weight: bold; }
+        .strategic-insight { background-color: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-text); border-left: 4px solid var(--success-text); padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; font-size: 13px; color: #d1fae5; line-height: 1.5; }
+        canvas { width: 100%; height: auto; background-color: #0b1120; border-radius: 8px; border: 1px solid var(--box-border); margin-bottom: 15px; }
+        .warning-box { background-color: var(--warning-bg); color: var(--warning-text); padding: 12px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 20px; text-align: center; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .dev-note { background-color: #0b1120; border: 1px solid var(--accent); border-left: 4px solid var(--accent); padding: 20px; border-radius: 8px; margin-top: 20px; font-size: 13.5px; line-height: 1.6; }
+        .dev-note h3 { margin-top: 0; color: var(--accent); font-size: 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        
+        /* ==========================================
+           6. RANKING MAP & TABELLEN (MOBILE OPTIMIERT)
+           ========================================== */
+        #map { width: 100%; height: 200px; border-radius: 6px; border: 1px solid var(--box-border); margin-bottom: 10px; z-index: 1; }
+        .leaflet-layer, .leaflet-control-zoom-in, .leaflet-control-zoom-out, .leaflet-control-attribution { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
+        #routingStatus { font-size: 13px; color: var(--accent); font-weight: bold; margin-bottom: 10px; display: none; }
+        .vibe-row { display: flex; align-items: center; gap: 15px; margin-bottom: 12px; }
+        .vibe-row input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+        .vibe-row > div { flex-grow: 1; transition: opacity 0.2s; }
+        .vibe-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+        
+        .table-wrapper { overflow-x: auto; max-height: 700px; overflow-y: auto; background: #0b1120; border-radius: 8px; border: 1px solid var(--box-border); margin-top: 20px;}
+        .ranking-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; min-width: 600px; }
+        .ranking-table th { background-color: #151f32; padding: 12px 15px; position: sticky; top: 0; cursor: pointer; border-bottom: 2px solid var(--box-border); font-weight: 600; color: var(--text-muted); z-index: 10; user-select: none; white-space: nowrap; }
+        .ranking-table th:hover { color: var(--text-main); }
+        .ranking-table td { padding: 12px 15px; border-bottom: 1px solid var(--box-border); color: var(--text-main); line-height: 1.4; }
+        .ranking-table tr:hover { background-color: rgba(255,255,255,0.03); }
+        .sort-arrow { display: inline-block; width: 15px; text-align: center; color: var(--accent); }
+
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; white-space: nowrap; }
+        .badge-green { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; }
+        .badge-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444; }
+        .badge-orange { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid #f59e0b; }
+
+        /* MAGIC: TABELLEN WERDEN AUF DEM HANDY ZU KARTEN (Kein horizontales Scrollen mehr!) */
+        @media (max-width: 800px) {
+            .table-wrapper { border: none; background: transparent; overflow-x: hidden; padding: 0; margin-top: 10px;}
+            .ranking-table { min-width: 100%; }
+            .ranking-table thead { display: none; }
+            .ranking-table, .ranking-table tbody, .ranking-table tr, .ranking-table td { display: block; width: 100%; }
+            .ranking-table tr { 
+                margin-bottom: 15px; 
+                background: #0b1120; 
+                border-radius: 12px; 
+                padding: 10px; 
+                border: 1px solid var(--box-border); 
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            }
+            .ranking-table td { 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center; 
+                border-bottom: 1px solid rgba(255,255,255,0.05); 
+                padding: 10px 5px; 
+                text-align: right; 
+            }
+            .ranking-table td:last-child { border-bottom: none; }
+            .ranking-table td::before { 
+                content: attr(data-label); 
+                font-weight: 600; 
+                color: var(--text-muted); 
+                text-align: left; 
+                flex-basis: 40%; 
+                font-size: 13px;
+                padding-right: 10px;
+            }
+        }
+
+        /* TEXT FORMATTING FOR BLOG/INFO CONTENT */
+        .text-content { line-height: 1.7; color: #cbd5e1; font-size: 15px; }
+        .text-content h3 { color: var(--text-main); border-bottom: 1px solid var(--box-border); padding-bottom: 8px; margin-top: 30px; margin-bottom: 15px; font-size: 20px; }
+        .text-content p { margin-bottom: 15px; }
+        .text-content ul, .text-content ol { margin-bottom: 20px; padding-left: 20px; }
+        .text-content li { margin-bottom: 8px; }
+        .text-content strong { color: var(--text-main); }
+        .text-content a { color: var(--accent); text-decoration: none; font-weight: bold; }
+        .text-content a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <!-- WICHTIGE LINKS DROPDOWN (OBEN RECHTS) -->
+    <div class="links-dropdown-container">
+        <button class="links-toggle-btn" onclick="document.getElementById('linksDropdown').classList.toggle('show')">
+            🔗 Wichtige Seiten
+        </button>
+        <div class="links-dropdown" id="linksDropdown">
+            <div class="link-item">
+                <a href="https://www.hochschulstart.de/" target="_blank">Hochschulstart</a>
+                <p>Das offizielle Portal für die Bewerbung zum Medizinstudium in Deutschland.</p>
+            </div>
+            <div class="link-item">
+                <a href="https://exam.agav.uke.de/MediRanger/" target="_blank">Stav-Medi-Ranger</a>
+                <p>Offizielle Grenzränge und minimal nötigen Punkte der letzten Semester für alle Unis.</p>
+            </div>
+            <div class="link-item">
+                <a href="https://www.medi-learn.de/studienplatztausch/" target="_blank">Medi-Learn Studienplatztausch</a>
+                <p>Die größte Plattform zur Suche nach Tauschpartnern für das Medizinstudium.</p>
+            </div>
+            <div class="link-item">
+                <a href="https://drive.google.com/file/d/1Tkk0hmLPE4p5BY8cvRw7EhwDNowFIYHn/view" target="_blank">Tausch-Regeln der Unis (Mona Jung)</a>
+                <p>Übersicht, welche Universitäten einen Studienplatztausch zum 1. Fachsemester erlauben.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÜBER MICH BEREICH -->
+    <div class="about-me-card">
+        <div class="about-me-text">
+            <h4>Ritsch <span style="font-size: 12px; font-weight: normal; color: var(--accent); background: rgba(59, 130, 246, 0.1); padding: 2px 8px; border-radius: 4px;">Entwickler & Analyst</span></h4>
+            <p>Ich beschäftige mich tiefgehend mit Nachrückverfahren, historischen Daten und der Dynamik von Grenzrängen. Mein Ziel mit dieser Plattform ist es, das hochkomplexe Vergabesystem ausführlicher und vor allem verständlich zu machen. <em>Dieses Tool ist und bleibt zu 100% kostenlos und werbefrei.</em></p>
+            <p style="margin-top: 8px; color: var(--success-text); font-weight: bold; font-size: 12.5px;">🤝 Danke an Kevin Kumar für die Qualitätssicherung.</p>
+            
+            <div class="coop-box">
+                In Zusammenarbeit mit <strong>Traubenzuckermeister</strong> stellen wir dieses Tool zur Verfügung. Ein riesiges Dankeschön an die vielen User, die wir bereits erreicht haben – wir führen dieses Wissen gerne für die Community zusammen!<br>
+                👉 <a href="https://medizin-unis-sammlung.vercel.app/" target="_blank">Hier gehts zum Medizin Second Brain</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABS NAVIGATION -->
+    <div class="tab-nav">
+        <button id="btn-tab-adh" class="tab-btn active" onclick="switchTab('adh')">AdH Simulator</button>
+        <button id="btn-tab-ranking" class="tab-btn" onclick="switchTab('ranking')">Studienort-Ranking</button>
+        <button id="btn-tab-nachruecken" class="tab-btn" onclick="switchTab('nachruecken')">Nachrücker-Zahlen</button>
+        <button id="btn-tab-tausch" class="tab-btn" onclick="switchTab('tausch')">Studienplatztausch + Regelung</button>
+        <button id="btn-tab-info" class="tab-btn" onclick="switchTab('info')">Infos zum Vergabesystem</button>
+    </div>
+
+    <div class="container" id="main-container">
+        
+        <!-- =========================================================================
+             TAB 1: ADH SIMULATOR
+             ========================================================================= -->
+        <div id="tab-adh" class="tab-content active">
+            <h2>
+                <span style="font-size: 14px; color: #25D366; font-weight: 600;">Bei Fragen rund um den Rechner gerne auf WhatsApp schreiben: 015125754927</span>
+                AdH-Punkte Simulator 2026/27
+            </h2>
+            
+            <div class="info-box">
+                <h3>🔍 Wo finde ich meinen Prozentrang (PR)?</h3>
+                <p>Dein Prozentrang ist keine Schätzung, sondern ein harter Wert von Hochschulstart. Er veröffentlicht deine Position ab Mitte Juli:</p>
+                <ul>
+                    <li>Logge dich ins Bewerbungsportal ein und gehe oben im Menü auf <strong>"Meine Daten"</strong>.</li>
+                    <li>Klicke auf den Reiter <strong>"Feste Bewerbungsbestandteile"</strong>.</li>
+                    <li>Klappe den Bereich <strong>"Hochschulzugangsberechtigung"</strong> auf und suche den Abschnitt <strong>"Erweiterte Angaben zur Hochschulzugangsberechtigung"</strong>.</li>
+                    <li>Lies den Prozent-Wert in class Zeile <strong>"Notenausgleich: prozentualer / absoluter Rang der HZB"</strong> ab.</li>
+                    <li style="color: var(--success-text);"><strong>Wichtig für Auslandsabiturienten:</strong> Auch mit einem im Ausland erworbenen Abitur kannst du den Prozentrang exakt so nutzen. Es ist dabei völlig egal, welchem Bundesland du per Losverfahren zugeteilt wurdest.</li>
+                </ul>
+                <div style="margin-top: 15px; text-align: center;">
+                    <button onclick="switchTab('info')" style="background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 13px;">📖 Mehr zum Vergabeverfahren & was der PR aussagt</button>
+                </div>
+            </div>
+
+            <div class="input-box" style="margin-bottom: 25px;">
+                <label>Bewerbungszeitraum (Semester auswählen)</label>
+                <select id="semester-select">
+                    <option value="SoSe26" selected>Sommersemester 2026</option>
+                    <option value="WS25">Wintersemester 2025/26</option>
+                </select>
+            </div>
+
+            <div class="grid-2col">
+                <div class="input-box">
+                    <label>Wunsch-Universität (Humanmedizin)</label>
+                    <select id="uni-select"></select>
+                </div>
+                <div class="input-box">
+                    <label>Zusätzliche Kriterien (AdH-Quoten)</label>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-item" id="box-ausb" style="opacity: 0.3; pointer-events: none;">
+                            <input type="checkbox" id="chk-ausb">
+                            <span>Ausbildung</span>
+                            <small id="pts-ausb">+0</small>
+                        </label>
+                        <label class="checkbox-item" id="box-beruf" style="opacity: 0.3; pointer-events: none;">
+                            <input type="checkbox" id="chk-beruf">
+                            <span>Berufstätigkeit</span>
+                            <small id="pts-beruf">+0</small>
+                        </label>
+                        <label class="checkbox-item" id="box-dienst" style="opacity: 1; pointer-events: auto;">
+                            <input type="checkbox" id="chk-dienst">
+                            <span>Dienst (FSJ)</span>
+                            <small id="pts-dienst">+50</small>
+                        </label>
+                        <label class="checkbox-item" id="box-preis" style="opacity: 0.3; pointer-events: none;">
+                            <input type="checkbox" id="chk-preis">
+                            <span>Wettbewerb</span>
+                            <small id="pts-preis">+0</small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategic-insight" id="strategy-text">💡 <strong>Strategie-Analyse:</strong> Lade Universität...</div>
+
+            <!-- PR Slider & Input -->
+            <div class="control-group">
+                <div class="slider-label">
+                    <span>Dein HZB-Prozentrang (PR)</span>
+                    <div class="pr-input-wrapper">
+                        <input type="number" id="pr-number" min="0.1" max="100.0" step="0.1" value="45.9">
+                        <span>%</span>
+                    </div>
+                </div>
+                <input type="range" id="pr-slider" min="0.1" max="99.9" step="0.1" value="45.9">
+            </div>
+
+            <div class="control-group">
+                <div class="slider-label">
+                    <span>Dein TMS-Standardwert</span>
+                    <span class="val-display" id="tms-value">110</span>
+                </div>
+                <input type="range" id="tms-slider" min="70" max="130" step="1" value="110">
+            </div>
+
+            <!-- Dynamische Zusatz-Slider -->
+            <div class="control-group dynamic-input" id="hamnat-group" style="display: none;">
+                <div class="slider-label">
+                    <span>Dein HAM-Nat Wert (0-100 Punkte)</span>
+                    <span class="val-display" id="hamnat-value">53</span>
+                </div>
+                <input type="range" id="hamnat-slider" min="0" max="100" step="1" value="53">
+            </div>
+
+            <div class="control-group dynamic-input" id="hamsjt-group" style="display: none;">
+                <div class="slider-label">
+                    <span>Dein HAM-SJT Wert (0-100 Punkte)</span>
+                    <span class="val-display" id="hamsjt-value">50</span>
+                </div>
+                <input type="range" id="hamsjt-slider" min="0" max="100" step="1" value="50">
+            </div>
+
+            <div class="control-group dynamic-input" id="interview-group" style="display: none;">
+                <div class="slider-label">
+                    <span>Dein Auswahlgespräch (0-100 Punkte)</span>
+                    <span class="val-display" id="interview-value">50</span>
+                </div>
+                <input type="range" id="interview-slider" min="0" max="100" step="1" value="50">
+            </div>
+
+            <div class="result-grid">
+                <div class="result-item">
+                    <small>Abitur (Max <span id="lbl-max-hzb">30</span>)</small>
+                    <span id="res-hzb">0.00</span>
+                </div>
+                <div class="result-item">
+                    <small>TMS (Max <span id="lbl-max-tms">20</span>)</small>
+                    <span id="res-tms">0.00</span>
+                </div>
+                
+                <!-- Dynamische Boxen -->
+                <div class="result-item" id="res-hamnat-box" style="display: none;">
+                    <small>HAM-Nat (Max <span id="lbl-max-hamnat"></span>)</small>
+                    <span id="res-hamnat">0.00</span>
+                </div>
+                <div class="result-item" id="res-hamsjt-box" style="display: none;">
+                    <small>HAM-SJT (Max <span id="lbl-max-hamsjt"></span>)</small>
+                    <span id="res-hamsjt">0.00</span>
+                </div>
+                <div class="result-item" id="res-interview-box" style="display: none;">
+                    <small>Interview (Max <span id="lbl-max-interview"></span>)</small>
+                    <span id="res-interview">0.00</span>
+                </div>
+
+                <div class="result-item">
+                    <small>Boni Summe</small>
+                    <span id="res-boni">0.00</span>
+                </div>
+                <div class="result-item" style="border-color: #3b82f6;">
+                    <small>Max. Möglich</small>
+                    <span>100</span>
+                </div>
+                
+                <div class="result-total">
+                    <small>Gesamte AdH-Punkte an dieser Universität</small>
+                    <span id="res-total">0.00</span>
+                </div>
+            </div>
+
+            <canvas id="gaussCanvas" width="600" height="200" style="display: block;"></canvas>
+            
+            <div class="cutoff-info" id="cutoff-container" style="display: flex;">
+                <span>Grenzrang <span id="lbl-semester-display">SoSe 26</span>: <strong id="cutoff-val" style="color: #f8fafc;">0.00 Pkt</strong></span>
+                <span id="cutoff-diff"><span class="diff-neg">-0.00 Pkt (Fehlen)</span></span>
+            </div>
+
+            <div class="warning-box">⚠️ WICHTIG: Dieses Tool berechnet ausschließlich die HZB-Punkte für das AdH (Auswahlverfahren der Hochschulen). Es gilt nicht für die ZEQ!</div>
+
+            <!-- ENTWICKLER NOTIZ -->
+            <div class="dev-note">
+                <h3>🧠 Wozu ist dieses Tool da? (Entwickler-Notiz von Ritsch)</h3>
+                <p><strong>Kein klassischer NC-Rechner-Ersatz, sondern die ultimative Ergänzung!</strong></p>
+                <p>Normale NC-Rechner arbeiten immer nur mit dem Wert deiner Note aus dem letzten Jahr. Dieses Tool hier setzt dort an, wo die harte Realität beginnt: <strong>Ab Mitte Juli</strong> veröffentlicht Hochschulstart deinen tatsächlichen Prozentrang (PR) im Portal.</p>
+                <p><strong>Das Problem im System:</strong> Bonuspunkte für TMS, eine Ausbildung oder ein FSJ sind immer fest normiert und sicher. Deine Abiturnote aber nicht! Weil der Landesschnitt von Jahr zu Jahr schwankt, ist dieselbe 1,8 in jedem Bewerbungsverfahren unterschiedlich viel wert.</p>
+                <p><strong>Die Lösung - Was dieses Tool macht:</strong> Es wandelt deinen frischen Juli-PR über die offizielle mathematische Formel (Inverse Normalverteilung) in nackte AdH-Punkte um und berechnet den exakten Anteil der Wunsch-Uni. Damit siehst du glasklar deine <strong>aktuelle Situation im Bewerbungsverfahren</strong>. Du kannst deinen exakten Score berechnen und ihn 1:1 mit dem Grenzrang (Cut-off) vom letzten Jahr vergleichen, um zu sehen, wie sich dein Abitur durch den aktuellen Jahrgang verschoben hat.</p>
+                <p style="color: #ef4444; font-size: 12px; margin-top: 15px;"><em>Hinweis: Dies ist keine Prognose oder Garantie, ob es für einen Studienplatz reicht! Es ist ein Analyse-Tool, um die mathematische Realität der aktuellen Bewerbung zu entschlüsseln.</em></p>
+            </div>
+
+            <div class="footer">Datenbasis: Offizielle AdH-Struktur 2025/2026 (Stiftung für Hochschulzulassung)</div>
+        </div>
+
+        <!-- =========================================================================
+             TAB 2: STUDIENORT-RANKING
+             ========================================================================= -->
+        <div id="tab-ranking" class="tab-content">
+            <div style="margin-bottom: 25px;">
+                <h2 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">Studienort-Ranking: Humanmedizin</h2>
+            </div>
+            
+            <div class="info-box info-blue">
+                <h3>🧭 Entdecke deinen perfekten Studienort</h3>
+                <p style="margin:0;">Wichtiger Hinweis: Dieses Tool bietet keine Entscheidungsgarantie. Es ist ein dynamisches Modell zum Explorieren der Universitäten und zum individuellen Abwägen deiner persönlichen Kriterien.</p>
+            </div>
+
+            <div class="grid-3col">
+                <div class="input-box">
+                    <label style="font-weight: bold; color: var(--text-main); font-size:16px; margin-bottom: 12px;">1. Heimatort setzen</label>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; margin-top: -5px;">Klicke auf die Karte, um deinen Wohnort zu markieren.</p>
+                    <div id="map"></div>
+                    <div id="routingStatus" class="hidden">Berechne Routen...</div>
+                    
+                    <label style="margin-top: 15px; font-weight: bold; color: var(--text-main);">Wie ortsgebunden bist du?</label>
+                    <select id="ortgebunden" onchange="renderRankingTable()" style="margin-bottom:0;">
+                        <option value="voll">Voll ortsgebunden (Distanz ist enorm wichtig)</option>
+                        <option value="teils" selected>Teils ortsgebunden (Spielt eine halbe Rolle)</option>
+                        <option value="gar_nicht">Gar nicht (Distanz ist völlig egal)</option>
+                    </select>
+                </div>
+
+                <div class="input-box">
+                    <label style="font-weight: bold; color: var(--text-main); font-size:16px; margin-bottom: 12px;">2. Vibe-Fragebogen</label>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; margin-top: -5px;">Deaktiviere Fragen per Checkbox, wenn sie dir egal sind.</p>
+                    
+                    <div class="vibe-row">
+                        <input type="checkbox" id="chk-vibe-size" checked onchange="updateVibeState(); renderRankingTable()">
+                        <div id="container-vibe-size">
+                            <div class="vibe-label"><span>Kleinstadt</span><span>Metropole</span></div>
+                            <input type="range" id="qSize" min="1" max="5" value="3" oninput="renderRankingTable()" style="margin-bottom:0;">
+                        </div>
+                    </div>
+                    <div class="vibe-row">
+                        <input type="checkbox" id="chk-vibe-nightlife" checked onchange="updateVibeState(); renderRankingTable()">
+                        <div id="container-vibe-nightlife">
+                            <div class="vibe-label"><span>Ruhig</span><span>Nightlife</span></div>
+                            <input type="range" id="qNightlife" min="1" max="5" value="3" oninput="renderRankingTable()" style="margin-bottom:0;">
+                        </div>
+                    </div>
+                    <div class="vibe-row">
+                        <input type="checkbox" id="chk-vibe-nature" checked onchange="updateVibeState(); renderRankingTable()">
+                        <div id="container-vibe-nature">
+                            <div class="vibe-label"><span>Beton</span><span>Natur/Wasser</span></div>
+                            <input type="range" id="qNature" min="1" max="5" value="3" oninput="renderRankingTable()" style="margin-bottom:0;">
+                        </div>
+                    </div>
+                    <div class="vibe-row">
+                        <input type="checkbox" id="chk-vibe-transport" checked onchange="updateVibeState(); renderRankingTable()">
+                        <div id="container-vibe-transport">
+                            <div class="vibe-label"><span>Auto-Stadt</span><span>Top ÖPNV</span></div>
+                            <input type="range" id="qTransport" min="1" max="5" value="3" oninput="renderRankingTable()" style="margin-bottom:0;">
+                        </div>
+                    </div>
+                    <div class="vibe-row" style="margin-bottom:0;">
+                        <input type="checkbox" id="chk-vibe-tradition" checked onchange="updateVibeState(); renderRankingTable()">
+                        <div id="container-vibe-tradition">
+                            <div class="vibe-label"><span>Modern</span><span>Historisch</span></div>
+                            <input type="range" id="qTradition" min="1" max="5" value="3" oninput="renderRankingTable()" style="margin-bottom:0;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-box">
+                    <label style="font-weight: bold; color: var(--text-main); font-size:16px; margin-bottom: 12px;">3. Kriterien & Finanzen</label>
+                    
+                    <label style="font-weight: bold; color: var(--text-main);">Monatliches Budget (€)</label>
+                    <input type="number" id="budget" value="1000" oninput="renderRankingTable()" style="margin-bottom: 8px;">
+                    <p style="font-size: 11px; color: var(--text-muted); margin-top:0; margin-bottom: 20px;">
+                        Dynamisch: Bei einem Minus dominiert das Kosten-Kriterium bis zu 95%.
+                    </p>
+                    
+                    <label style="font-weight: bold; color: var(--text-main);">Studiengangsgröße</label>
+                    <select id="sizeImportance" onchange="toggleSizeSlider(); renderRankingTable()" style="margin-bottom: 8px;">
+                        <option value="voll">Ist mir wichtig</option>
+                        <option value="teils">Teils wichtig</option>
+                        <option value="egal">Ist mir völlig egal</option>
+                    </select>
+                    
+                    <div id="sizeSliderContainer" style="margin-bottom: 20px;">
+                        <div class="vibe-label"><span>Familiär</span><span>Massiv</span></div>
+                        <input type="range" id="sizePref" min="0" max="100" value="50" oninput="renderRankingTable()" style="margin-bottom:0;">
+                    </div>
+
+                    <label style="font-weight: bold; color: var(--text-main);">Studienaufbau</label>
+                    <select id="prefStudiengang" onchange="renderRankingTable()" style="margin-bottom:0;">
+                        <option value="egal">Ist mir völlig egal</option>
+                        <option value="Regel">Regelstudiengang priorisieren</option>
+                        <option value="Modell">Modellstudiengang priorisieren</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th onclick="setSort('index')">Rank <span id="sort-index" class="sort-arrow"></span></th>
+                            <th onclick="setSort('name')">Universität <span id="sort-name" class="sort-arrow"></span></th>
+                            <th onclick="setSort('score')">Gesamt <span id="sort-score" class="sort-arrow"></span></th>
+                            <th onclick="setSort('typ')">Aufbau <span id="sort-typ" class="sort-arrow"></span></th>
+                            <th id="headerGroesse" onclick="setSort('cap')">Kapazität <span id="sort-cap" class="sort-arrow"></span></th>
+                            <th onclick="setSort('totalCosts')">Stadtkosten <span id="sort-totalCosts" class="sort-arrow"></span></th>
+                            <th id="headerDistanz" onclick="setSort('dist')">Auto-Distanz <span id="sort-dist" class="sort-arrow"></span></th>
+                            <th onclick="setSort('vibeDisplay')">Vibe <span id="sort-vibeDisplay" class="sort-arrow"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- =========================================================================
+             TAB 3: NACHRÜCKVERFAHREN
+             ========================================================================= -->
+        <div id="tab-nachruecken" class="tab-content text-content">
+            <h2>Nachrücker-Zahlen Medizin (WS 25/26)</h2>
+            <div class="info-box">
+                <p style="margin:0;">Die offizielle Datenlage zum Nachrückverfahren wird von Hochschulstart nicht detailliert je Uni veröffentlicht. Die folgenden Daten und Tabellen basieren auf einer gemeinsamen Datenanalyse von <strong>Kevin Kumar und mir</strong>. <br><br>👉 <a href="https://www.future-doctor.de/nachruecker-zahlen-medizin/" target="_blank">Lies dir hier unbedingt unseren vollständigen Beitrag auf future-doctor.de durch!</a></p>
+            </div>
+            
+            <p>Die folgende Auswertung zeigt, wie viele Plätze je Quote und in der Vorabquote insgesamt zur Verfügung standen und wie viele Zulassungen tatsächlich erteilt wurden:</p>
+            <ul>
+                <li><strong>ABQ:</strong> 2.531 Plätze ➔ 3.227 Zulassungen <strong style="color:var(--success-text);">(+696 Nachrücker)</strong></li>
+                <li><strong>AdH:</strong> 5.061 Plätze ➔ 5.747 Zulassungen <strong style="color:var(--success-text);">(+686 Nachrücker)</strong></li>
+                <li><strong>ZEQ:</strong> 845 Plätze ➔ 946 Zulassungen <strong style="color:var(--success-text);">(+101 Nachrücker)</strong></li>
+                <li><strong>Vorabquoten:</strong> 1.844 Plätze</li>
+            </ul>
+
+            <h3 style="margin-top: 30px;">Zusätzliche Zulassungen durch Nachrücker je Universität</h3>
+            <p>Diese Tabelle listet je Uni und Quote, wie viele Plätze nachträglich an Nachrücker vergeben wurden. Ein Wert von <strong>0</strong> bedeutet, dass jede Zulassung sofort angenommen wurde und niemand mehr nachrücken konnte.</p>
+            
+            <div class="table-wrapper">
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Universität</th>
+                            <th>ABQ</th>
+                            <th>AdH</th>
+                            <th>ZEQ</th>
+                            <th style="color: var(--accent);">Gesamt Nachrücker</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td data-label="Universität">Aachen RWTH</td><td data-label="ABQ"><strong style="color:var(--success-text)">+5</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+15</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+4</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+24</strong></td></tr>
+                        <tr><td data-label="Universität">Augsburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+10</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+25</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+6</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+41</strong></td></tr>
+                        <tr><td data-label="Universität">Berlin Charité</td><td data-label="ABQ"><strong style="color:var(--success-text)">+20</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+10</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+31</strong></td></tr>
+                        <tr><td data-label="Universität">Bielefeld U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+4</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+9</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+14</strong></td></tr>
+                        <tr><td data-label="Universität">Bochum U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+21</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+36</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+4</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+61</strong></td></tr>
+                        <tr><td data-label="Universität">Bonn U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+10</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+7</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+17</strong></td></tr>
+                        <tr><td data-label="Universität">Dresden TU</td><td data-label="ABQ"><strong style="color:var(--success-text)">+8</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+13</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+23</strong></td></tr>
+                        <tr><td data-label="Universität">Dresden/Chemnitz TU</td><td data-label="ABQ"><strong style="color:var(--success-text)">+4</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+9</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+13</strong></td></tr>
+                        <tr><td data-label="Universität">Duisburg-Essen U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+9</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+11</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+20</strong></td></tr>
+                        <tr><td data-label="Universität">Düsseldorf U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+6</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+26</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+3</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+35</strong></td></tr>
+                        <tr><td data-label="Universität">Erlangen-Nürnberg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+12</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+21</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+3</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+36</strong></td></tr>
+                        <tr><td data-label="Universität">Erlangen/Bayreuth U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+6</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+10</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+3</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+19</strong></td></tr>
+                        <tr><td data-label="Universität">Frankfurt am Main U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+20</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+23</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+45</strong></td></tr>
+                        <tr><td data-label="Universität">Freiburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+27</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+7</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+34</strong></td></tr>
+                        <tr><td data-label="Universität">Gießen U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+14</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+20</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+5</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+39</strong></td></tr>
+                        <tr><td data-label="Universität">Göttingen U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+9</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+9</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+19</strong></td></tr>
+                        <tr><td data-label="Universität">Greifswald U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+15</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+23</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+6</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+44</strong></td></tr>
+                        <tr><td data-label="Universität">Halle-Wittenberg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+23</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+28</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+53</strong></td></tr>
+                        <tr><td data-label="Universität">Hamburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+22</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+2</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+26</strong></td></tr>
+                        <tr><td data-label="Universität">Hannover MedH</td><td data-label="ABQ"><strong style="color:var(--success-text)">+16</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+6</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+22</strong></td></tr>
+                        <tr><td data-label="Universität">Heidelberg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+13</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+23</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+37</strong></td></tr>
+                        <tr><td data-label="Universität">Heid./Mannheim U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+15</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+26</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+7</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+48</strong></td></tr>
+                        <tr><td data-label="Universität">Jena U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+36</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+22</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+60</strong></td></tr>
+                        <tr><td data-label="Universität">Kiel U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+12</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+11</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+23</strong></td></tr>
+                        <tr><td data-label="Universität">Köln U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+14</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+13</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+3</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+30</strong></td></tr>
+                        <tr><td data-label="Universität">Leipzig U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+11</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+37</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+6</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+54</strong></td></tr>
+                        <tr><td data-label="Universität">Lübeck U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+15</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+9</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+25</strong></td></tr>
+                        <tr><td data-label="Universität">Magdeburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+17</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+24</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+41</strong></td></tr>
+                        <tr><td data-label="Universität">Mainz U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+9</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+7</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+18</strong></td></tr>
+                        <tr><td data-label="Universität">Mainz/MC Trier U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+1</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+3</strong></td></tr>
+                        <tr><td data-label="Universität">Marburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+37</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+27</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+13</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+77</strong></td></tr>
+                        <tr><td data-label="Universität">München U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+104</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+46</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+4</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+154</strong></td></tr>
+                        <tr><td data-label="Universität">Münster U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+8</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+8</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+16</strong></td></tr>
+                        <tr><td data-label="Universität">Oldenburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+3</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+2</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+6</strong></td></tr>
+                        <tr><td data-label="Universität">Regensburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+21</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+12</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+34</strong></td></tr>
+                        <tr><td data-label="Universität">Regensburg/MCN U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+8</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+6</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+16</strong></td></tr>
+                        <tr><td data-label="Universität">Rostock U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+29</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+50</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+6</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+85</strong></td></tr>
+                        <tr><td data-label="Universität">Saarbrücken U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+40</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+24</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+4</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+68</strong></td></tr>
+                        <tr><td data-label="Universität">Tübingen U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+11</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+6</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+17</strong></td></tr>
+                        <tr><td data-label="Universität">Ulm U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+22</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+19</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+41</strong></td></tr>
+                        <tr><td data-label="Universität">Würzburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+9</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+5</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+16</strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- =========================================================================
+             TAB 4: STUDIENPLATZTAUSCH
+             ========================================================================= -->
+        <div id="tab-tausch" class="tab-content text-content">
+            <h2>Studienplatztausch (1. FS)</h2>
+            <div class="info-box info-blue">
+                <p style="margin:0;">Die folgenden Daten basieren auf dem ausführlichen Studienplatztausch-Guide (Stand: WiSe 25/26) von <strong>Mona Jung</strong>. Für die kompletten und detaillierten Bedingungen, Fristen und Ausnahmeregelungen lest bitte unbedingt das Originaldokument!<br><br>👉 <a href="https://drive.google.com/file/d/1Tkk0hmLPE4p5BY8cvRw7EhwDNowFIYHn/view" target="_blank">Zum Studienplatztausch-Guide von Mona Jung</a></p>
+            </div>
+            
+            <p>Die Tabelle zeigt, ob ein Studienplatztausch zum ersten Fachsemester (1. FS) in Humanmedizin an der jeweiligen Universität grundsätzlich möglich ist.</p>
+            <ul>
+                <li><span class="badge badge-green">Ja</span> = Tausch zum 1. FS möglich (Quote in der Regel nicht relevant).</li>
+                <li><span class="badge badge-orange">Eingeschränkt</span> = Tausch nur unter sehr strengen Voraussetzungen (z.B. absolut identische Quote, sehr ähnliche Punkte/Noten) oder nur bei anerkanntem Härtefall möglich.</li>
+                <li><span class="badge badge-red">Nein</span> = Tausch zum 1. FS ist nicht möglich.</li>
+            </ul>
+
+            <div class="table-wrapper">
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Universität</th>
+                            <th>Tausch 1. FS?</th>
+                            <th>Hinweise / Ausnahmen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td data-label="Universität">Aachen RWTH</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Augsburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td data-label="Hinweise">Zulassungskriterien (z.B. TMS, Abi) müssen sehr ähnlich sein. Sehr strenge Einzelfallprüfung.</td></tr>
+                        <tr><td data-label="Universität">Berlin Charité</td><td data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td data-label="Hinweise">Quote muss exakt übereinstimmen. Kein Tausch innerhalb der Vorabquoten.</td></tr>
+                        <tr><td data-label="Universität">Bielefeld U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Bochum U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Ab WiSe 2025/2026 nicht mehr möglich.</td></tr>
+                        <tr><td data-label="Universität">Bonn U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Dresden TU</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Dresden/Chemnitz TU</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Duisburg-Essen U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Ab SoSe 2024 nicht mehr möglich.</td></tr>
+                        <tr><td data-label="Universität">Düsseldorf U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Nur in begründeten, nachgewiesenen Härtefällen möglich.</td></tr>
+                        <tr><td data-label="Universität">Erlangen-Nürnberg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td data-label="Universität">Erlangen/Bayreuth U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td data-label="Universität">Frankfurt am Main U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
+                        <tr><td data-label="Universität">Freiburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Gießen U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Göttingen U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Tausch zwischen Ausländerquote und Bildungsinländern ist nicht möglich, sonst Quote egal.</td></tr>
+                        <tr><td data-label="Universität">Greifswald U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td data-label="Universität">Halle-Wittenberg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant. <strong>Kein Ringtausch möglich!</strong></td></tr>
+                        <tr><td data-label="Universität">Hamburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td data-label="Universität">Hannover MedH</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder Ortsbindung als Pflege in Region Hannover.</td></tr>
+                        <tr><td data-label="Universität">Heidelberg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Heidelberg/Mannheim U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Jena U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Kiel U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant. Ringtausch möglich.</td></tr>
+                        <tr><td data-label="Universität">Köln U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Leipzig U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Lübeck U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Magdeburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Mainz U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td data-label="Universität">Mainz/MC Trier U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td data-label="Universität">Marburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">München U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant. Auch Landarztquote möglich.</td></tr>
+                        <tr><td data-label="Universität">Münster U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Ausschließlich im höheren Fachsemester möglich.</td></tr>
+                        <tr><td data-label="Universität">Oldenburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder alleiniger Niedersachsen-Wohnsitz.</td></tr>
+                        <tr><td data-label="Universität">Regensburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td data-label="Universität">Regensburg/MCN U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td data-label="Universität">Rostock U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Saarbrücken U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
+                        <tr><td data-label="Universität">Tübingen U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
+                        <tr><td data-label="Universität">Ulm U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
+                        <tr><td data-label="Universität">Würzburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- =========================================================================
+             TAB 5: INFO ZUM VERGABESYSTEM
+             ========================================================================= -->
+        <div id="tab-info" class="tab-content text-content">
+            <h2>Hinter den Kulissen: Wie das Vergabesystem funktioniert</h2>
+
+            <h3>Schritt 1: Von der Gesamtplatzzahl zur Quote</h3>
+            <p>Die Platzzahl auf der Uni-Website ist nicht die Zahl, die in der Auswahl tatsächlich ankommt. Die Plätze schrumpfen vorher schrittweise durch feste Vorab-Abzüge:</p>
+            <ul>
+                <li><strong>Der internationale Abzug:</strong> Zuerst fallen etwa 5 % der Plätze für internationale Bewerber:innen weg. In Aachen gingen im WS 25/26 zum Beispiel 13 von 288 Plätzen direkt an internationale Studierende.</li>
+                <li><strong>Die Vorabquoten:</strong> Zusammen mit dieser internationalen Quote gehen bis zu 20 % der Plätze in diverse Vorabquoten auf, etwa für Härtefälle, die Landarztquote oder ein Zweitstudium.</li>
+                <li><strong>Der 30-10-60-Schlüssel:</strong> Erst was nach diesen Abzügen übrig bleibt, verteilt sich strikt nach dem gesetzlichen Schlüssel: 30 % Abiturbestenquote, 60 % Auswahlverfahren der Hochschulen und 10 % Zusätzliche Eignungsquote.</li>
+            </ul>
+
+            <p>Wie stark diese Vorabquoten die Verteilung in der Praxis verzerren, zeigt die RWTH Aachen. Hier haben wir als Beispiel Aachen durchgerechnet:</p>
+
+            <!-- Original Grafik -->
+            <div style="text-align: center; margin: 25px 0; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <img src="https://www.future-doctor.de/wp-content/uploads/2026/07/nachruecker-aachen-quoten-ws2526.png" alt="Halbkreis-Diagramm der echten Platzverteilung an der RWTH Aachen im WS 25/26: 48 % AdH, 24 % ABQ, 8 % ZEQ, der Rest geht in Vorabquoten" style="max-width: 100%; height: auto;" onerror="this.style.display='none'; document.getElementById('fallback-chart').style.display='block';">
+            </div>
+
+            <!-- CSS Ersatzgrafik (Wird standardmäßig angezeigt oder als Ergänzung) -->
+            <div id="fallback-chart" style="margin-bottom: 25px;">
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;"><em>Ersatzgrafik: Wahre Platzverteilung in Aachen nach Abzügen</em></p>
+                <div style="display: flex; height: 35px; border-radius: 6px; overflow: hidden; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                    <div style="width: 48%; background: #007bff; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="AdH (48%)">AdH 48%</div>
+                    <div style="width: 24%; background: #10b981; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="ABQ (24%)">ABQ 24%</div>
+                    <div style="width: 8%; background: #8b5cf6; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="ZEQ (8%)">ZEQ 8%</div>
+                    <div style="width: 20%; background: #f59e0b; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="Vorabquoten & International (20%)">Vorab 20%</div>
+                </div>
+            </div>
+
+            <div class="info-box info-blue">
+                <p style="margin: 0;"><strong>Das Ergebnis:</strong> Die ABQ schrumpft von theoretisch 30 % auf real 24 % zusammen. Statt 60 % AdH bleiben nur noch 48 % der Plätze übrig. Aus theoretisch 10 % ZEQ werden am Ende magere 8 %. <em>(Quelle: Gemeinsame Analyse von Kevin Kumar und Ritsch, future-doctor.de)</em></p>
+            </div>
+
+            <h3>Abitur ist nicht gleich Abitur (Die Mathematik im AdH)</h3>
+            <p><strong>Von Ritsch</strong></p>
+            <p>Für die Bepunktung des Abiturs im AdH ist nur das Bundesland wichtig, in dem man das Abitur gemacht hat. Wie viele Punkte man letztlich dafür bekommt, hängt einzig und allein von der Konkurrenz des jeweiligen Bundeslandes ab.</p>
+            <p>Ab Mitte/Ende Juli veröffentlicht Hochschulstart in deinem Profil einen unscheinbaren, aber alles entscheidenden Wert. Gerankt wird über den Prozentrang (PR) der Hochschulzugangsberechtigung aller Bewerber, die sich auf Hochschulstart für Humanmedizin, Zahnmedizin, Tiermedizin und Pharmazie bewerben. Daraus wird dann ein gemeinsamer Topf gemacht.</p>
+
+            <p><strong>Wo finde ich meinen Prozentrang?</strong></p>
+            <ul>
+                <li>Logge dich ins Bewerbungsportal bei Hochschulstart ein und gehe oben im Menü auf „Meine Daten“.</li>
+                <li>Klicke auf den Reiter „Feste Bewerbungsbestandteile“.</li>
+                <li>Klappe den Bereich „Hochschulzugangsberechtigung“ auf und suche den Abschnitt „Erweiterte Angaben zur Hochschulzugangsberechtigung“.</li>
+                <li>Lies den Prozent-Wert in der Zeile „Notenausgleich: prozentualer / absoluter Rang der HZB“ ab.</li>
+            </ul>
+
+            <p>Dieser Wert gibt an, wo man im direkten Vergleich in seinem Bundesland steht. Die Vergabe der Punkte im AdH basiert mathematisch exakt auf diesem Prozentrang. Dabei erhält man die Punkte anhand der <strong>Gaußschen Normalverteilung</strong>, ähnlich wie beim TMS wird der PR so in nackte AdH-Punkte umgerechnet.</p>
+
+            <p><strong>Beispiel an der Uni Würzburg (Maximal 60 Punkte für das Abitur):</strong></p>
+            <ul>
+                <li>Für PR 15 erhält man 19,65 von 60 Punkten.</li>
+                <li>Für PR 50 bekommt man 30 von 60 Punkten.</li>
+                <li>Für PR 75 bekommt man 36,70 von 60 Punkten.</li>
+                <li>Für PR 100 bekommt man 60 von 60 Punkten.</li>
+            </ul>
+
+            <p><strong>Warum bekommt man bei einem PR von 75 nicht einfach 75 % the Punkte (also 45 von 60)?</strong><br>
+            Das liegt an der Mathematik der Gaußschen Normalverteilung. Das Punktesystem verläuft nicht linear, sondern in Form einer Glockenkurve. Die allermeisten Bewerber tummeln sich in der Mitte um den Durchschnitt (PR 50). Um von PR 50 auf PR 75 zu klettern, muss man im Verhältnis nur eine etwas bessere Note haben, weil man hier lediglich die große "Masse" an durchschnittlichen Bewerbern überholt.</p>
+            
+            <p>Diese außergewöhnliche Leistung an den beiden extremen Rändern wird durch das mathematische Modell überproportional stark mit Punkten bestraft oder belohnt. Daher ist der Punkteabstand zwischen PR 75 und PR 100 deutlich gewaltiger als zwischen PR 50 und PR 75.</p>
+
+            <p>Das führt dazu, dass man in jedem Bewerbungssemester mit dem gleichen Notenschnitt eine andere Punktzahl für das Abitur erhält. Die Bonuspunkte für den TMS, eine Ausbildung oder ein FSJ sind ohnehin fest normiert. Die gewertete Abiturleistung hingegen schwankt dynamisch mit dem aktuellen Bewerberjahrgang.</p>
+
+            <div class="info-box">
+                <h3 style="color: var(--success-text);">Häufige Frage: Was passiert bei schwachen Jahrgängen?</h3>
+                <p style="margin: 0;"><strong>Frage:</strong> Wenn sich weniger Abiturienten aus anderen Bundesländern bewerben, hat man dann auch einen Vorteil, wenn man aus einem Bundesland kommt, das zum Beispiel keinen G8 auf G9 Wechsel hatte?</p>
+                <p style="margin-top: 10px;"><strong>Antwort:</strong> Dein PR wird ausschließlich im Vergleich zu den Bewerbern aus deinem eigenen Bundesland berechnet. Sobald alle Bewerber aus allen Bundesländern ihre AdH-Punkte haben, werden sie in den bundesweiten Topf geworfen. Du hast also mit exakt derselben errechneten Punktzahl plötzlich eventuell bessere Chancen, zugelassen zu werden, weil schlichtweg Mitbewerber fehlen, die sich sonst vor dich geschoben hätten.</p>
+            </div>
+            
+            <p>Aus diesem Grund habe ich den Simulator entwickelt, mit dem man über den PR-Wert die eigenen Chancen at jeder Uni simulieren und den Effekt sofort sehen kann. So lässt sich schon vor dem Start bzw. während des laufenden Verfahrens der Grenzrang im Vergleich zum letzten Jahr exakt ablesen.</p>
+        </div>
+
+    </div>
+
+    <!-- WICHTIGE LINKS DROPDOWN SCRIPT -->
+    <script>
+        document.addEventListener('click', function(event) {
+            var dropdown = document.getElementById('linksDropdown');
+            var btn = document.querySelector('.links-toggle-btn');
+            if (dropdown && btn) {
+                if (!btn.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+    </script>
+
+    <!-- TABS LOGIC -->
+    <script>
+        let mapInitialized = false;
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('btn-tab-' + tabId).classList.add('active');
+
+            const container = document.getElementById('main-container');
+            if (tabId === 'ranking') {
+                container.style.maxWidth = '1300px';
+                if (!mapInitialized) {
+                    initMap();
+                    mapInitialized = true;
+                } else {
+                    setTimeout(() => map.invalidateSize(), 100);
+                }
+            } else {
+                container.style.maxWidth = '800px';
+            }
+        }
+    </script>
+
+    <!-- =========================================================================
+         SCRIPT 1: ADH PUNKTESIMULATOR
+         ========================================================================= -->
+    <script>
+        const DATA_VERSIONS = {
+            "WS25": {
+                "aachen_1": { name: "RWTH Aachen (AdH-1)", hzb: 95, tms: 5, ausb: 0, beruf: 0, dienst: 0, preis: 0, cutoff: 69.8 },
+                "aachen_2": { name: "RWTH Aachen (AdH-2)", hzb: 20, tms: 70, ausb: 0, beruf: 10, dienst: 0, preis: 0, cutoff: 65.9 },
+                "aachen_3": { name: "RWTH Aachen (AdH-3)", hzb: 50, tms: 0, ausb: 50, beruf: 0, dienst: 0, preis: 0, cutoff: 78.2 },
+                "augsburg_2": { name: "Uni Augsburg (AdH-2)", hzb: 25, tms: 70, ausb: 3, beruf: 0, dienst: 2, preis: 0, cutoff: 63.6 },
+                "charite": { name: "Charité Berlin", hzb: 20, tms: 60, ausb: 0, beruf: 0, dienst: 20, preis: 0, cutoff: 69.7 },
+                "bielefeld_1": { name: "Uni Bielefeld (AdH-1)", hzb: 90, tms: 0, ausb: 0, beruf: 10, dienst: 0, preis: 0, cutoff: 66.9 },
+                "bielefeld_2": { name: "Uni Bielefeld (AdH-2)", hzb: 80, tms: 0, ausb: 20, beruf: 0, dienst: 0, preis: 0, cutoff: 62.4 },
+                "bielefeld_3": { name: "Uni Bielefeld (AdH-3)", hzb: 50, tms: 50, ausb: 0, beruf: 0, dienst: 0, preis: 0, cutoff: 60.2 },
+                "bochum": { name: "Uni Bochum", hzb: 60, tms: 35, ausb: 3, beruf: 0, dienst: 2, preis: 0, cutoff: 54.5 },
+                "bonn": { name: "Uni Bonn", hzb: 60, tms: 35, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 57.1 },
+                "lausitz_1": { name: "MedU Lausitz (AdH-1)", hzb: 30, tms: 30, ausb: 30, beruf: 10, dienst: 0, preis: 0, cutoff: null },
+                "dresden_1": { name: "TU Dresden (AdH-1)", hzb: 30, tms: 20, ausb: 0, beruf: 0, dienst: 50, preis: 0, cutoff: 76.7 },
+                "dresden_2": { name: "TU Dresden (AdH-2)", hzb: 30, tms: 20, ausb: 50, beruf: 0, dienst: 0, preis: 0, cutoff: 74.6 },
+                "dresden_chem_1": { name: "TU Dresden/Chemnitz (AdH-1)", hzb: 65, tms: 30, ausb: 0, beruf: 0, dienst: 5, preis: 0, cutoff: 57.3 },
+                "dresden_chem_2": { name: "TU Dresden/Chemnitz (AdH-2)", hzb: 20, tms: 10, ausb: 0, beruf: 0, dienst: 0, preis: 0, cutoff: 69.5 },
+                "duisburg": { name: "Uni Duisburg-Essen", hzb: 40, tms: 40, ausb: 10, beruf: 0, dienst: 10, preis: 0, cutoff: 58.0 },
+                "duesseldorf_1": { name: "Uni Düsseldorf (AdH-1)", hzb: 48, tms: 48, ausb: 0, beruf: 0, dienst: 2, preis: 2, cutoff: 57.6 },
+                "duesseldorf_2": { name: "Uni Düsseldorf (AdH-2)", hzb: 24, tms: 24, ausb: 50, beruf: 0, dienst: 1, preis: 1, cutoff: 75.4 },
+                "erlangen": { name: "FAU Erlangen-Nürnberg", hzb: 60, tms: 35, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 58.8 },
+                "erlangen_bay": { name: "FAU Erlangen/Bayreuth", hzb: 60, tms: 35, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 57.5 },
+                "frankfurt": { name: "Uni Frankfurt/Main", hzb: 45, tms: 50, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 55.6 },
+                "freiburg": { name: "Uni Freiburg", hzb: 41, tms: 43, ausb: 10, beruf: 2, dienst: 2, preis: 2, cutoff: 54.6 },
+                "giessen": { name: "Uni Gießen", hzb: 49, tms: 41, ausb: 4, beruf: 2, dienst: 0, preis: 4, cutoff: 51.7 },
+                "goettingen_1": { name: "Uni Göttingen (AdH-1)", hzb: 60, tms: 30, ausb: 0, beruf: 0, dienst: 10, preis: 0, cutoff: 59.6 },
+                "goettingen_2": { name: "Uni Göttingen (AdH-2)", hzb: 60, tms: 10, ausb: 30, beruf: 0, dienst: 0, preis: 0, cutoff: 66.2 },
+                "greifswald_1": { name: "Uni Greifswald (AdH-1)", hzb: 10, tms: 20, ausb: 60, beruf: 10, dienst: 0, preis: 0, cutoff: 79.3 },
+                "halle_1": { name: "Uni Halle-Wittenberg (AdH-1)", hzb: 65, tms: 35, ausb: 0, beruf: 0, dienst: 0, preis: 0, cutoff: 58.5 },
+                "halle_2": { name: "Uni Halle-Wittenberg (AdH-2)", hzb: 40, tms: 40, ausb: 0, beruf: 20, dienst: 0, preis: 0, cutoff: 62.9 },
+                "hannover_1": { name: "MedH Hannover (AdH-1)", hzb: 30, tms: 50, ausb: 0, beruf: 20, dienst: 0, preis: 0, cutoff: 65.5 },
+                "hannover_2": { name: "MedH Hannover (AdH-2)", hzb: 30, tms: 50, ausb: 20, beruf: 0, dienst: 0, preis: 0, cutoff: 61.3 },
+                "hamburg": { name: "Uni Hamburg", hzb: 40, tms: 0, ausb: 0, beruf: 0, dienst: 0, preis: 0, hamnat: 40, hamsjt: 20, cutoff: 64.3 },
+                "heidelberg": { name: "Uni Heidelberg", hzb: 46, tms: 44, ausb: 4, beruf: 2, dienst: 2, preis: 2, cutoff: 62.4 },
+                "heid_mannheim": { name: "Uni Heidelberg/Mannheim", hzb: 46, tms: 44, ausb: 4, beruf: 2, dienst: 2, preis: 2, cutoff: 56.1 },
+                "jena_1": { name: "Uni Jena (AdH-1)", hzb: 85, tms: 10, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 57.7 },
+                "jena_2": { name: "Uni Jena (AdH-2)", hzb: 25, tms: 70, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 60.0 },
+                "jena_3": { name: "Uni Jena (AdH-3)", hzb: 5, tms: 40, ausb: 55, beruf: 0, dienst: 0, preis: 0, cutoff: 77.3 },
+                "kiel": { name: "Uni Kiel", hzb: 60, tms: 30, ausb: 10, beruf: 0, dienst: 0, preis: 0, cutoff: 53.1 },
+                "koeln": { name: "Uni Köln", hzb: 45, tms: 45, ausb: 10, beruf: 0, dienst: 0, preis: 0, cutoff: 58.3 },
+                "leipzig": { name: "Uni Leipzig", hzb: 60, tms: 30, ausb: 10, beruf: 0, dienst: 0, preis: 0, cutoff: 55.5 },
+                "luebeck": { name: "Uni Lübeck", hzb: 50, tms: 35, ausb: 9, beruf: 0, dienst: 3, preis: 3, cutoff: 51.8 },
+                "magdeburg_1": { name: "Uni Magdeburg (AdH-1)", hzb: 95, tms: 0, ausb: 0, beruf: 0, dienst: 3, preis: 2, cutoff: 63.3 },
+                "magdeburg_2": { name: "Uni Magdeburg (Quote 2)", hzb: 45, tms: 0, ausb: 0, beruf: 0, dienst: 0, preis: 0, hamnat: 55, cutoff: 58.9 },
+                "magdeburg_3": { name: "Uni Magdeburg (Quote 3)", hzb: 30, tms: 0, ausb: 15, beruf: 0, dienst: 0, preis: 0, hamnat: 55, cutoff: 54.6 },
+                "mainz": { name: "Uni Mainz", hzb: 45, tms: 45, ausb: 5, beruf: 3, dienst: 0, preis: 2, cutoff: 55.0 },
+                "mainz_trier": { name: "Uni Mainz/Trier", hzb: 45, tms: 45, ausb: 5, beruf: 3, dienst: 0, preis: 2, cutoff: 53.0 },
+                "marburg": { name: "Uni Marburg", hzb: 50, tms: 40, ausb: 10, beruf: 0, dienst: 0, preis: 0, cutoff: 51.6 },
+                "muenchen": { name: "LMU München", hzb: 51, tms: 24, ausb: 10, beruf: 0, dienst: 8, preis: 7, cutoff: 49.5 },
+                "muenster": { name: "Uni Münster", hzb: 56, tms: 40, ausb: 0, beruf: 3, dienst: 1, preis: 0, cutoff: 67.4 },
+                "oldenburg_1": { name: "Uni Oldenburg (AdH-1)", hzb: 50, tms: 20, ausb: 30, beruf: 0, dienst: 0, preis: 0, cutoff: 63.6 },
+                "oldenburg_2": { name: "Uni Oldenburg (AdH-2)", hzb: 50, tms: 47, ausb: 0, beruf: 3, dienst: 0, preis: 0, cutoff: 62.8 },
+                "regensburg": { name: "Uni Regensburg", hzb: 60, tms: 30, ausb: 5, beruf: 0, dienst: 5, preis: 0, cutoff: 58.4 },
+                "regensburg_mcn": { name: "Uni Regensburg MCN", hzb: 55, tms: 5, ausb: 5, beruf: 0, dienst: 5, preis: 0, interview: 30, cutoff: 58.5 },
+                "rostock_1": { name: "Uni Rostock (AdH-1)", hzb: 48, tms: 46, ausb: 0, beruf: 0, dienst: 6, preis: 0, cutoff: 55.8 },
+                "rostock_2": { name: "Uni Rostock (AdH-2)", hzb: 34, tms: 33, ausb: 33, beruf: 0, dienst: 0, preis: 0, cutoff: 64.4 },
+                "saarbruecken_1": { name: "Uni Saarbrücken (AdH-1)", hzb: 90, tms: 10, ausb: 0, beruf: 0, dienst: 0, preis: 0, cutoff: 60.4 },
+                "saarbruecken_2": { name: "Uni Saarbrücken (AdH-2)", hzb: 40, tms: 40, ausb: 0, beruf: 20, dienst: 0, preis: 0, cutoff: 46.2 },
+                "saarbruecken_3": { name: "Uni Saarbrücken (AdH-3)", hzb: 0, tms: 60, ausb: 0, beruf: 20, dienst: 20, preis: 0, cutoff: 67.0 },
+                "tuebingen": { name: "Uni Tübingen", hzb: 44, tms: 43, ausb: 7, beruf: 0, dienst: 6, preis: 0, cutoff: 59.0 },
+                "ulm": { name: "Uni Ulm", hzb: 46, tms: 44, ausb: 6, beruf: 0, dienst: 2, preis: 2, cutoff: 54.8 },
+                "wuerzburg": { name: "Uni Würzburg", hzb: 60, tms: 30, ausb: 0, beruf: 0, dienst: 5, preis: 5, cutoff: 58.8 }
+            },
+            "SoSe26": {
+                "charite": { name: "Charité Berlin", hzb: 20, tms: 60, ausb: 0, beruf: 0, dienst: 20, preis: 0, cutoff: 67.1 },
+                "erlangen": { name: "FAU Erlangen-Nürnberg", hzb: 60, tms: 35, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 59.0 },
+                "erlangen_bay": { name: "FAU Erlangen/Bayreuth", hzb: 60, tms: 35, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 58.4 },
+                "giessen": { name: "Uni Gießen", hzb: 49, tms: 41, ausb: 4, beruf: 2, dienst: 0, preis: 4, cutoff: 54.9 },
+                "goettingen_1": { name: "Uni Göttingen (AdH-1)", hzb: 60, tms: 30, ausb: 0, beruf: 0, dienst: 10, preis: 0, cutoff: 62.1 },
+                "goettingen_2": { name: "Uni Göttingen (AdH-2)", hzb: 60, tms: 10, ausb: 30, beruf: 0, dienst: 0, preis: 0, cutoff: 70.0 },
+                "koeln": { name: "Uni Köln", hzb: 45, tms: 45, ausb: 10, beruf: 0, dienst: 0, preis: 0, cutoff: 59.5 },
+                "mainz": { name: "Uni Mainz", hzb: 45, tms: 45, ausb: 5, beruf: 3, dienst: 0, preis: 2, cutoff: 57.3 },
+                "mainz_trier": { name: "Uni Mainz/Trier", hzb: 45, tms: 45, ausb: 5, beruf: 3, dienst: 0, preis: 2, cutoff: 56.3 },
+                "muenster": { name: "Uni Münster", hzb: 56, tms: 40, ausb: 0, beruf: 3, dienst: 1, preis: 0, cutoff: 66.7 },
+                "tuebingen": { name: "Uni Tübingen", hzb: 44, tms: 43, ausb: 7, beruf: 0, dienst: 6, preis: 0, cutoff: 57.8 },
+                "wuerzburg": { name: "Uni Würzburg", hzb: 60, tms: 30, ausb: 0, beruf: 0, dienst: 5, preis: 5, cutoff: 58.9 }
+            }
+        };
+
+        const elSemester = document.getElementById('semester-select');
+        const elUni = document.getElementById('uni-select');
+        
+        // Slider + Input Verknüpfung
+        const elPrSlider = document.getElementById('pr-slider');
+        const elPrNumber = document.getElementById('pr-number');
+        
+        const elTmsSlider = document.getElementById('tms-slider');
+        const elHamnatSlider = document.getElementById('hamnat-slider');
+        const elHamsjtSlider = document.getElementById('hamsjt-slider');
+        const elInterviewSlider = document.getElementById('interview-slider');
+        const chkAusb = document.getElementById('chk-ausb');
+        const chkBeruf = document.getElementById('chk-beruf');
+        const chkDienst = document.getElementById('chk-dienst');
+        const chkPreis = document.getElementById('chk-preis');
+        const canvas = document.getElementById('gaussCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function updateAdhUniList() {
+            const semester = elSemester.value;
+            const unis = DATA_VERSIONS[semester];
+            elUni.innerHTML = '';
+            let sortedKeys = Object.keys(unis).sort((a, b) => unis[a].name.localeCompare(unis[b].name));
+            for (const key of sortedKeys) {
+                let option = document.createElement('option');
+                option.value = key;
+                option.text = unis[key].name;
+                elUni.appendChild(option);
+            }
+            if(unis["wuerzburg"]) elUni.value = "wuerzburg"; 
+            else if (sortedKeys.length > 0) elUni.value = sortedKeys[0];
+            updateAdhAll();
+        }
+
+        function inverseNormal(p) {
+            if (p <= 0) return -5;
+            if (p >= 1) return 5;
+            let q = (p < 0.5) ? p : 1.0 - p;
+            let t = Math.sqrt(-2.0 * Math.log(q));
+            let num = 2.515517 + t * (0.802853 + t * 0.010328);
+            let den = 1.0 + t * (1.432788 + t * (0.189269 + t * 0.001308));
+            let z = t - (num / den);
+            return (p < 0.5) ? -z : z;
+        }
+
+        function updateAdhAll() {
+            const semester = elSemester.value;
+            const uniKey = elUni.value;
+            if (!uniKey || !DATA_VERSIONS[semester][uniKey]) return;
+            const uni = DATA_VERSIONS[semester][uniKey];
+            
+            updateCheckboxUI('ausb', uni.ausb);
+            updateCheckboxUI('beruf', uni.beruf);
+            updateCheckboxUI('dienst', uni.dienst);
+            updateCheckboxUI('preis', uni.preis);
+
+            const strategyEl = document.getElementById('strategy-text');
+            if(uni.hzb <= 30) strategyEl.innerHTML = "💡 <strong>Strategie-Analyse:</strong> Die " + uni.name + " vergibt maximal nur " + uni.hzb + " Punkte für das Abitur. Die Gauß-Kurve ist extrem gestaucht! Dein Abitur fällt hier kaum ins Gewicht, das Verfahren wird fast ausschließlich über zusätzliche Leistungen entschieden.";
+            else if (uni.hzb >= 55) strategyEl.innerHTML = "💡 <strong>Strategie-Analyse:</strong> Die " + uni.name + " vergibt maximal " + uni.hzb + " Punkte für das Abitur. Die Gauß-Kurve ist weit gestreckt! Ein starkes Abi ist hier der Schlüssel zur Zulassung.";
+            else strategyEl.innerHTML = "💡 <strong>Strategie-Analyse:</strong> Die " + uni.name + " gewichtet das Abitur mit max. " + uni.hzb + " Punkten sehr ausgewogen. Du brauchst hier ein starkes Gesamtpaket.";
+
+            document.getElementById('lbl-max-hzb').innerText = uni.hzb;
+            document.getElementById('lbl-max-tms').innerText = uni.tms || 0;
+
+            let hamnatMax = uni.hamnat || 0;
+            let hamsjtMax = uni.hamsjt || 0;
+            let interviewMax = uni.interview || 0;
+
+            document.getElementById('hamnat-group').style.display = hamnatMax > 0 ? 'block' : 'none';
+            document.getElementById('res-hamnat-box').style.display = hamnatMax > 0 ? 'block' : 'none';
+            if(hamnatMax > 0) document.getElementById('lbl-max-hamnat').innerText = hamnatMax;
+
+            document.getElementById('hamsjt-group').style.display = hamsjtMax > 0 ? 'block' : 'none';
+            document.getElementById('res-hamsjt-box').style.display = hamsjtMax > 0 ? 'block' : 'none';
+            if(hamsjtMax > 0) document.getElementById('lbl-max-hamsjt').innerText = hamsjtMax;
+
+            document.getElementById('interview-group').style.display = interviewMax > 0 ? 'block' : 'none';
+            document.getElementById('res-interview-box').style.display = interviewMax > 0 ? 'block' : 'none';
+            if(interviewMax > 0) document.getElementById('lbl-max-interview').innerText = interviewMax;
+
+            // PR Wert auslesen und validieren
+            let pr = parseFloat(elPrNumber.value);
+            if(isNaN(pr)) pr = 0.1;
+            if(pr > 99.9) pr = 99.9;
+            
+            let hzbPoints = 0; let mu = 1; let sigma = 1;
+            if (uni.hzb > 0) {
+                mu = uni.hzb / 2.0; sigma = uni.hzb / 6.0;
+                let z = inverseNormal(pr / 100.0);
+                hzbPoints = Math.max(0, Math.min(mu + (z * sigma), uni.hzb));
+            }
+
+            let tms = parseInt(elTmsSlider.value); document.getElementById('tms-value').innerText = tms;
+            let tmsPoints = 0; if (uni.tms > 0 && tms > 70) tmsPoints = Math.min(((tms - 70) / 60.0) * uni.tms, uni.tms);
+
+            let hamnatPoints = 0; if (hamnatMax > 0) { let val = parseInt(elHamnatSlider.value); document.getElementById('hamnat-value').innerText = val; hamnatPoints = (val / 100.0) * hamnatMax; }
+            let hamsjtPoints = 0; if (hamsjtMax > 0) { let val = parseInt(elHamsjtSlider.value); document.getElementById('hamsjt-value').innerText = val; hamsjtPoints = (val / 100.0) * hamsjtMax; }
+            let interviewPoints = 0; if (interviewMax > 0) { let val = parseInt(elInterviewSlider.value); document.getElementById('interview-value').innerText = val; interviewPoints = (val / 100.0) * interviewMax; }
+
+            let bonusPoints = 0;
+            if (chkAusb.checked) bonusPoints += uni.ausb; if (chkBeruf.checked) bonusPoints += uni.beruf;
+            if (chkDienst.checked) bonusPoints += uni.dienst; if (chkPreis.checked) bonusPoints += uni.preis;
+
+            let total = Math.min(hzbPoints + tmsPoints + bonusPoints + hamnatPoints + hamsjtPoints + interviewPoints, 100); 
+
+            document.getElementById('res-hzb').innerText = hzbPoints.toFixed(2); document.getElementById('res-tms').innerText = tmsPoints.toFixed(2);
+            document.getElementById('res-hamnat').innerText = hamnatPoints.toFixed(2); document.getElementById('res-hamsjt').innerText = hamsjtPoints.toFixed(2);
+            document.getElementById('res-interview').innerText = interviewPoints.toFixed(2); document.getElementById('res-boni').innerText = bonusPoints.toFixed(2);
+            document.getElementById('res-total').innerText = total.toFixed(2);
+
+            const cutoffContainer = document.getElementById('cutoff-container');
+            document.getElementById('lbl-semester-display').innerText = semester === "SoSe26" ? "SoSe 26" : "WS 25/26";
+
+            let requiredHzb = null;
+            if (uni.cutoff) {
+                document.getElementById('cutoff-val').innerText = uni.cutoff.toFixed(2) + " Pkt";
+                let diff = total - uni.cutoff;
+                document.getElementById('cutoff-diff').innerHTML = diff >= 0 ? `<span class="diff-pos">+${diff.toFixed(2)} Pkt (Über Grenze)</span>` : `<span class="diff-neg">${diff.toFixed(2)} Pkt (Fehlen)</span>`;
+                cutoffContainer.style.display = 'flex';
+                requiredHzb = uni.cutoff - (tmsPoints + bonusPoints + hamnatPoints + hamsjtPoints + interviewPoints);
+            } else { cutoffContainer.style.display = 'none'; }
+
+            if (uni.hzb > 0) { drawChart(hzbPoints, uni.hzb, mu, sigma, requiredHzb); canvas.style.display = 'block'; } 
+            else canvas.style.display = 'none'; 
+        }
+
+        function updateCheckboxUI(id, maxPts) {
+            const box = document.getElementById('box-' + id), label = document.getElementById('pts-' + id), chk = document.getElementById('chk-' + id);
+            label.innerText = "+" + maxPts;
+            if (maxPts === 0) { box.style.opacity = "0.3"; box.style.pointerEvents = "none"; chk.checked = false; } 
+            else { box.style.opacity = "1"; box.style.pointerEvents = "auto"; }
+        }
+
+        function normalPDF(x, mu, sigma) { return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2)); }
+
+        function drawChart(targetPoints, G, MU, SIGMA, requiredHzb) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const padding = 25, width = canvas.width - (padding * 2), height = canvas.height - (padding * 2);
+            const scaleX = width / G, maxDensity = normalPDF(MU, MU, SIGMA), scaleY = height / maxDensity;
+
+            ctx.beginPath(); ctx.lineWidth = 3; ctx.strokeStyle = '#3b82f6';
+            let firstPoint = true, targetX_px = padding + (targetPoints * scaleX);
+
+            for (let x = 0; x <= G; x += (G/100)) {
+                let canvasX = padding + (x * scaleX), canvasY = canvas.height - padding - (normalPDF(x, MU, SIGMA) * scaleY);
+                if (firstPoint) { ctx.moveTo(canvasX, canvasY); firstPoint = false; } else ctx.lineTo(canvasX, canvasY);
+            }
+            ctx.stroke();
+
+            if (requiredHzb !== undefined && requiredHzb !== null && requiredHzb >= 0 && requiredHzb <= G) {
+                let reqX_px = padding + (requiredHzb * scaleX);
+                ctx.beginPath(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]);
+                ctx.moveTo(reqX_px, padding); ctx.lineTo(reqX_px, canvas.height - padding); ctx.stroke(); ctx.setLineDash([]);
+                ctx.fillStyle = '#10b981'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Ziel-Abitur: ' + requiredHzb.toFixed(1) + ' Pkt', reqX_px, padding - 10);
+            }
+
+            ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.setLineDash([5, 5]);
+            ctx.moveTo(targetX_px, padding); ctx.lineTo(targetX_px, canvas.height - padding); ctx.stroke(); ctx.setLineDash([]);
+            ctx.fillStyle = '#ef4444'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Dein Abi', targetX_px, canvas.height - padding + 15);
+            ctx.beginPath(); ctx.strokeStyle = '#334155'; ctx.lineWidth = 1; ctx.moveTo(padding, canvas.height - padding); ctx.lineTo(canvas.width - padding, canvas.height - padding); ctx.stroke();
+        }
+
+        // PR Event Listener
+        elPrSlider.addEventListener('input', function() {
+            elPrNumber.value = this.value;
+            updateAdhAll();
+        });
+        elPrNumber.addEventListener('input', function() {
+            let val = parseFloat(this.value);
+            if(!isNaN(val) && val >= 0.1 && val <= 100) {
+                elPrSlider.value = val;
+            }
+            updateAdhAll();
+        });
+
+        // Other Event Listeners
+        elSemester.addEventListener('change', updateAdhUniList); elUni.addEventListener('change', updateAdhAll);
+        elTmsSlider.addEventListener('input', updateAdhAll); elHamnatSlider.addEventListener('input', updateAdhAll); elHamsjtSlider.addEventListener('input', updateAdhAll);
+        elInterviewSlider.addEventListener('input', updateAdhAll); chkAusb.addEventListener('change', updateAdhAll); chkBeruf.addEventListener('change', updateAdhAll);
+        chkDienst.addEventListener('change', updateAdhAll); chkPreis.addEventListener('change', updateAdhAll);
+
+        updateAdhUniList();
+
+        // --- 3. JAVASCRIPT: STUDIENORT-RANKING ---
+        let currentSort = { col: 'score', dir: 'desc' };
+        const BASE_WEIGHTS = { distanz: 0.25, vibe: 0.31, groesse: 0.12, studiengang: 0.07 };
+        const MIN_CAP = 30; const MAX_CAP = 870; 
+
+        let rankingUnis = [
+            { id: 1, name: 'Aachen RWTH', cap: 285, rent: 450, other: 350, dist: 0, typ: 'Modell', profile: [3,3,3,4,3], lat: 50.7753, lon: 6.0839 },
+            { id: 2, name: 'Augsburg U', cap: 168, rent: 500, other: 350, dist: 0, typ: 'Modell', profile: [3,3,3,4,4], lat: 48.3705, lon: 10.8985 },
+            { id: 3, name: 'Berlin, Charité', cap: 318, rent: 600, other: 400, dist: 0, typ: 'Modell', profile: [5,5,3,5,4], lat: 52.5200, lon: 13.4050 },
+            { id: 4, name: 'Bielefeld U', cap: 120, rent: 400, other: 350, dist: 0, typ: 'Modell', profile: [3,2,4,4,2], lat: 52.0302, lon: 8.5325 },
+            { id: 5, name: 'Bochum U', cap: 353, rent: 420, other: 350, dist: 0, typ: 'Regel', profile: [4,3,3,4,2], lat: 51.4818, lon: 7.2162 },
+            { id: 6, name: 'Bonn U', cap: 335, rent: 500, other: 350, dist: 0, typ: 'Regel', profile: [3,3,4,4,4], lat: 50.7374, lon: 7.0982 },
+            { id: 7, name: 'Dresden TU', cap: 230, rent: 400, other: 350, dist: 0, typ: 'Regel', profile: [4,4,4,4,4], lat: 51.0504, lon: 13.7373 },
+            { id: 8, name: 'Dresden/Chemnitz TU', cap: 50, rent: 350, other: 350, dist: 0, typ: 'Modell', profile: [3,3,3,3,3], lat: 50.8323, lon: 12.9253 },
+            { id: 9, name: 'Duisburg-Essen U', cap: 226, rent: 400, other: 350, dist: 0, typ: 'Regel', profile: [4,3,3,4,2], lat: 51.4556, lon: 7.0116 },
+            { id: 10, name: 'Düsseldorf U', cap: 399, rent: 550, other: 350, dist: 0, typ: 'Modell', profile: [4,4,3,5,3], lat: 51.2277, lon: 6.7735 },
+            { id: 11, name: 'Erlangen-Nürnberg U', cap: 173, rent: 450, other: 350, dist: 0, typ: 'Regel', profile: [2,3,4,3,4], lat: 49.5897, lon: 11.0039 },
+            { id: 12, name: 'Erlangen-Nürnb./Bayreuth U', cap: 55, rent: 400, other: 350, dist: 0, typ: 'Regel', profile: [2,2,4,3,3], lat: 49.9456, lon: 11.5713 },
+            { id: 13, name: 'Frankfurt am Main U', cap: 383, rent: 600, other: 400, dist: 0, typ: 'Regel', profile: [5,4,3,5,3], lat: 50.1109, lon: 8.6821 },
+            { id: 14, name: 'Freiburg U', cap: 367, rent: 550, other: 350, dist: 0, typ: 'Regel', profile: [3,3,5,4,5], lat: 47.9990, lon: 7.8421 },
+            { id: 15, name: 'Giessen U', cap: 180, rent: 420, other: 350, dist: 0, typ: 'Regel', profile: [2,3,4,3,3], lat: 50.5841, lon: 8.6784 },
+            { id: 16, name: 'Göttingen U', cap: 179, rent: 450, other: 350, dist: 0, typ: 'Regel', profile: [2,3,4,4,5], lat: 51.5413, lon: 9.9158 },
+            { id: 17, name: 'Greifswald U', cap: 196, rent: 350, other: 300, dist: 0, typ: 'Regel', profile: [1,2,5,3,4], lat: 54.0931, lon: 13.3879 },
+            { id: 18, name: 'Halle-Wittenberg U', cap: 223, rent: 380, other: 350, dist: 0, typ: 'Regel', profile: [3,3,3,4,4], lat: 51.4828, lon: 11.9694 },
+            { id: 19, name: 'Hamburg U', cap: 364, rent: 650, other: 400, dist: 0, typ: 'Modell', profile: [5,5,4,5,4], lat: 53.5511, lon: 9.9937 },
+            { id: 20, name: 'Hannover MedH', cap: 320, rent: 450, other: 350, dist: 0, typ: 'Modell', profile: [4,3,4,4,3], lat: 52.3759, lon: 9.7320 },
+            { id: 21, name: 'Heidelberg U', cap: 350, rent: 550, other: 350, dist: 0, typ: 'Regel', profile: [2,3,4,4,5], lat: 49.3988, lon: 8.6724 },
+            { id: 22, name: 'Heidelberg/Mannheim U', cap: 270, rent: 500, other: 350, dist: 0, typ: 'Modell', profile: [3,3,3,4,3], lat: 49.4875, lon: 8.4660 },
+            { id: 23, name: 'Jena U', cap: 286, rent: 400, other: 350, dist: 0, typ: 'Regel', profile: [2,3,4,4,4], lat: 50.9271, lon: 11.5892 },
+            { id: 24, name: 'Kiel U', cap: 205, rent: 450, other: 350, dist: 0, typ: 'Regel', profile: [3,3,5,4,3], lat: 54.3233, lon: 10.1365 },
+            { id: 25, name: 'Köln U', cap: 194, rent: 600, other: 400, dist: 0, typ: 'Modell', profile: [5,5,3,5,4], lat: 50.9375, lon: 6.9603 },
+            { id: 26, name: 'Leipzig U', cap: 340, rent: 400, other: 350, dist: 0, typ: 'Regel', profile: [4,5,4,5,4], lat: 51.3397, lon: 12.3731 },
+            { id: 27, name: 'Lübeck U', cap: 197, rent: 450, other: 350, dist: 0, typ: 'Regel', profile: [2,2,5,3,4], lat: 53.8655, lon: 10.6866 },
+            { id: 28, name: 'Magdeburg U', cap: 196, rent: 350, other: 350, dist: 0, typ: 'Regel', profile: [3,2,3,4,3], lat: 52.1205, lon: 11.6276 },
+            { id: 29, name: 'Mainz U', cap: 195, rent: 500, other: 350, dist: 0, typ: 'Regel', profile: [3,3,3,4,3], lat: 49.9929, lon: 8.2473 },
+            { id: 30, name: 'Mainz/MC Trier U', cap: 30, rent: 450, other: 350, dist: 0, typ: 'Regel', profile: [2,2,4,2,4], lat: 49.7499, lon: 6.6371 },
+            { id: 31, name: 'Marburg U', cap: 407, rent: 450, other: 350, dist: 0, typ: 'Regel', profile: [1,3,4,3,5], lat: 50.8022, lon: 8.7668 },
+            { id: 32, name: 'München U', cap: 870, rent: 750, other: 400, dist: 0, typ: 'Regel', profile: [5,4,4,5,4], lat: 48.1351, lon: 11.5820 },
+            { id: 33, name: 'Münster U', cap: 147, rent: 500, other: 350, dist: 0, typ: 'Regel', profile: [3,3,4,4,5], lat: 51.9607, lon: 7.6261 },
+            { id: 34, name: 'Oldenburg U', cap: 120, rent: 420, other: 350, dist: 0, typ: 'Modell', profile: [2,2,4,3,3], lat: 53.1435, lon: 8.2146 },
+            { id: 35, name: 'Regensburg U', cap: 232, rent: 480, other: 350, dist: 0, typ: 'Regel', profile: [2,3,4,4,5], lat: 49.0134, lon: 12.1016 },
+            { id: 36, name: 'Regensburg/MCN U', cap: 110, rent: 480, other: 350, dist: 0, typ: 'Regel', profile: [2,3,4,4,5], lat: 49.0134, lon: 12.1016 },
+            { id: 37, name: 'Rostock U', cap: 223, rent: 400, other: 350, dist: 0, typ: 'Regel', profile: [3,3,5,4,4], lat: 54.0924, lon: 12.0991 },
+            { id: 38, name: 'Saarland U (Homburg)', cap: 298, rent: 400, other: 350, dist: 0, typ: 'Regel', profile: [1,1,4,2,2], lat: 49.3283, lon: 7.3406 },
+            { id: 39, name: 'Tübingen U', cap: 179, rent: 550, other: 350, dist: 0, typ: 'Regel', profile: [1,3,4,3,5], lat: 48.5216, lon: 9.0576 },
+            { id: 40, name: 'Ulm U', cap: 355, rent: 480, other: 350, dist: 0, typ: 'Regel', profile: [2,2,4,3,3], lat: 48.3984, lon: 9.9916 },
+            { id: 41, name: 'Würzburg U', cap: 153, rent: 480, other: 350, dist: 0, typ: 'Regel', profile: [2,3,4,4,5], lat: 49.7939, lon: 9.9512 }
+        ];
+
+        function initMap() {
+            map = L.map('map').setView([48.1351, 11.5820], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+            homeMarker = L.marker([48.1351, 11.5820]).addTo(map); renderRankingTable(); updateDistances(48.1351, 11.5820);
+            map.on('click', function(e) { if(homeMarker) map.removeLayer(homeMarker); homeMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map); updateDistances(e.latlng.lat, e.latlng.lng); });
+        }
+
+        async function updateDistances(hLat, hLon) {
+            const status = document.getElementById('routingStatus'); status.style.display = 'block';
+            try {
+                let coordString = `${hLon},${hLat}`; rankingUnis.forEach(uni => { coordString += `;${uni.lon},${uni.lat}`; });
+                const res = await fetch(`https://router.project-osrm.org/table/v1/driving/${coordString}?sources=0`);
+                const data = await res.json();
+                if(data.code === 'Ok') rankingUnis.forEach((uni, i) => { uni.dist = Math.round(data.distances[0][i + 1] / 1000); });
+            } catch(e) {
+                rankingUnis.forEach(uni => {
+                    const R = 6371, dLat = (uni.lat - hLat) * Math.PI / 180, dLon = (uni.lon - hLon) * Math.PI / 180;
+                    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(hLat * Math.PI / 180) * Math.cos(uni.lat * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+                    uni.dist = Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)) * 1.3);
+                });
+            }
+            status.style.display = 'none'; renderRankingTable();
+        }
+
+        function toggleSizeSlider() {
+            const container = document.getElementById('sizeSliderContainer');
+            container.style.opacity = document.getElementById('sizeImportance').value === 'egal' ? '0.3' : '1';
+            container.style.pointerEvents = document.getElementById('sizeImportance').value === 'egal' ? 'none' : 'auto';
+        }
+
+        function updateVibeState() {
+            ['size', 'nightlife', 'nature', 'transport', 'tradition'].forEach(v => {
+                const isActive = document.getElementById('chk-vibe-' + v).checked, container = document.getElementById('container-vibe-' + v);
+                container.style.opacity = isActive ? '1' : '0.3'; container.style.pointerEvents = isActive ? 'auto' : 'none';
+            });
+        }
+
+        function getActiveWeights() {
+            const ort = document.getElementById('ortgebunden').value, size = document.getElementById('sizeImportance').value, bud = parseFloat(document.getElementById('budget').value) || 0;
+            let kosten = 0.10 + (0.85 / (1 + Math.exp(0.012 * (bud - 750)))), rem = 1.0 - kosten;
+            let dBase = ort === 'gar_nicht' ? 0 : (ort === 'teils' ? BASE_WEIGHTS.distanz / 2 : BASE_WEIGHTS.distanz);
+            let sBase = size === 'egal' ? 0 : (size === 'teils' ? BASE_WEIGHTS.groesse / 2 : BASE_WEIGHTS.groesse);
+            let pBase = document.getElementById('prefStudiengang').value === 'egal' ? 0 : BASE_WEIGHTS.studiengang;
+            let sum = BASE_WEIGHTS.vibe + dBase + sBase + pBase;
+            return { kosten, vibe: sum>0 ? (BASE_WEIGHTS.vibe/sum)*rem : 0, distanz: sum>0 ? (dBase/sum)*rem : 0, groesse: sum>0 ? (sBase/sum)*rem : 0, studiengang: sum>0 ? (pBase/sum)*rem : 0 };
+        }
+
+        function calcVibeScore(p) {
+            const vibes = [{ id: 'size', val: parseInt(document.getElementById('qSize').value), idx: 0 }, { id: 'nightlife', val: parseInt(document.getElementById('qNightlife').value), idx: 1 }, { id: 'nature', val: parseInt(document.getElementById('qNature').value), idx: 2 }, { id: 'transport', val: parseInt(document.getElementById('qTransport').value), idx: 3 }, { id: 'tradition', val: parseInt(document.getElementById('qTradition').value), idx: 4 }];
+            let sum = 0, count = 0;
+            vibes.forEach(v => { if(document.getElementById('chk-vibe-' + v.id).checked) { sum += Math.abs(p[v.idx] - v.val); count++; } });
+            return count === 0 ? 10 : 10 - ((sum / (count * 4)) * 9);
+        }
+
+        function calculateRankingScore(uni, sizePref, userBudget, weights, prefStudiengang) {
+            let vibeRaw = calcVibeScore(uni.profile), scoreDistanz = Math.max(0, 100 - (Math.floor(uni.dist / 100) * 10));
+            let scoreGroesse = 100 - Math.abs((((uni.cap - MIN_CAP) / (MAX_CAP - MIN_CAP)) * 100) - sizePref);
+            let totalCosts = uni.rent + uni.other, delta = userBudget - totalCosts;
+            let scoreKosten = 100 / (1 + Math.exp(-0.02 * (delta - 60)));
+            let scoreStudiengang = prefStudiengang !== 'egal' ? (uni.typ === prefStudiengang ? 100 : 0) : 100;
+            return { score: ((scoreKosten * weights.kosten) + (vibeRaw * 10 * weights.vibe) + (scoreDistanz * weights.distanz) + (scoreGroesse * weights.groesse) + (scoreStudiengang * weights.studiengang)).toFixed(1), totalCosts, delta, vibeDisplay: vibeRaw.toFixed(1) };
+        }
+
+        function setSort(col) {
+            if (currentSort.col === col) currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+            else { currentSort.col = col; currentSort.dir = (col === 'name' || col === 'typ') ? 'asc' : 'desc'; }
+            renderRankingTable();
+        }
+
+        function renderRankingTable() {
+            const sizePref = parseFloat(document.getElementById('sizePref').value), userBudget = parseFloat(document.getElementById('budget').value) || 0;
+            const prefStudiengang = document.getElementById('prefStudiengang').value, activeWeights = getActiveWeights();
+            const ortgebunden = document.getElementById('ortgebunden').value, sizeImportance = document.getElementById('sizeImportance').value;
+
+            document.getElementById('headerDistanz').style.opacity = ortgebunden === 'gar_nicht' ? "0.3" : "1";
+            document.getElementById('headerGroesse').style.opacity = sizeImportance === 'egal' ? "0.3" : (sizeImportance === 'teils' ? "0.7" : "1");
+
+            document.querySelectorAll('.sort-arrow').forEach(el => el.innerHTML = '');
+            const arrowEl = document.getElementById(`sort-${currentSort.col}`); if(arrowEl) arrowEl.innerHTML = currentSort.dir === 'asc' ? '↑' : '↓';
+
+            rankingUnis.forEach((u, idx) => {
+                const res = calculateRankingScore(u, sizePref, userBudget, activeWeights, prefStudiengang);
+                u.score = res.score; u.totalCosts = res.totalCosts; u.delta = res.delta; u.vibeDisplay = res.vibeDisplay; u.originalIndex = idx + 1;
+            });
+            
+            rankingUnis.sort((a, b) => {
+                let valA = currentSort.col === 'index' ? a.originalIndex : (['score', 'cap', 'totalCosts', 'dist', 'vibeDisplay'].includes(currentSort.col) ? parseFloat(a[currentSort.col])||0 : a[currentSort.col]);
+                let valB = currentSort.col === 'index' ? b.originalIndex : (['score', 'cap', 'totalCosts', 'dist', 'vibeDisplay'].includes(currentSort.col) ? parseFloat(b[currentSort.col])||0 : b[currentSort.col]);
+                if (valA < valB) return currentSort.dir === 'asc' ? -1 : 1; if (valA > valB) return currentSort.dir === 'asc' ? 1 : -1; return 0;
+            });
+
+            const tbody = document.getElementById('rankingTableBody'); tbody.innerHTML = '';
+            rankingUnis.forEach((uni, index) => {
+                let capStyle = uni.cap > 400 ? "color: var(--warning-text); font-weight: bold;" : (uni.cap < 150 ? "color: var(--accent); font-weight: bold;" : "");
+                if(sizeImportance === 'egal') capStyle += "opacity: 0.3;"; else if(sizeImportance === 'teils') capStyle += "opacity: 0.7;";
+                let deltaText = uni.delta >= 0 ? `<span style="color:var(--success-text); font-weight:bold;">+${uni.delta} €</span>` : `<span style="color:var(--warning-text); font-weight:bold;">${uni.delta} €</span>`;
+                let distanzDisplay = ortgebunden === 'gar_nicht' ? `<span style="opacity:0.3">${uni.dist} km</span>` : (ortgebunden === 'teils' ? `<span style="opacity:0.7">${uni.dist} km</span>` : `${uni.dist} km`);
+                let typColor = (prefStudiengang !== 'egal' && uni.typ === prefStudiengang) ? "color:var(--success-text); font-weight:bold;" : "";
+
+                tbody.innerHTML += `<tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">${index + 1}</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">${uni.name}</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">${uni.score}</td><td data-label="Aufbau" style="${typColor}">${uni.typ}</td><td data-label="Kapazität" style="${capStyle}">${uni.cap}</td><td data-label="Stadtkosten" style="line-height:1.2;">${uni.totalCosts} €<br><span style="font-size:11px;">${deltaText}</span></td><td data-label="Auto-Distanz">${distanzDisplay}</td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">${uni.vibeDisplay} / 10</td></tr>`;
+            });
+        }
+    </script>
+</body>
+</html>
