@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="de">
-<head>
+<html lang="de"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medizinstudium Zentrale | by Ritsch</title>
+    <title>Medizinstudium Zentrale | by Flavio Grispino "Ritsch"</title>
 
     <!-- Leaflet CSS & JS für die interaktive Karte -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="Medizinstudium%20Zentrale%20_%20by%20Ritsch_files/leaflet_tFaM.css">
+    <script src="Medizinstudium%20Zentrale%20_%20by%20Ritsch_files/leaflet_tFaM.js"></script>
 
     <style>
         /* ==========================================
@@ -338,16 +338,27 @@
             </div>
         </div>
     </div>
+    
+    <!-- WHATSAPP BANNER HINZUGEFÜGT AM ANFANG -->
+    <div style="background-color: rgba(37, 211, 102, 0.15); border: 1px solid #25D366; color: #25D366; padding: 12px 20px; border-radius: 12px; margin-bottom: 25px; text-align: center; font-weight: 600; width: 100%; max-width: 800px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        📱 Bei Fragen rund um den Rechner gerne auf WhatsApp schreiben: 015125754927
+    </div>
 
     <!-- ÜBER MICH BEREICH -->
     <div class="about-me-card">
         <div class="about-me-text">
-            <h4>Ritsch <span style="font-size: 12px; font-weight: normal; color: var(--accent); background: rgba(59, 130, 246, 0.1); padding: 2px 8px; border-radius: 4px;">Entwickler & Analyst</span></h4>
-            <p>Ich beschäftige mich tiefgehend mit Nachrückverfahren, historischen Daten und der Dynamik von Grenzrängen. Mein Ziel mit dieser Plattform ist es, das hochkomplexe Vergabesystem ausführlicher und vor allem verständlich zu machen. <em>Dieses Tool ist und bleibt zu 100% kostenlos und werbefrei.</em></p>
+            <h4>Flavio Grispino "Ritsch" <span style="font-size: 12px; font-weight: normal; color: var(--accent); background: rgba(59, 130, 246, 0.1); padding: 2px 8px; border-radius: 4px;">Entwickler &amp; Analyst</span></h4>
+            <p>Ich beschäftige mich tiefgehend mit Nachrückverfahren, 
+historischen Daten und der Dynamik von Grenzrängen. Mein Ziel mit dieser
+ Plattform ist es, das hochkomplexe Vergabesystem ausführlicher und vor 
+allem verständlich zu machen. <em>Dieses Tool ist und bleibt zu 100% kostenlos und werbefrei.</em></p>
             <p style="margin-top: 8px; color: var(--success-text); font-weight: bold; font-size: 12.5px;">🤝 Danke an Kevin Kumar für die Qualitätssicherung.</p>
             
             <div class="coop-box">
-                In Zusammenarbeit mit <strong>Traubenzuckermeister</strong> stellen wir dieses Tool zur Verfügung. Ein riesiges Dankeschön an die vielen User, die wir bereits erreicht haben – wir führen dieses Wissen gerne für die Community zusammen!<br>
+                In Zusammenarbeit mit <strong>Traubenzuckermeister</strong>
+ stellen wir dieses Tool zur Verfügung. Ein riesiges Dankeschön an die 
+vielen User, die wir bereits erreicht haben – wir führen dieses Wissen 
+gerne für die Community zusammen!<br>
                 👉 <a href="https://medizin-unis-sammlung.vercel.app/" target="_blank">Hier gehts zum Medizin Second Brain</a>
             </div>
         </div>
@@ -362,36 +373,40 @@
         <button id="btn-tab-info" class="tab-btn" onclick="switchTab('info')">Infos zum Vergabesystem</button>
     </div>
 
-    <div class="container" id="main-container">
+    <div class="container" id="main-container" style="max-width: 800px;">
         
         <!-- =========================================================================
              TAB 1: ADH SIMULATOR
              ========================================================================= -->
         <div id="tab-adh" class="tab-content active">
             <h2>
-                <span style="font-size: 14px; color: #25D366; font-weight: 600;">Bei Fragen rund um den Rechner gerne auf WhatsApp schreiben: 015125754927</span>
                 AdH-Punkte Simulator 2026/27
             </h2>
             
             <div class="info-box">
                 <h3>🔍 Wo finde ich meinen Prozentrang (PR)?</h3>
-                <p>Dein Prozentrang ist keine Schätzung, sondern ein harter Wert von Hochschulstart. Er veröffentlicht deine Position ab Mitte Juli:</p>
+                <p>Dein Prozentrang ist keine Schätzung, sondern ein 
+harter Wert von Hochschulstart. Er veröffentlicht deine Position ab 
+Mitte Juli:</p>
                 <ul>
                     <li>Logge dich ins Bewerbungsportal ein und gehe oben im Menü auf <strong>"Meine Daten"</strong>.</li>
                     <li>Klicke auf den Reiter <strong>"Feste Bewerbungsbestandteile"</strong>.</li>
                     <li>Klappe den Bereich <strong>"Hochschulzugangsberechtigung"</strong> auf und suche den Abschnitt <strong>"Erweiterte Angaben zur Hochschulzugangsberechtigung"</strong>.</li>
                     <li>Lies den Prozent-Wert in class Zeile <strong>"Notenausgleich: prozentualer / absoluter Rang der HZB"</strong> ab.</li>
-                    <li style="color: var(--success-text);"><strong>Wichtig für Auslandsabiturienten:</strong> Auch mit einem im Ausland erworbenen Abitur kannst du den Prozentrang exakt so nutzen. Es ist dabei völlig egal, welchem Bundesland du per Losverfahren zugeteilt wurdest.</li>
+                    <li style="color: var(--success-text);"><strong>Wichtig für Auslandsabiturienten:</strong>
+ Auch mit einem im Ausland erworbenen Abitur kannst du den Prozentrang 
+exakt so nutzen. Es ist dabei völlig egal, welchem Bundesland du per 
+Losverfahren zugeteilt wurdest.</li>
                 </ul>
                 <div style="margin-top: 15px; text-align: center;">
-                    <button onclick="switchTab('info')" style="background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 13px;">📖 Mehr zum Vergabeverfahren & was der PR aussagt</button>
+                    <button onclick="switchTab('info')" style="background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 13px;">📖 Mehr zum Vergabeverfahren &amp; was der PR aussagt</button>
                 </div>
             </div>
 
             <div class="input-box" style="margin-bottom: 25px;">
                 <label>Bewerbungszeitraum (Semester auswählen)</label>
                 <select id="semester-select">
-                    <option value="SoSe26" selected>Sommersemester 2026</option>
+                    <option value="SoSe26" selected="selected">Sommersemester 2026</option>
                     <option value="WS25">Wintersemester 2025/26</option>
                 </select>
             </div>
@@ -399,7 +414,7 @@
             <div class="grid-2col">
                 <div class="input-box">
                     <label>Wunsch-Universität (Humanmedizin)</label>
-                    <select id="uni-select"></select>
+                    <select id="uni-select"><option value="charite">Charité Berlin</option><option value="erlangen">FAU Erlangen-Nürnberg</option><option value="erlangen_bay">FAU Erlangen/Bayreuth</option><option value="giessen">Uni Gießen</option><option value="goettingen_1">Uni Göttingen (AdH-1)</option><option value="goettingen_2">Uni Göttingen (AdH-2)</option><option value="koeln">Uni Köln</option><option value="mainz">Uni Mainz</option><option value="mainz_trier">Uni Mainz/Trier</option><option value="muenster">Uni Münster</option><option value="tuebingen">Uni Tübingen</option><option value="wuerzburg" selected="selected">Uni Würzburg</option></select>
                 </div>
                 <div class="input-box">
                     <label>Zusätzliche Kriterien (AdH-Quoten)</label>
@@ -417,18 +432,21 @@
                         <label class="checkbox-item" id="box-dienst" style="opacity: 1; pointer-events: auto;">
                             <input type="checkbox" id="chk-dienst">
                             <span>Dienst (FSJ)</span>
-                            <small id="pts-dienst">+50</small>
+                            <small id="pts-dienst">+5</small>
                         </label>
-                        <label class="checkbox-item" id="box-preis" style="opacity: 0.3; pointer-events: none;">
+                        <label class="checkbox-item" id="box-preis" style="opacity: 1; pointer-events: auto;">
                             <input type="checkbox" id="chk-preis">
                             <span>Wettbewerb</span>
-                            <small id="pts-preis">+0</small>
+                            <small id="pts-preis">+5</small>
                         </label>
                     </div>
                 </div>
             </div>
 
-            <div class="strategic-insight" id="strategy-text">💡 <strong>Strategie-Analyse:</strong> Lade Universität...</div>
+            <div class="strategic-insight" id="strategy-text">💡 <strong>Strategie-Analyse:</strong>
+ Die Uni Würzburg vergibt maximal 60 Punkte für das Abitur. Die 
+Gauß-Kurve ist weit gestreckt! Ein starkes Abi ist hier der Schlüssel 
+zur Zulassung.</div>
 
             <!-- PR Slider & Input -->
             <div class="control-group">
@@ -477,12 +495,12 @@
 
             <div class="result-grid">
                 <div class="result-item">
-                    <small>Abitur (Max <span id="lbl-max-hzb">30</span>)</small>
-                    <span id="res-hzb">0.00</span>
+                    <small>Abitur (Max <span id="lbl-max-hzb">60</span>)</small>
+                    <span id="res-hzb">28.97</span>
                 </div>
                 <div class="result-item">
-                    <small>TMS (Max <span id="lbl-max-tms">20</span>)</small>
-                    <span id="res-tms">0.00</span>
+                    <small>TMS (Max <span id="lbl-max-tms">30</span>)</small>
+                    <span id="res-tms">20.00</span>
                 </div>
                 
                 <!-- Dynamische Boxen -->
@@ -510,27 +528,44 @@
                 
                 <div class="result-total">
                     <small>Gesamte AdH-Punkte an dieser Universität</small>
-                    <span id="res-total">0.00</span>
+                    <span id="res-total">48.97</span>
                 </div>
             </div>
 
             <canvas id="gaussCanvas" width="600" height="200" style="display: block;"></canvas>
             
             <div class="cutoff-info" id="cutoff-container" style="display: flex;">
-                <span>Grenzrang <span id="lbl-semester-display">SoSe 26</span>: <strong id="cutoff-val" style="color: #f8fafc;">0.00 Pkt</strong></span>
-                <span id="cutoff-diff"><span class="diff-neg">-0.00 Pkt (Fehlen)</span></span>
+                <span>Grenzrang <span id="lbl-semester-display">SoSe 26</span>: <strong id="cutoff-val" style="color: #f8fafc;">58.90 Pkt</strong></span>
+                <span id="cutoff-diff"><span class="diff-neg">-9.93 Pkt (Fehlen)</span></span>
             </div>
 
-            <div class="warning-box">⚠️ WICHTIG: Dieses Tool berechnet ausschließlich die HZB-Punkte für das AdH (Auswahlverfahren der Hochschulen). Es gilt nicht für die ZEQ!</div>
+            <div class="warning-box">⚠️ WICHTIG: Dieses Tool berechnet 
+ausschließlich die HZB-Punkte für das AdH (Auswahlverfahren der 
+Hochschulen). Es gilt nicht für die ZEQ!</div>
 
             <!-- ENTWICKLER NOTIZ -->
             <div class="dev-note">
-                <h3>🧠 Wozu ist dieses Tool da? (Entwickler-Notiz von Ritsch)</h3>
+                <h3>🧠 Wozu ist dieses Tool da? (Entwickler-Notiz von Flavio Grispino "Ritsch")</h3>
                 <p><strong>Kein klassischer NC-Rechner-Ersatz, sondern die ultimative Ergänzung!</strong></p>
-                <p>Normale NC-Rechner arbeiten immer nur mit dem Wert deiner Note aus dem letzten Jahr. Dieses Tool hier setzt dort an, wo die harte Realität beginnt: <strong>Ab Mitte Juli</strong> veröffentlicht Hochschulstart deinen tatsächlichen Prozentrang (PR) im Portal.</p>
-                <p><strong>Das Problem im System:</strong> Bonuspunkte für TMS, eine Ausbildung oder ein FSJ sind immer fest normiert und sicher. Deine Abiturnote aber nicht! Weil der Landesschnitt von Jahr zu Jahr schwankt, ist dieselbe 1,8 in jedem Bewerbungsverfahren unterschiedlich viel wert.</p>
-                <p><strong>Die Lösung - Was dieses Tool macht:</strong> Es wandelt deinen frischen Juli-PR über die offizielle mathematische Formel (Inverse Normalverteilung) in nackte AdH-Punkte um und berechnet den exakten Anteil der Wunsch-Uni. Damit siehst du glasklar deine <strong>aktuelle Situation im Bewerbungsverfahren</strong>. Du kannst deinen exakten Score berechnen und ihn 1:1 mit dem Grenzrang (Cut-off) vom letzten Jahr vergleichen, um zu sehen, wie sich dein Abitur durch den aktuellen Jahrgang verschoben hat.</p>
-                <p style="color: #ef4444; font-size: 12px; margin-top: 15px;"><em>Hinweis: Dies ist keine Prognose oder Garantie, ob es für einen Studienplatz reicht! Es ist ein Analyse-Tool, um die mathematische Realität der aktuellen Bewerbung zu entschlüsseln.</em></p>
+                <p>Normale NC-Rechner arbeiten immer nur mit dem Wert 
+deiner Note aus dem letzten Jahr. Dieses Tool hier setzt dort an, wo die
+ harte Realität beginnt: <strong>Ab Mitte Juli</strong> veröffentlicht Hochschulstart deinen tatsächlichen Prozentrang (PR) im Portal.</p>
+                <p><strong>Das Problem im System:</strong> Bonuspunkte 
+für TMS, eine Ausbildung oder ein FSJ sind immer fest normiert und 
+sicher. Deine Abiturnote aber nicht! Weil der Landesschnitt von Jahr zu 
+Jahr schwankt, ist dieselbe 1,8 in jedem Bewerbungsverfahren 
+unterschiedlich viel wert.</p>
+                <p><strong>Die Lösung - Was dieses Tool macht:</strong> 
+Es wandelt deinen frischen Juli-PR über die offizielle mathematische 
+Formel (Inverse Normalverteilung) in nackte AdH-Punkte um und berechnet 
+den exakten Anteil der Wunsch-Uni. Damit siehst du glasklar deine <strong>aktuelle Situation im Bewerbungsverfahren</strong>.
+ Du kannst deinen exakten Score berechnen und ihn 1:1 mit dem Grenzrang 
+(Cut-off) vom letzten Jahr vergleichen, um zu sehen, wie sich dein 
+Abitur durch den aktuellen Jahrgang verschoben hat.</p>
+                <p style="color: #ef4444; font-size: 12px; margin-top: 15px;"><em>Hinweis:
+ Dies ist keine Prognose oder Garantie, ob es für einen Studienplatz 
+reicht! Es ist ein Analyse-Tool, um die mathematische Realität der 
+aktuellen Bewerbung zu entschlüsseln.</em></p>
             </div>
 
             <div class="footer">Datenbasis: Offizielle AdH-Struktur 2025/2026 (Stiftung für Hochschulzulassung)</div>
@@ -546,20 +581,23 @@
             
             <div class="info-box info-blue">
                 <h3>🧭 Entdecke deinen perfekten Studienort</h3>
-                <p style="margin:0;">Wichtiger Hinweis: Dieses Tool bietet keine Entscheidungsgarantie. Es ist ein dynamisches Modell zum Explorieren der Universitäten und zum individuellen Abwägen deiner persönlichen Kriterien.</p>
+                <p style="margin:0;">Wichtiger Hinweis: Dieses Tool 
+bietet keine Entscheidungsgarantie. Es ist ein dynamisches Modell zum 
+Explorieren der Universitäten und zum individuellen Abwägen deiner 
+persönlichen Kriterien.</p>
             </div>
 
             <div class="grid-3col">
                 <div class="input-box">
                     <label style="font-weight: bold; color: var(--text-main); font-size:16px; margin-bottom: 12px;">1. Heimatort setzen</label>
                     <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; margin-top: -5px;">Klicke auf die Karte, um deinen Wohnort zu markieren.</p>
-                    <div id="map"></div>
-                    <div id="routingStatus" class="hidden">Berechne Routen...</div>
+                    <div id="map" class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" style="position: relative;" tabindex="0"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(-97px, -99px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 18; transform: translate3d(0px, 0px, 0px) scale(1);"><img alt="" src="Medizinstudium%20Zentrale%20_%20by%20Ritsch_files/21_002_tFaM.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-175px, -211px, 0px); opacity: 1;"><img alt="" src="Medizinstudium%20Zentrale%20_%20by%20Ritsch_files/21_tFaM.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(81px, -211px, 0px); opacity: 1;"><img alt="" src="Medizinstudium%20Zentrale%20_%20by%20Ritsch_files/22_tFaM.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-175px, 45px, 0px); opacity: 1;"><img alt="" src="Medizinstudium%20Zentrale%20_%20by%20Ritsch_files/22_002_tFaM.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(81px, 45px, 0px); opacity: 1;"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-shadow-pane"><img src="Medizinstudium%20Zentrale%20_%20by%20Ritsch_files/marker-shadow_tFaM.png" class="leaflet-marker-shadow leaflet-zoom-animated" style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; transform: translate3d(96px, 99px, 0px);" alt=""></div><div class="leaflet-pane leaflet-marker-pane"><img src="Medizinstudium%20Zentrale%20_%20by%20Ritsch_files/marker-icon_tFaM.png" class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; transform: translate3d(96px, 99px, 0px); z-index: 99;" alt="Marker" tabindex="0" role="button"></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(8720px, 5686px, 0px) scale(32);"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true">+</span></a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true">−</span></a></div></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control"><a href="https://leafletjs.com/" title="A JavaScript library for interactive maps"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" class="leaflet-attribution-flag"><path fill="#4C7BE1" d="M0 0h12v4H0z"></path><path fill="#FFD500" d="M0 4h12v3H0z"></path><path fill="#E0BC00" d="M0 7h12v1H0z"></path></svg> Leaflet</a> <span aria-hidden="true">|</span> © OpenStreetMap</div></div></div></div>
+                    <div id="routingStatus" class="hidden" style="display: none;">Berechne Routen...</div>
                     
                     <label style="margin-top: 15px; font-weight: bold; color: var(--text-main);">Wie ortsgebunden bist du?</label>
                     <select id="ortgebunden" onchange="renderRankingTable()" style="margin-bottom:0;">
                         <option value="voll">Voll ortsgebunden (Distanz ist enorm wichtig)</option>
-                        <option value="teils" selected>Teils ortsgebunden (Spielt eine halbe Rolle)</option>
+                        <option value="teils" selected="selected">Teils ortsgebunden (Spielt eine halbe Rolle)</option>
                         <option value="gar_nicht">Gar nicht (Distanz ist völlig egal)</option>
                     </select>
                 </div>
@@ -569,35 +607,35 @@
                     <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; margin-top: -5px;">Deaktiviere Fragen per Checkbox, wenn sie dir egal sind.</p>
                     
                     <div class="vibe-row">
-                        <input type="checkbox" id="chk-vibe-size" checked onchange="updateVibeState(); renderRankingTable()">
+                        <input type="checkbox" id="chk-vibe-size" checked="checked" onchange="updateVibeState(); renderRankingTable()">
                         <div id="container-vibe-size">
                             <div class="vibe-label"><span>Kleinstadt</span><span>Metropole</span></div>
                             <input type="range" id="qSize" min="1" max="5" value="3" oninput="renderRankingTable()" style="margin-bottom:0;">
                         </div>
                     </div>
                     <div class="vibe-row">
-                        <input type="checkbox" id="chk-vibe-nightlife" checked onchange="updateVibeState(); renderRankingTable()">
+                        <input type="checkbox" id="chk-vibe-nightlife" checked="checked" onchange="updateVibeState(); renderRankingTable()">
                         <div id="container-vibe-nightlife">
                             <div class="vibe-label"><span>Ruhig</span><span>Nightlife</span></div>
                             <input type="range" id="qNightlife" min="1" max="5" value="3" oninput="renderRankingTable()" style="margin-bottom:0;">
                         </div>
                     </div>
                     <div class="vibe-row">
-                        <input type="checkbox" id="chk-vibe-nature" checked onchange="updateVibeState(); renderRankingTable()">
+                        <input type="checkbox" id="chk-vibe-nature" checked="checked" onchange="updateVibeState(); renderRankingTable()">
                         <div id="container-vibe-nature">
                             <div class="vibe-label"><span>Beton</span><span>Natur/Wasser</span></div>
                             <input type="range" id="qNature" min="1" max="5" value="3" oninput="renderRankingTable()" style="margin-bottom:0;">
                         </div>
                     </div>
                     <div class="vibe-row">
-                        <input type="checkbox" id="chk-vibe-transport" checked onchange="updateVibeState(); renderRankingTable()">
+                        <input type="checkbox" id="chk-vibe-transport" checked="checked" onchange="updateVibeState(); renderRankingTable()">
                         <div id="container-vibe-transport">
                             <div class="vibe-label"><span>Auto-Stadt</span><span>Top ÖPNV</span></div>
                             <input type="range" id="qTransport" min="1" max="5" value="3" oninput="renderRankingTable()" style="margin-bottom:0;">
                         </div>
                     </div>
                     <div class="vibe-row" style="margin-bottom:0;">
-                        <input type="checkbox" id="chk-vibe-tradition" checked onchange="updateVibeState(); renderRankingTable()">
+                        <input type="checkbox" id="chk-vibe-tradition" checked="checked" onchange="updateVibeState(); renderRankingTable()">
                         <div id="container-vibe-tradition">
                             <div class="vibe-label"><span>Modern</span><span>Historisch</span></div>
                             <input type="range" id="qTradition" min="1" max="5" value="3" oninput="renderRankingTable()" style="margin-bottom:0;">
@@ -606,7 +644,7 @@
                 </div>
 
                 <div class="input-box">
-                    <label style="font-weight: bold; color: var(--text-main); font-size:16px; margin-bottom: 12px;">3. Kriterien & Finanzen</label>
+                    <label style="font-weight: bold; color: var(--text-main); font-size:16px; margin-bottom: 12px;">3. Kriterien &amp; Finanzen</label>
                     
                     <label style="font-weight: bold; color: var(--text-main);">Monatliches Budget (€)</label>
                     <input type="number" id="budget" value="1000" oninput="renderRankingTable()" style="margin-bottom: 8px;">
@@ -616,7 +654,7 @@
                     
                     <label style="font-weight: bold; color: var(--text-main);">Studiengangsgröße</label>
                     <select id="sizeImportance" onchange="toggleSizeSlider(); renderRankingTable()" style="margin-bottom: 8px;">
-                        <option value="voll">Ist mir wichtig</option>
+                        <option value="voll" selected="selected">Ist mir wichtig</option>
                         <option value="teils">Teils wichtig</option>
                         <option value="egal">Ist mir völlig egal</option>
                     </select>
@@ -628,7 +666,7 @@
 
                     <label style="font-weight: bold; color: var(--text-main);">Studienaufbau</label>
                     <select id="prefStudiengang" onchange="renderRankingTable()" style="margin-bottom:0;">
-                        <option value="egal">Ist mir völlig egal</option>
+                        <option value="egal" selected="selected">Ist mir völlig egal</option>
                         <option value="Regel">Regelstudiengang priorisieren</option>
                         <option value="Modell">Modellstudiengang priorisieren</option>
                     </select>
@@ -641,15 +679,15 @@
                         <tr>
                             <th onclick="setSort('index')">Rank <span id="sort-index" class="sort-arrow"></span></th>
                             <th onclick="setSort('name')">Universität <span id="sort-name" class="sort-arrow"></span></th>
-                            <th onclick="setSort('score')">Gesamt <span id="sort-score" class="sort-arrow"></span></th>
+                            <th onclick="setSort('score')">Gesamt <span id="sort-score" class="sort-arrow">↓</span></th>
                             <th onclick="setSort('typ')">Aufbau <span id="sort-typ" class="sort-arrow"></span></th>
-                            <th id="headerGroesse" onclick="setSort('cap')">Kapazität <span id="sort-cap" class="sort-arrow"></span></th>
+                            <th id="headerGroesse" onclick="setSort('cap')" style="opacity: 1;">Kapazität <span id="sort-cap" class="sort-arrow"></span></th>
                             <th onclick="setSort('totalCosts')">Stadtkosten <span id="sort-totalCosts" class="sort-arrow"></span></th>
-                            <th id="headerDistanz" onclick="setSort('dist')">Auto-Distanz <span id="sort-dist" class="sort-arrow"></span></th>
+                            <th id="headerDistanz" onclick="setSort('dist')" style="opacity: 1;">Auto-Distanz <span id="sort-dist" class="sort-arrow"></span></th>
                             <th onclick="setSort('vibeDisplay')">Vibe <span id="sort-vibeDisplay" class="sort-arrow"></span></th>
                         </tr>
                     </thead>
-                    <tbody id="rankingTableBody"></tbody>
+                    <tbody id="rankingTableBody"><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">1</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Ulm U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">88.1</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">355</td><td data-label="Stadtkosten" style="line-height:1.2;">830 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+170 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">158 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.7 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">2</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Augsburg U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">87.4</td><td data-label="Aufbau" style="">Modell</td><td data-label="Kapazität" style="">168</td><td data-label="Stadtkosten" style="line-height:1.2;">850 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+150 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">74 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">9.1 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">3</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Heidelberg/Mannheim U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">86.1</td><td data-label="Aufbau" style="">Modell</td><td data-label="Kapazität" style="">270</td><td data-label="Stadtkosten" style="line-height:1.2;">850 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+150 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">355 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">9.6 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">4</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Dresden/Chemnitz TU</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">83.3</td><td data-label="Aufbau" style="">Modell</td><td data-label="Kapazität" style="color: var(--accent); font-weight: bold;">50</td><td data-label="Stadtkosten" style="line-height:1.2;">700 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+300 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">410 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">10.0 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">5</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Halle-Wittenberg U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">82.7</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">223</td><td data-label="Stadtkosten" style="line-height:1.2;">730 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+270 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">485 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">9.1 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">6</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Erlangen-Nürnberg U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">82.7</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">173</td><td data-label="Stadtkosten" style="line-height:1.2;">800 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+200 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">217 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.7 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">7</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Mainz U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">82.5</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">195</td><td data-label="Stadtkosten" style="line-height:1.2;">850 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+150 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">415 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">9.6 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">8</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Aachen RWTH</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">81.8</td><td data-label="Aufbau" style="">Modell</td><td data-label="Kapazität" style="">285</td><td data-label="Stadtkosten" style="line-height:1.2;">800 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+200 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">642 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">9.6 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">9</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Giessen U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">81.5</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">180</td><td data-label="Stadtkosten" style="line-height:1.2;">770 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+230 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">447 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">9.1 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">10</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Regensburg U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">81.0</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">232</td><td data-label="Stadtkosten" style="line-height:1.2;">830 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+170 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">136 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">11</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Erlangen-Nürnb./Bayreuth U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">80.6</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="color: var(--accent); font-weight: bold;">55</td><td data-label="Stadtkosten" style="line-height:1.2;">750 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+250 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">262 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.7 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">12</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Magdeburg U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">80.3</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">196</td><td data-label="Stadtkosten" style="line-height:1.2;">700 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+300 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">576 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">9.1 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">13</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Jena U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">79.7</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">286</td><td data-label="Stadtkosten" style="line-height:1.2;">750 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+250 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">404 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.2 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">14</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Marburg U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">79.7</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="color: var(--warning-text); font-weight: bold;">407</td><td data-label="Stadtkosten" style="line-height:1.2;">800 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+200 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">467 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">15</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Bochum U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">79.3</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">353</td><td data-label="Stadtkosten" style="line-height:1.2;">770 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+230 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">632 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.7 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">16</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Bonn U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">79.3</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">335</td><td data-label="Stadtkosten" style="line-height:1.2;">850 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+150 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">565 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.7 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">17</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Regensburg/MCN U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">78.3</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="color: var(--accent); font-weight: bold;">110</td><td data-label="Stadtkosten" style="line-height:1.2;">830 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+170 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">136 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">18</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Hannover MedH</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">78.2</td><td data-label="Aufbau" style="">Modell</td><td data-label="Kapazität" style="">320</td><td data-label="Stadtkosten" style="line-height:1.2;">800 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+200 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">636 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.7 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">19</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Würzburg U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">77.4</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">153</td><td data-label="Stadtkosten" style="line-height:1.2;">830 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+170 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">285 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">20</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Freiburg U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">77.2</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">367</td><td data-label="Stadtkosten" style="line-height:1.2;">900 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+100 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">362 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">21</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Heidelberg U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">76.8</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">350</td><td data-label="Stadtkosten" style="line-height:1.2;">900 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+100 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">332 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">22</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Duisburg-Essen U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">76.6</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">226</td><td data-label="Stadtkosten" style="line-height:1.2;">750 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+250 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">642 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.7 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">23</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Dresden TU</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">76.3</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">230</td><td data-label="Stadtkosten" style="line-height:1.2;">750 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+250 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">467 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">24</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Tübingen U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">75.0</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">179</td><td data-label="Stadtkosten" style="line-height:1.2;">900 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+100 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">249 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">25</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Leipzig U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">74.4</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">340</td><td data-label="Stadtkosten" style="line-height:1.2;">750 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+250 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">469 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">6.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">26</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Düsseldorf U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">74.3</td><td data-label="Aufbau" style="">Modell</td><td data-label="Kapazität" style="">399</td><td data-label="Stadtkosten" style="line-height:1.2;">900 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+100 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">634 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.2 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">27</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Saarland U (Homburg)</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">73.5</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">298</td><td data-label="Stadtkosten" style="line-height:1.2;">750 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+250 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">440 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">6.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">28</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Göttingen U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">72.7</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">179</td><td data-label="Stadtkosten" style="line-height:1.2;">800 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+200 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">516 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">29</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Oldenburg U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">72.2</td><td data-label="Aufbau" style="">Modell</td><td data-label="Kapazität" style="color: var(--accent); font-weight: bold;">120</td><td data-label="Stadtkosten" style="line-height:1.2;">770 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+230 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">787 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.7 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">30</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Bielefeld U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">72.1</td><td data-label="Aufbau" style="">Modell</td><td data-label="Kapazität" style="color: var(--accent); font-weight: bold;">120</td><td data-label="Stadtkosten" style="line-height:1.2;">750 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+250 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">630 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.2 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">31</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Frankfurt am Main U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">71.1</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">383</td><td data-label="Stadtkosten" style="line-height:1.2;">1000 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+0 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">396 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">32</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Münster U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">71.0</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="color: var(--accent); font-weight: bold;">147</td><td data-label="Stadtkosten" style="line-height:1.2;">850 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+150 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">664 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.2 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">33</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Rostock U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">70.5</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">223</td><td data-label="Stadtkosten" style="line-height:1.2;">750 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+250 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">862 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.2 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">34</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Kiel U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">69.9</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">205</td><td data-label="Stadtkosten" style="line-height:1.2;">800 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+200 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">904 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">8.7 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">35</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Mainz/MC Trier U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">69.4</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="color: var(--accent); font-weight: bold;">30</td><td data-label="Stadtkosten" style="line-height:1.2;">800 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+200 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">524 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">36</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Lübeck U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">67.3</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">197</td><td data-label="Stadtkosten" style="line-height:1.2;">800 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+200 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">832 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">37</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Greifswald U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">65.9</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="">196</td><td data-label="Stadtkosten" style="line-height:1.2;">650 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+350 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">877 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">7.3 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">38</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">München U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">61.8</td><td data-label="Aufbau" style="">Regel</td><td data-label="Kapazität" style="color: var(--warning-text); font-weight: bold;">870</td><td data-label="Stadtkosten" style="line-height:1.2;">1150 €<br><span style="font-size:11px;"><span style="color:var(--warning-text); font-weight:bold;">-150 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">0 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">6.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">39</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Berlin, Charité</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">59.6</td><td data-label="Aufbau" style="">Modell</td><td data-label="Kapazität" style="">318</td><td data-label="Stadtkosten" style="line-height:1.2;">1000 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+0 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">656 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">6.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">40</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Köln U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">58.7</td><td data-label="Aufbau" style="">Modell</td><td data-label="Kapazität" style="">194</td><td data-label="Stadtkosten" style="line-height:1.2;">1000 €<br><span style="font-size:11px;"><span style="color:var(--success-text); font-weight:bold;">+0 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">593 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">6.8 / 10</td></tr><tr><td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">41</td><td data-label="Universität" style="font-weight:bold; color:var(--text-main);">Hamburg U</td><td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">54.6</td><td data-label="Aufbau" style="">Modell</td><td data-label="Kapazität" style="">364</td><td data-label="Stadtkosten" style="line-height:1.2;">1050 €<br><span style="font-size:11px;"><span style="color:var(--warning-text); font-weight:bold;">-50 €</span></span></td><td data-label="Auto-Distanz"><span style="opacity:0.7">796 km</span></td><td data-label="Vibe" style="color:var(--accent); font-weight:bold;">6.4 / 10</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -660,10 +698,15 @@
         <div id="tab-nachruecken" class="tab-content text-content">
             <h2>Nachrücker-Zahlen Medizin (WS 25/26)</h2>
             <div class="info-box">
-                <p style="margin:0;">Die offizielle Datenlage zum Nachrückverfahren wird von Hochschulstart nicht detailliert je Uni veröffentlicht. Die folgenden Daten und Tabellen basieren auf einer gemeinsamen Datenanalyse von <strong>Kevin Kumar und mir</strong>. <br><br>👉 <a href="https://www.future-doctor.de/nachruecker-zahlen-medizin/" target="_blank">Lies dir hier unbedingt unseren vollständigen Beitrag auf future-doctor.de durch!</a></p>
+                <p style="margin:0;">Die offizielle Datenlage zum 
+Nachrückverfahren wird von Hochschulstart nicht detailliert je Uni 
+veröffentlicht. Die folgenden Daten und Tabellen basieren auf einer 
+gemeinsamen Datenanalyse von <strong>Kevin Kumar und mir</strong>. <br><br>👉 <a href="https://www.future-doctor.de/nachruecker-zahlen-medizin/" target="_blank">Lies dir hier unbedingt unseren vollständigen Beitrag auf future-doctor.de durch!</a></p>
             </div>
             
-            <p>Die folgende Auswertung zeigt, wie viele Plätze je Quote und in der Vorabquote insgesamt zur Verfügung standen und wie viele Zulassungen tatsächlich erteilt wurden:</p>
+            <p>Die folgende Auswertung zeigt, wie viele Plätze je Quote 
+und in der Vorabquote insgesamt zur Verfügung standen und wie viele 
+Zulassungen tatsächlich erteilt wurden:</p>
             <ul>
                 <li><strong>ABQ:</strong> 2.531 Plätze ➔ 3.227 Zulassungen <strong style="color:var(--success-text);">(+696 Nachrücker)</strong></li>
                 <li><strong>AdH:</strong> 5.061 Plätze ➔ 5.747 Zulassungen <strong style="color:var(--success-text);">(+686 Nachrücker)</strong></li>
@@ -741,10 +784,15 @@
                 <p style="margin:0;">Die folgenden Daten basieren auf dem ausführlichen Studienplatztausch-Guide (Stand: WiSe 25/26) von <strong>Mona Jung</strong>. Für die kompletten und detaillierten Bedingungen, Fristen und Ausnahmeregelungen lest bitte unbedingt das Originaldokument!<br><br>👉 <a href="https://drive.google.com/file/d/1Tkk0hmLPE4p5BY8cvRw7EhwDNowFIYHn/view" target="_blank">Zum Studienplatztausch-Guide von Mona Jung</a></p>
             </div>
             
-            <p>Die Tabelle zeigt, ob ein Studienplatztausch zum ersten Fachsemester (1. FS) in Humanmedizin an der jeweiligen Universität grundsätzlich möglich ist.</p>
+            <p>Die Tabelle zeigt, ob ein Studienplatztausch zum ersten 
+Fachsemester (1. FS) in Humanmedizin an der jeweiligen Universität 
+grundsätzlich möglich ist.</p>
             <ul>
                 <li><span class="badge badge-green">Ja</span> = Tausch zum 1. FS möglich (Quote in der Regel nicht relevant).</li>
-                <li><span class="badge badge-orange">Eingeschränkt</span> = Tausch nur unter sehr strengen Voraussetzungen (z.B. absolut identische Quote, sehr ähnliche Punkte/Noten) oder nur bei anerkanntem Härtefall möglich.</li>
+                <li><span class="badge badge-orange">Eingeschränkt</span>
+ = Tausch nur unter sehr strengen Voraussetzungen (z.B. absolut 
+identische Quote, sehr ähnliche Punkte/Noten) oder nur bei anerkanntem 
+Härtefall möglich.</li>
                 <li><span class="badge badge-red">Nein</span> = Tausch zum 1. FS ist nicht möglich.</li>
             </ul>
 
@@ -811,18 +859,31 @@
             <h2>Hinter den Kulissen: Wie das Vergabesystem funktioniert</h2>
 
             <h3>Schritt 1: Von der Gesamtplatzzahl zur Quote</h3>
-            <p>Die Platzzahl auf der Uni-Website ist nicht die Zahl, die in der Auswahl tatsächlich ankommt. Die Plätze schrumpfen vorher schrittweise durch feste Vorab-Abzüge:</p>
+            <p>Die Platzzahl auf der Uni-Website ist nicht die Zahl, die
+ in der Auswahl tatsächlich ankommt. Die Plätze schrumpfen vorher 
+schrittweise durch feste Vorab-Abzüge:</p>
             <ul>
-                <li><strong>Der internationale Abzug:</strong> Zuerst fallen etwa 5 % der Plätze für internationale Bewerber:innen weg. In Aachen gingen im WS 25/26 zum Beispiel 13 von 288 Plätzen direkt an internationale Studierende.</li>
-                <li><strong>Die Vorabquoten:</strong> Zusammen mit dieser internationalen Quote gehen bis zu 20 % der Plätze in diverse Vorabquoten auf, etwa für Härtefälle, die Landarztquote oder ein Zweitstudium.</li>
-                <li><strong>Der 30-10-60-Schlüssel:</strong> Erst was nach diesen Abzügen übrig bleibt, verteilt sich strikt nach dem gesetzlichen Schlüssel: 30 % Abiturbestenquote, 60 % Auswahlverfahren der Hochschulen und 10 % Zusätzliche Eignungsquote.</li>
+                <li><strong>Der internationale Abzug:</strong> Zuerst 
+fallen etwa 5 % der Plätze für internationale Bewerber:innen weg. In 
+Aachen gingen im WS 25/26 zum Beispiel 13 von 288 Plätzen direkt an 
+internationale Studierende.</li>
+                <li><strong>Die Vorabquoten:</strong> Zusammen mit 
+dieser internationalen Quote gehen bis zu 20 % der Plätze in diverse 
+Vorabquoten auf, etwa für Härtefälle, die Landarztquote oder ein 
+Zweitstudium.</li>
+                <li><strong>Der 30-10-60-Schlüssel:</strong> Erst was 
+nach diesen Abzügen übrig bleibt, verteilt sich strikt nach dem 
+gesetzlichen Schlüssel: 30 % Abiturbestenquote, 60 % Auswahlverfahren 
+der Hochschulen und 10 % Zusätzliche Eignungsquote.</li>
             </ul>
 
-            <p>Wie stark diese Vorabquoten die Verteilung in der Praxis verzerren, zeigt die RWTH Aachen. Hier haben wir als Beispiel Aachen durchgerechnet:</p>
+            <p>Wie stark diese Vorabquoten die Verteilung in der Praxis 
+verzerren, zeigt die RWTH Aachen. Hier haben wir als Beispiel Aachen 
+durchgerechnet:</p>
 
             <!-- Original Grafik -->
             <div style="text-align: center; margin: 25px 0; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                <img src="https://www.future-doctor.de/wp-content/uploads/2026/07/nachruecker-aachen-quoten-ws2526.png" alt="Halbkreis-Diagramm der echten Platzverteilung an der RWTH Aachen im WS 25/26: 48 % AdH, 24 % ABQ, 8 % ZEQ, der Rest geht in Vorabquoten" style="max-width: 100%; height: auto;" onerror="this.style.display='none'; document.getElementById('fallback-chart').style.display='block';">
+                <img src="Medizinstudium%20Zentrale%20_%20by%20Ritsch_files/nachruecker-aachen-quoten-ws2526_tFaM.png" alt="Halbkreis-Diagramm der echten Platzverteilung an der RWTH Aachen im WS 25/26: 48 % AdH, 24 % ABQ, 8 % ZEQ, der Rest geht in Vorabquoten" style="max-width: 100%; height: auto;" onerror="this.style.display='none'; document.getElementById('fallback-chart').style.display='block';">
             </div>
 
             <!-- CSS Ersatzgrafik (Wird standardmäßig angezeigt oder als Ergänzung) -->
@@ -832,28 +893,44 @@
                     <div style="width: 48%; background: #007bff; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="AdH (48%)">AdH 48%</div>
                     <div style="width: 24%; background: #10b981; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="ABQ (24%)">ABQ 24%</div>
                     <div style="width: 8%; background: #8b5cf6; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="ZEQ (8%)">ZEQ 8%</div>
-                    <div style="width: 20%; background: #f59e0b; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="Vorabquoten & International (20%)">Vorab 20%</div>
+                    <div style="width: 20%; background: #f59e0b; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="Vorabquoten &amp; International (20%)">Vorab 20%</div>
                 </div>
             </div>
 
             <div class="info-box info-blue">
-                <p style="margin: 0;"><strong>Das Ergebnis:</strong> Die ABQ schrumpft von theoretisch 30 % auf real 24 % zusammen. Statt 60 % AdH bleiben nur noch 48 % der Plätze übrig. Aus theoretisch 10 % ZEQ werden am Ende magere 8 %. <em>(Quelle: Gemeinsame Analyse von Kevin Kumar und Ritsch, future-doctor.de)</em></p>
+                <p style="margin: 0;"><strong>Das Ergebnis:</strong> Die
+ ABQ schrumpft von theoretisch 30 % auf real 24 % zusammen. Statt 60 % 
+AdH bleiben nur noch 48 % der Plätze übrig. Aus theoretisch 10 % ZEQ 
+werden am Ende magere 8 %. <em>(Quelle: Gemeinsame Analyse von Kevin Kumar und Flavio Grispino "Ritsch", future-doctor.de)</em></p>
             </div>
 
             <h3>Abitur ist nicht gleich Abitur (Die Mathematik im AdH)</h3>
-            <p><strong>Von Ritsch</strong></p>
-            <p>Für die Bepunktung des Abiturs im AdH ist nur das Bundesland wichtig, in dem man das Abitur gemacht hat. Wie viele Punkte man letztlich dafür bekommt, hängt einzig und allein von der Konkurrenz des jeweiligen Bundeslandes ab.</p>
-            <p>Ab Mitte/Ende Juli veröffentlicht Hochschulstart in deinem Profil einen unscheinbaren, aber alles entscheidenden Wert. Gerankt wird über den Prozentrang (PR) der Hochschulzugangsberechtigung aller Bewerber, die sich auf Hochschulstart für Humanmedizin, Zahnmedizin, Tiermedizin und Pharmazie bewerben. Daraus wird dann ein gemeinsamer Topf gemacht.</p>
+            <p><strong>Von Flavio Grispino "Ritsch"</strong></p>
+            <p>Für die Bepunktung des Abiturs im AdH ist nur das 
+Bundesland wichtig, in dem man das Abitur gemacht hat. Wie viele Punkte 
+man letztlich dafür bekommt, hängt einzig und allein von der Konkurrenz 
+des jeweiligen Bundeslandes ab.</p>
+            <p>Ab Mitte/Ende Juli veröffentlicht Hochschulstart in 
+deinem Profil einen unscheinbaren, aber alles entscheidenden Wert. 
+Gerankt wird über den Prozentrang (PR) der Hochschulzugangsberechtigung 
+aller Bewerber, die sich auf Hochschulstart für Humanmedizin, 
+Zahnmedizin, Tiermedizin und Pharmazie bewerben. Daraus wird dann ein 
+gemeinsamer Topf gemacht.</p>
 
             <p><strong>Wo finde ich meinen Prozentrang?</strong></p>
             <ul>
                 <li>Logge dich ins Bewerbungsportal bei Hochschulstart ein und gehe oben im Menü auf „Meine Daten“.</li>
                 <li>Klicke auf den Reiter „Feste Bewerbungsbestandteile“.</li>
-                <li>Klappe den Bereich „Hochschulzugangsberechtigung“ auf und suche den Abschnitt „Erweiterte Angaben zur Hochschulzugangsberechtigung“.</li>
+                <li>Klappe den Bereich „Hochschulzugangsberechtigung“ 
+auf und suche den Abschnitt „Erweiterte Angaben zur 
+Hochschulzugangsberechtigung“.</li>
                 <li>Lies den Prozent-Wert in der Zeile „Notenausgleich: prozentualer / absoluter Rang der HZB“ ab.</li>
             </ul>
 
-            <p>Dieser Wert gibt an, wo man im direkten Vergleich in seinem Bundesland steht. Die Vergabe der Punkte im AdH basiert mathematisch exakt auf diesem Prozentrang. Dabei erhält man die Punkte anhand der <strong>Gaußschen Normalverteilung</strong>, ähnlich wie beim TMS wird der PR so in nackte AdH-Punkte umgerechnet.</p>
+            <p>Dieser Wert gibt an, wo man im direkten Vergleich in 
+seinem Bundesland steht. Die Vergabe der Punkte im AdH basiert 
+mathematisch exakt auf diesem Prozentrang. Dabei erhält man die Punkte 
+anhand der <strong>Gaußschen Normalverteilung</strong>, ähnlich wie beim TMS wird der PR so in nackte AdH-Punkte umgerechnet.</p>
 
             <p><strong>Beispiel an der Uni Würzburg (Maximal 60 Punkte für das Abitur):</strong></p>
             <ul>
@@ -864,19 +941,45 @@
             </ul>
 
             <p><strong>Warum bekommt man bei einem PR von 75 nicht einfach 75 % the Punkte (also 45 von 60)?</strong><br>
-            Das liegt an der Mathematik der Gaußschen Normalverteilung. Das Punktesystem verläuft nicht linear, sondern in Form einer Glockenkurve. Die allermeisten Bewerber tummeln sich in der Mitte um den Durchschnitt (PR 50). Um von PR 50 auf PR 75 zu klettern, muss man im Verhältnis nur eine etwas bessere Note haben, weil man hier lediglich die große "Masse" an durchschnittlichen Bewerbern überholt.</p>
+            Das liegt an der Mathematik der Gaußschen Normalverteilung. 
+Das Punktesystem verläuft nicht linear, sondern in Form einer 
+Glockenkurve. Die allermeisten Bewerber tummeln sich in der Mitte um den
+ Durchschnitt (PR 50). Um von PR 50 auf PR 75 zu klettern, muss man im 
+Verhältnis nur eine etwas bessere Note haben, weil man hier lediglich 
+die große "Masse" an durchschnittlichen Bewerbern überholt.</p>
             
-            <p>Diese außergewöhnliche Leistung an den beiden extremen Rändern wird durch das mathematische Modell überproportional stark mit Punkten bestraft oder belohnt. Daher ist der Punkteabstand zwischen PR 75 und PR 100 deutlich gewaltiger als zwischen PR 50 und PR 75.</p>
+            <p>Diese außergewöhnliche Leistung an den beiden extremen 
+Rändern wird durch das mathematische Modell überproportional stark mit 
+Punkten bestraft oder belohnt. Daher ist der Punkteabstand zwischen PR 
+75 und PR 100 deutlich gewaltiger als zwischen PR 50 und PR 75.</p>
 
-            <p>Das führt dazu, dass man in jedem Bewerbungssemester mit dem gleichen Notenschnitt eine andere Punktzahl für das Abitur erhält. Die Bonuspunkte für den TMS, eine Ausbildung oder ein FSJ sind ohnehin fest normiert. Die gewertete Abiturleistung hingegen schwankt dynamisch mit dem aktuellen Bewerberjahrgang.</p>
+            <p>Das führt dazu, dass man in jedem Bewerbungssemester mit 
+dem gleichen Notenschnitt eine andere Punktzahl für das Abitur erhält. 
+Die Bonuspunkte für den TMS, eine Ausbildung oder ein FSJ sind ohnehin 
+fest normiert. Die gewertete Abiturleistung hingegen schwankt dynamisch 
+mit dem aktuellen Bewerberjahrgang.</p>
 
             <div class="info-box">
                 <h3 style="color: var(--success-text);">Häufige Frage: Was passiert bei schwachen Jahrgängen?</h3>
-                <p style="margin: 0;"><strong>Frage:</strong> Wenn sich weniger Abiturienten aus anderen Bundesländern bewerben, hat man dann auch einen Vorteil, wenn man aus einem Bundesland kommt, das zum Beispiel keinen G8 auf G9 Wechsel hatte?</p>
-                <p style="margin-top: 10px;"><strong>Antwort:</strong> Dein PR wird ausschließlich im Vergleich zu den Bewerbern aus deinem eigenen Bundesland berechnet. Sobald alle Bewerber aus allen Bundesländern ihre AdH-Punkte haben, werden sie in den bundesweiten Topf geworfen. Du hast also mit exakt derselben errechneten Punktzahl plötzlich eventuell bessere Chancen, zugelassen zu werden, weil schlichtweg Mitbewerber fehlen, die sich sonst vor dich geschoben hätten.</p>
+                <p style="margin: 0;"><strong>Frage:</strong> Wenn sich 
+weniger Abiturienten aus anderen Bundesländern bewerben, hat man dann 
+auch einen Vorteil, wenn man aus einem Bundesland kommt, das zum 
+Beispiel keinen G8 auf G9 Wechsel hatte?</p>
+                <p style="margin-top: 10px;"><strong>Antwort:</strong> 
+Dein PR wird ausschließlich im Vergleich zu den Bewerbern aus deinem 
+eigenen Bundesland berechnet. Sobald alle Bewerber aus allen 
+Bundesländern ihre AdH-Punkte haben, werden sie in den bundesweiten Topf
+ geworfen. Du hast also mit exakt derselben errechneten Punktzahl 
+plötzlich eventuell bessere Chancen, zugelassen zu werden, weil 
+schlichtweg Mitbewerber fehlen, die sich sonst vor dich geschoben 
+hätten.</p>
             </div>
             
-            <p>Aus diesem Grund habe ich den Simulator entwickelt, mit dem man über den PR-Wert die eigenen Chancen at jeder Uni simulieren und den Effekt sofort sehen kann. So lässt sich schon vor dem Start bzw. während des laufenden Verfahrens der Grenzrang im Vergleich zum letzten Jahr exakt ablesen.</p>
+            <p>Aus diesem Grund habe ich den Simulator entwickelt, mit 
+dem man über den PR-Wert die eigenen Chancen at jeder Uni simulieren und
+ den Effekt sofort sehen kann. So lässt sich schon vor dem Start bzw. 
+während des laufenden Verfahrens der Grenzrang im Vergleich zum letzten 
+Jahr exakt ablesen.</p>
         </div>
 
     </div>
@@ -1337,5 +1440,5 @@
             });
         }
     </script>
-</body>
-</html>
+
+</body></html>
