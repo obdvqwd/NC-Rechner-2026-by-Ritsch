@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medizinstudium Zentrale | by Ritsch</title>
+    <title>Medizinstudium Zentrale | by Flavio Grispino "Ritsch"</title>
 
     <!-- Leaflet CSS & JS für die interaktive Karte -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -26,6 +26,14 @@
             --success-bg: rgba(16, 185, 129, 0.1);
             --success-text: #10b981;
             --box-border: #334155;
+            
+            /* Tausch Stufen Farben */
+            --lvl-5: #10b981; /* Sehr leicht */
+            --lvl-4: #3b82f6; /* Leicht */
+            --lvl-3: #f59e0b; /* Mittel */
+            --lvl-2: #ef4444; /* Schwer */
+            --lvl-1: #991b1b; /* Sehr schwer */
+            --lvl-na: #64748b; /* k.A. */
         }
         
         * { box-sizing: border-box; }
@@ -268,6 +276,14 @@
         .badge-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444; }
         .badge-orange { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid #f59e0b; }
 
+        /* Tausch Stufen Badges */
+        .score-5 { background: rgba(16, 185, 129, 0.15); color: var(--lvl-5); border: 1px solid var(--lvl-5); }
+        .score-4 { background: rgba(59, 130, 246, 0.15); color: var(--lvl-4); border: 1px solid var(--lvl-4); }
+        .score-3 { background: rgba(245, 158, 11, 0.15); color: var(--lvl-3); border: 1px solid var(--lvl-3); }
+        .score-2 { background: rgba(239, 68, 68, 0.15); color: var(--lvl-2); border: 1px solid var(--lvl-2); }
+        .score-1 { background: rgba(153, 27, 27, 0.3); color: #fca5a5; border: 1px solid var(--lvl-1); }
+        .score-na { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); border: 1px solid var(--box-border); }
+
         /* MAGIC: TABELLEN WERDEN AUF DEM HANDY ZU KARTEN (Kein horizontales Scrollen mehr!) */
         @media (max-width: 800px) {
             .table-wrapper { border: none; background: transparent; overflow-x: hidden; padding: 0; margin-top: 10px;}
@@ -343,7 +359,7 @@
     <!-- ÜBER MICH BEREICH -->
     <div class="about-me-card">
         <div class="about-me-text">
-            <h4>Ritsch <span style="font-size: 12px; font-weight: normal; color: var(--accent); background: rgba(59, 130, 246, 0.1); padding: 2px 8px; border-radius: 4px;">Entwickler & Analyst</span></h4>
+            <h4>Flavio Grispino "Ritsch" <span style="font-size: 12px; font-weight: normal; color: var(--accent); background: rgba(59, 130, 246, 0.1); padding: 2px 8px; border-radius: 4px;">Entwickler & Analyst</span></h4>
             <p>Ich beschäftige mich tiefgehend mit Nachrückverfahren, historischen Daten und der Dynamik von Grenzrängen. Mein Ziel mit dieser Plattform ist es, das hochkomplexe Vergabesystem ausführlicher und vor allem verständlich zu machen. <em>Dieses Tool ist und bleibt zu 100% kostenlos und werbefrei.</em></p>
             <p style="margin-top: 8px; color: var(--success-text); font-weight: bold; font-size: 12.5px;">🤝 Danke an Kevin Kumar für die Qualitätssicherung.</p>
             
@@ -526,7 +542,7 @@
 
             <!-- ENTWICKLER NOTIZ -->
             <div class="dev-note">
-                <h3>🧠 Wozu ist dieses Tool da? (Entwickler-Notiz von Ritsch)</h3>
+                <h3>🧠 Wozu ist dieses Tool da? (Entwickler-Notiz von Flavio Grispino "Ritsch")</h3>
                 <p><strong>Kein klassischer NC-Rechner-Ersatz, sondern die ultimative Ergänzung!</strong></p>
                 <p>Normale NC-Rechner arbeiten immer nur mit dem Wert deiner Note aus dem letzten Jahr. Dieses Tool hier setzt dort an, wo die harte Realität beginnt: <strong>Ab Mitte Juli</strong> veröffentlicht Hochschulstart deinen tatsächlichen Prozentrang (PR) im Portal.</p>
                 <p><strong>Das Problem im System:</strong> Bonuspunkte für TMS, eine Ausbildung oder ein FSJ sind immer fest normiert und sicher. Deine Abiturnote aber nicht! Weil der Landesschnitt von Jahr zu Jahr schwankt, ist dieselbe 1,8 in jedem Bewerbungsverfahren unterschiedlich viel wert.</p>
@@ -661,7 +677,7 @@
         <div id="tab-nachruecken" class="tab-content text-content">
             <h2>Nachrücker-Zahlen Medizin (WS 25/26)</h2>
             <div class="info-box">
-                <p style="margin:0;">Die offizielle Datenlage zum Nachrückverfahren wird von Hochschulstart nicht detailliert je Uni veröffentlicht. Die folgenden Daten und Tabellen basieren auf einer gemeinsamen Datenanalyse von <strong>Kevin Kumar und mir</strong>. <br><br>👉 <a href="https://www.future-doctor.de/nachruecker-zahlen-medizin/" target="_blank">Lies dir hier unbedingt unseren vollständigen Beitrag auf future-doctor.de durch!</a></p>
+                <p style="margin:0;">Die offizielle Datenlage zum Nachrückverfahren wird von Hochschulstart nicht detailliert je Uni veröffentlicht. Die folgenden Daten und Tabellen basieren auf einer gemeinsamen Datenanalyse von <strong>Kevin Kumar und mir (Flavio Grispino "Ritsch")</strong>. <br><br>👉 <a href="https://www.future-doctor.de/nachruecker-zahlen-medizin/" target="_blank">Lies dir hier unbedingt unseren vollständigen Beitrag auf future-doctor.de durch!</a></p>
             </div>
             
             <p>Die folgende Auswertung zeigt, wie viele Plätze je Quote und in der Vorabquote insgesamt zur Verfügung standen und wie viele Zulassungen tatsächlich erteilt wurden:</p>
@@ -803,6 +819,76 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- NEUER ABSCHNITT: TAUSCH HÖHERE SEMESTER -->
+            <h2 style="margin-top: 50px;">Studienplatztausch (Potenzial für höhere Semester)</h2>
+            <div class="info-box">
+                <h3 style="color: var(--accent); margin-top: 0; font-size: 16px; margin-bottom: 8px;">Wie leicht lässt sich dieser Studienplatz wegtauschen?</h3>
+                <p style="margin-top: 5px; margin-bottom: 15px;">Diese Übersicht zeigt aus der Perspektive <strong>"Ich habe den Platz an dieser Uni"</strong>, wie hoch die allgemeine Nachfrage anderer Studierender nach diesem Ort ist. Beachtet, dass bei Modellstudiengängen der Tausch oft prinzipiell erschwert ist, selbst bei hoher Nachfrage.</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <span class="badge score-5">Stufe 5 (Viel Nachfrage, Tausch leicht)</span>
+                    <span class="badge score-4">Stufe 4 (Gute Optionen)</span>
+                    <span class="badge score-3">Stufe 3 (Mittlere Nachfrage)</span>
+                    <span class="badge score-2">Stufe 2 (Wenig Nachfrage)</span>
+                    <span class="badge score-1">Stufe 1 (Sehr schlechte Nachfrage)</span>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Universität</th>
+                            <th>Tausch-Stufe</th>
+                            <th>Besonderheiten & Nachfrage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td data-label="Universität">TH Aachen</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Augsburg</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">Charité Berlin</td><td data-label="Stufe"><span class="badge score-5">Stufe 5 (1. FS)</span> <br><span class="badge score-2" style="margin-top:5px;">Stufe 2 (Später)</span></td><td data-label="Besonderheiten">1. FS extrem viel Nachfrage. Später sehr schwer wegen speziellem Modellstudiengang</td></tr>
+                        <tr><td data-label="Universität">U Bielefeld</td><td data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td data-label="Besonderheiten">Modellstudiengang, sonst mäßig viel Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Bochum</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Viele suchen NRW-Unis, wird aber von manchen eher als Plan B gesehen</td></tr>
+                        <tr><td data-label="Universität">U Bonn</td><td data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">MedU Lausitz</td><td data-label="Stufe"><span class="badge score-na">K.A.</span></td><td data-label="Besonderheiten">Keine Wertung möglich. Modellstudiengang, daher Tausch vermutlich schwerer</td></tr>
+                        <tr><td data-label="Universität">TU Dresden</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">TU Dresden / Chemnitz</td><td data-label="Stufe"><span class="badge score-na">K.A.</span></td><td data-label="Besonderheiten">Keine Wertung möglich. Modellstudiengang, daher Tausch vermutlich schwerer</td></tr>
+                        <tr><td data-label="Universität">U Duisburg-Essen</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Viele suchen NRW-Unis, wird aber von manchen eher als Plan B gesehen</td></tr>
+                        <tr><td data-label="Universität">U Düsseldorf</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Erlangen-Nürnberg</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Erlangen / Bayreuth</td><td data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td data-label="Besonderheiten">Eher schlechter, aber Tauschoptionen sind vorhanden</td></tr>
+                        <tr><td data-label="Universität">U Frankfurt/Main</td><td data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Freiburg</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Gießen</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Göttingen</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Greifswald</td><td data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td data-label="Besonderheiten">Eher sehr wenig Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Halle-Wittenberg</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">MedH Hannover</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Hamburg</td><td data-label="Stufe"><span class="badge score-5">Stufe 5 (1. FS)</span> <br><span class="badge score-3" style="margin-top:5px;">Stufe 3 (Später)</span></td><td data-label="Besonderheiten">Zum 1. FS sehr gute Nachfrage, ab höherem Semester Modellstudiengang (aber trotzdem gute Nachfrage)</td></tr>
+                        <tr><td data-label="Universität">U Heidelberg</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Heidelberg-Mannheim</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Jena</td><td data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td data-label="Besonderheiten">Eher schlechte Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Kiel</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Köln</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Leipzig</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Lübeck</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Magdeburg</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Mainz</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Mainz MC Trier</td><td data-label="Stufe"><span class="badge score-na">K.A.</span></td><td data-label="Besonderheiten">Keine Wertung möglich</td></tr>
+                        <tr><td data-label="Universität">U Marburg</td><td data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td data-label="Besonderheiten">Eher wenig Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U München</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Eher gute Nachfrage, aber auch sehr viel Angebot vorhanden</td></tr>
+                        <tr><td data-label="Universität">U Münster</td><td data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Oldenburg</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Regensburg</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Regensburg MC Niederbayern</td><td data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td data-label="Besonderheiten">Eher schlechte Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Rostock</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Saarbrücken</td><td data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td data-label="Besonderheiten">Eher sehr schlechte Nachfrage</td></tr>
+                        <tr><td data-label="Universität">U Tübingen</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage / Optionen</td></tr>
+                        <tr><td data-label="Universität">U Ulm</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage / Optionen</td></tr>
+                        <tr><td data-label="Universität">U Würzburg</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage / Optionen</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- =========================================================================
@@ -838,11 +924,11 @@
             </div>
 
             <div class="info-box info-blue">
-                <p style="margin: 0;"><strong>Das Ergebnis:</strong> Die ABQ schrumpft von theoretisch 30 % auf real 24 % zusammen. Statt 60 % AdH bleiben nur noch 48 % der Plätze übrig. Aus theoretisch 10 % ZEQ werden am Ende magere 8 %. <em>(Quelle: Gemeinsame Analyse von Kevin Kumar und Ritsch, future-doctor.de)</em></p>
+                <p style="margin: 0;"><strong>Das Ergebnis:</strong> Die ABQ schrumpft von theoretisch 30 % auf real 24 % zusammen. Statt 60 % AdH bleiben nur noch 48 % der Plätze übrig. Aus theoretisch 10 % ZEQ werden am Ende magere 8 %. <em>(Quelle: Gemeinsame Analyse von Kevin Kumar und Flavio Grispino "Ritsch", future-doctor.de)</em></p>
             </div>
 
             <h3>Abitur ist nicht gleich Abitur (Die Mathematik im AdH)</h3>
-            <p><strong>Von Ritsch</strong></p>
+            <p><strong>Von Flavio Grispino "Ritsch"</strong></p>
             <p>Für die Bepunktung des Abiturs im AdH ist nur das Bundesland wichtig, in dem man das Abitur gemacht hat. Wie viele Punkte man letztlich dafür bekommt, hängt einzig und allein von der Konkurrenz des jeweiligen Bundeslandes ab.</p>
             <p>Ab Mitte/Ende Juli veröffentlicht Hochschulstart in deinem Profil einen unscheinbaren, aber alles entscheidenden Wert. Gerankt wird über den Prozentrang (PR) der Hochschulzugangsberechtigung aller Bewerber, die sich auf Hochschulstart für Humanmedizin, Zahnmedizin, Tiermedizin und Pharmazie bewerben. Daraus wird dann ein gemeinsamer Topf gemacht.</p>
 
