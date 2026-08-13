@@ -327,6 +327,141 @@
         .text-content strong { color: var(--text-main); }
         .text-content a { color: var(--accent); text-decoration: none; font-weight: bold; }
         .text-content a:hover { text-decoration: underline; }
+
+        /* ==========================================
+           7. ERSTI-GUIDE CSS (Eingebaut & Scoped)
+           ========================================== */
+        .ersti-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: #0b1120;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--box-border);
+            justify-content: center;
+        }
+        .ersti-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13.5px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ersti-nav a:hover, .ersti-nav a.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent);
+        }
+        .ersti-phase-card {
+            background-color: #0b1120;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--box-border);
+            scroll-margin-top: 20px;
+        }
+        .ersti-phase-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--box-border);
+        }
+        .ersti-phase-number {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .ersti-phase-title {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .ersti-check-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .ersti-check-list li {
+            background: var(--panel-bg);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            border: 1px solid var(--box-border);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0 !important; /* Reset from .text-content li */
+        }
+        .ersti-check-list li.checked {
+            background: rgba(59, 130, 246, 0.05);
+            border-color: var(--accent);
+        }
+        .ersti-check-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid var(--text-muted);
+            flex-shrink: 0;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .ersti-check-list li.checked .ersti-check-icon {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        .ersti-list-content { flex: 1; }
+        .ersti-list-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .ersti-list-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin: 0;
+        }
+        .ersti-price-tag {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success-text);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -377,6 +512,8 @@
         <button id="btn-tab-nachruecken" class="tab-btn" onclick="switchTab('nachruecken')">Nachrücker-Zahlen</button>
         <button id="btn-tab-tausch" class="tab-btn" onclick="switchTab('tausch')">Studienplatztausch + Regelung</button>
         <button id="btn-tab-info" class="tab-btn" onclick="switchTab('info')">Infos zum Vergabesystem</button>
+        <!-- NEUER ERSTI-GUIDE TAB -->
+        <button id="btn-tab-ersti" class="tab-btn" onclick="switchTab('ersti')">Ersti-Guide</button>
     </div>
 
     <div class="container" id="main-container">
@@ -976,6 +1113,273 @@
             <p>Aus diesem Grund habe ich den Simulator entwickelt, mit dem man über den PR-Wert die eigenen Chancen at jeder Uni simulieren und den Effekt sofort sehen kann. So lässt sich schon vor dem Start bzw. während des laufenden Verfahrens der Grenzrang im Vergleich zum letzten Jahr exakt ablesen.</p>
         </div>
 
+        <!-- =========================================================================
+             TAB 6: ERSTI-GUIDE (Checkliste)
+             ========================================================================= -->
+        <div id="tab-ersti" class="tab-content text-content">
+            <h2>Ersti Checkliste <span style="font-size: 14px; color: var(--text-muted); font-weight: normal; margin-left: 10px;">Ausstattung, Technik und Organisation</span></h2>
+            
+            <div class="ersti-nav">
+                <a href="#phase1" onclick="document.getElementById('phase1').scrollIntoView({behavior: 'smooth'})">🎯 Vorbereitung</a>
+                <a href="#phase2" onclick="document.getElementById('phase2').scrollIntoView({behavior: 'smooth'})">📱 Tech & Apps</a>
+                <a href="#phase3" onclick="document.getElementById('phase3').scrollIntoView({behavior: 'smooth'})">🔬 Labor</a>
+                <a href="#phase4" onclick="document.getElementById('phase4').scrollIntoView({behavior: 'smooth'})">📚 Bücher</a>
+                <a href="#phase5" onclick="document.getElementById('phase5').scrollIntoView({behavior: 'smooth'})">🏠 Wohnen</a>
+            </div>
+
+            <!-- PHASE 1 -->
+            <div id="phase1" class="ersti-phase-card">
+                <div class="ersti-phase-header">
+                    <div class="ersti-phase-number">1</div>
+                    <h3 class="ersti-phase-title">Vorbereitung & Praktika</h3>
+                </div>
+                
+                <p>Vorbereitung schadet prinzipiell nie! Es gibt aber keinen Grund, vor dem ersten Semester extrem viel zu büffeln. Wenn du die Zeit vor Studienstart sinnvoll nutzen möchtest, mache es entspannt und ohne Stress.</p>
+                
+                <ul class="ersti-check-list">
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Naturwissenschaften auffrischen (Kostenlos)</div>
+                            <p class="ersti-list-text">Bitte lerne nicht blind auf Verdacht komplexe Themen auswendig. Ein lockerer Überblick über die Grundlagen in Chemie, Biologie und Physik reicht völlig aus. Nutze dafür am besten kostenlose Quellen: Lese dir entspannt alte Abitur Skripte durch, schaue dir verständliche YouTube Erklärvideos an oder suche nach freien Online Skripten.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Mit Kommilitonen vernetzen</div>
+                            <p class="ersti-list-text">Tritt so früh wie möglich der WhatsApp Ersti Gruppe deiner neuen Uni bei. So kannst du erste Kontakte knüpfen und Fragen klären. Eine gute Übersicht findest du auf <a href="https://ersti-gruppen.de/" target="_blank">Ersti Gruppen</a>.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Pflegepraktikum vorziehen</div>
+                            <p class="ersti-list-text">Es ist kein Muss, aber wenn es geht, versuche das Pflegepraktikum (oder Teile davon) schon vor dem Studium zu absolvieren. Das entspannt deine vorlesungsfreie Zeit in der Vorklinik ungemein.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Erste Hilfe Kurs erledigen</div>
+                            <p class="ersti-list-text">Für die spätere Anmeldung zum Physikum brauchst du zwingend einen Erste Hilfe Kurs. Viele haben diesen bereits für den Führerschein gemacht. Falls nicht, erledige ihn am besten jetzt. So sparst du dir später einen ganzen Tag Zeit.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- PHASE 2 -->
+            <div id="phase2" class="ersti-phase-card">
+                <div class="ersti-phase-header">
+                    <div class="ersti-phase-number">2</div>
+                    <h3 class="ersti-phase-title">Hardware, Tech & Apps</h3>
+                </div>
+                
+                <p>Das Medizinstudium ist heute nahezu papierlos. Skripte, Vorlesungsfolien und Notizen laufen fast vollständig digital ab.</p>
+                
+                <ul class="ersti-check-list">
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">
+                                Tablet mit Stift (Ein absolutes Muss)
+                                <span class="ersti-price-tag">300 bis 1000 Euro</span>
+                            </div>
+                            <p class="ersti-list-text">Ob iPad mit Pencil oder Galaxy Tab mit Stift: Du wirst es jeden Tag nutzen, um in PDFs zu markieren und anatomische Strukturen einzuzeichnen.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Laptop oder PC</div>
+                            <p class="ersti-list-text">Für Hausarbeiten, aufwendige Recherchen oder Online Klausuren. Es muss kein teures Gerät sein, Hauptsache es läuft zuverlässig.</p>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="info-box">
+                    <h3>🧠 Anki (Intelligentes Lernen)</h3>
+                    <p>Die mit Abstand wichtigste App. Das Medizinstudium besteht aus unfassbar viel Auswendiglernen. Anki ist ein intelligentes Karteikartensystem. Du kannst fertige Stapel von höheren Semestern importieren und sparst dir unzählige Stunden.</p>
+                </div>
+
+                <ul class="ersti-check-list">
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">AMBOSS und Via medici (Thieme)</div>
+                            <p class="ersti-list-text">Warte hier mit dem Abo! Diese Plattformen werden an vielen Fakultäten komplett übernommen und kostenlos bereitgestellt (allerdings nicht an allen). Überprüfe vor einem Kauf unbedingt hier, ob deine Uni es stellt: <a href="https://medizin-unis-sammlung.vercel.app/" target="_blank">Medizin Unis Sammlung</a>.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Notiz Apps (GoodNotes oder Notability)</div>
+                            <p class="ersti-list-text">Zum perfekten Organisieren von Vorlesungen auf deinem Tablet.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">3D Anatomie App</div>
+                            <p class="ersti-list-text">Extrem hilfreich für das räumliche Vorstellungsvermögen, bevor es in den Präpsaal geht.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- PHASE 3 -->
+            <div id="phase3" class="ersti-phase-card">
+                <div class="ersti-phase-header">
+                    <div class="ersti-phase-number">3</div>
+                    <h3 class="ersti-phase-title">Präpsaal & Labor</h3>
+                </div>
+
+                <p>In den ersten Semestern warten viele Praktika und natürlich der Präpkurs auf dich. Hier gibt es oft strenge Vorschriften der Fakultät.</p>
+
+                <ul class="ersti-check-list">
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">
+                                Weißer Laborkittel
+                                <span class="ersti-price-tag">20 bis 40 Euro</span>
+                            </div>
+                            <p class="ersti-list-text">Wichtig: Er muss aus reiner Baumwolle sein wegen des Brandschutzes im Labor. Lange Ärmel und Druckknöpfe sind praktisch, um ihn im Notfall sehr schnell ausziehen zu können.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">
+                                Präp Besteck
+                                <span class="ersti-price-tag">15 bis 30 Euro</span>
+                            </div>
+                            <p class="ersti-list-text">Besteht meist aus einem Skalpellgriff, einer anatomischen Pinzette (stumpf) und einer chirurgischen Pinzette (mit kleinen Zähnchen).</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">
+                                Schutzbrille
+                                <span class="ersti-price-tag">5 bis 10 Euro</span>
+                            </div>
+                            <p class="ersti-list-text">Ein simples Modell aus dem Baumarkt reicht völlig aus. Schützt deine Augen vor Chemikalien wie Formalin.</p>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="warning-box" style="margin-top: 25px;">
+                    ⚠️ <strong>Das Stethoskop Mysterium</strong><br>
+                    Ein eigenes Stethoskop? Es kommt darauf an! Im Modellstudiengang brauchst du es eventuell schon früher für die Untersuchungskurse. In Regelstudiengängen reicht es oft erst später. Du wirst früher oder später definitiv ein gutes Standardmodell brauchen, also ist ein Kauf am Anfang kein Fehler. Es ist aber kein sofortiges Muss für alle. Recherchiere am besten kurz, wie deine Uni das handhabt!
+                </div>
+            </div>
+
+            <!-- PHASE 4 -->
+            <div id="phase4" class="ersti-phase-card">
+                <div class="ersti-phase-header">
+                    <div class="ersti-phase-number">4</div>
+                    <h3 class="ersti-phase-title">Bücher & Lernmaterial</h3>
+                </div>
+                
+                <p>Medizinbücher sind unglaublich teuer und schwer. Bevor du hunderte Euro im Buchhandel ausgibst, beachte diese goldene Regel:</p>
+
+                <div class="info-box info-blue">
+                    <h3>📚 Nicht blind am Anfang alles kaufen</h3>
+                    <p>Fast jede Uni Bibliothek bietet dir kostenfreien Zugang zu den Online Versionen der großen Verlage. Lerne erstmal ein paar Wochen und schaue, mit welchem Schreibstil du am besten klarkommst. Sehr viele kaufen dicke Bücher und nutzen am Ende doch nur digitale Skripte.</p>
+                </div>
+
+                <ul class="ersti-check-list">
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Der Anatomie Atlas (Prometheus oder Sobotta)</div>
+                            <p class="ersti-list-text">Das einzige Buch, das man sich wirklich als gedruckte Version holen sollte. Ein guter Tipp: Kaufe es gebraucht! Knochen ändern sich nicht, eine etwas ältere Ausgabe reicht meistens völlig aus.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Endspurt Skripte oder Medi Learn Hefte</div>
+                            <p class="ersti-list-text">Perfekt komprimiertes Wissen. Diese werden aber meist erst relevant, wenn du gezielt auf das Physikum oder große Klausuren lernst.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- PHASE 5 -->
+            <div id="phase5" class="ersti-phase-card">
+                <div class="ersti-phase-header">
+                    <div class="ersti-phase-number">5</div>
+                    <h3 class="ersti-phase-title">Umzug & Eigenständigkeit</h3>
+                </div>
+                
+                <p>Für viele bedeutet der Studienstart auch den Auszug von zu Hause. Hier ist eine Übersicht aller wichtigen Unterlagen, Verträge und Aufgaben.</p>
+
+                <h3 style="margin-top: 30px;">1. Wichtige Unterlagen für die Wohnungssuche</h3>
+                <ul class="ersti-check-list">
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Bewerbungsmappe für Wohnungen vorbereiten</div>
+                            <p class="ersti-list-text">Habe deine Dokumente direkt digital als ein einziges PDF und ausgedruckt parat. Dazu gehören: Personalausweis Kopie, Auskunft zur Bonität (Schufa Auskunft), Einkommensnachweise (oder Elternbürgschaft inklusive Gehaltsnachweisen der Eltern) und deine Immatrikulationsbescheinigung.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Wohnberechtigungsschein (WBS) und Wohnheim</div>
+                            <p class="ersti-list-text">Prüfe, ob du Anspruch auf einen WBS hast, um günstigere Wohnungen mieten zu können. Bewerbe dich zudem sofort am Tag deiner Zulassung beim lokalen Studierendenwerk für einen Wohnheimplatz.</p>
+                        </div>
+                    </li>
+                </ul>
+
+                <h3 style="margin-top: 30px;">2. Behörden und Verträge nach der Zusage</h3>
+                <ul class="ersti-check-list">
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Behördengänge und Erstwohnsitzbonus</div>
+                            <p class="ersti-list-text">Melde deinen neuen Wohnsitz rechtzeitig (meist innerhalb von zwei Wochen) beim Einwohnermeldeamt an. Dafür brauchst du die Wohnungsgeberbestätigung deines Vermieters. Tipp: Viele Studentenstädte zahlen einen Erstwohnsitzbonus (oft 100 bis 200 Euro Begrüßungsgeld)!</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Strom, Internet und GEZ</div>
+                            <p class="ersti-list-text">Kümmere dich früh um einen Internetvertrag, da die Freischaltung oft Wochen dauert. Melde rechtzeitig Strom an. Beim Rundfunkbeitrag (GEZ) gilt: Pro WG muss nur einer zahlen. Wer BAföG bezieht, kann sich zudem komplett befreien lassen.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">BAföG und Kindergeld ummelden</div>
+                            <p class="ersti-list-text">Reiche deinen BAföG Antrag so früh wie möglich ein, da die Bearbeitung Monate dauern kann. Teile der Familienkasse deine neue Adresse für das Kindergeld mit.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Versicherungen anpassen</div>
+                            <p class="ersti-list-text">Prüfe, ob du bei deinen Eltern in der Haftpflichtversicherung und Krankenkasse familienversichert bleibst. Eine eigene Haftpflichtversicherung ist beim Auszug essenziell. Eventuell lohnt sich auch eine einfache Hausratversicherung für deine Bude.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="ersti-check-icon">✓</div>
+                        <div class="ersti-list-content">
+                            <div class="ersti-list-title">Nachsendeauftrag einrichten</div>
+                            <p class="ersti-list-text">Denke daran, bei der Post rechtzeitig einen Nachsendeauftrag für deine alte Adresse einzurichten, damit wichtige Briefe (wie Dokumente der Uni oder Behörden) auch in deiner neuen Wohnung ankommen.</p>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="info-box" style="margin-top: 25px;">
+                    <h3>🎓 Das Sicherheitsnetz der Unis</h3>
+                    <p>Vergiss nicht: Sehr viele Studienorte sind echte Studentenstädte. Es gibt dort eine extrem gut ausgebaute Struktur und ein starkes Sicherheitsnetz für Studierende. Das Studierendenwerk und verschiedene Beratungsstellen helfen dir bei Sorgen rund um Wohnung, Finanzen oder psychischen Druck jederzeit weiter!</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- WICHTIGE LINKS DROPDOWN SCRIPT -->
@@ -1481,6 +1885,16 @@
                 </tr>`;
             });
         }
+        
+        // --- 4. ERSTI CHECKLISTE INTERAKTION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const listItems = document.querySelectorAll('.ersti-check-list li');
+            listItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    this.classList.toggle('checked');
+                });
+            });
+        });
     </script>
 </body>
 </html>
