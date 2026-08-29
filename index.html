@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -13,8 +14,8 @@
     <script defer src="/_vercel/insights/script.js"></script>
 
     <!-- Leaflet CSS & JS für die interaktive Karte -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link id="leaflet-css" rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" onerror="this.onerror=null; this.href='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css';" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onerror="var s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'; document.head.appendChild(s);"></script>
 
     <style>
         /* ==========================================
@@ -179,10 +180,23 @@
         .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Sub-Navigation innerhalb eines zusammengefassten Tabs (z.B. "Verfahren & Zahlen") */
+        .sub-tab-nav { display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap; border-bottom: 1px solid var(--box-border); padding-bottom: 18px; }
+        .sub-tab-btn {
+            background: transparent; color: var(--text-muted); border: 1px solid var(--box-border);
+            padding: 8px 14px; border-radius: 20px; font-size: 13.5px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .sub-tab-btn:hover { border-color: var(--accent); color: var(--text-main); }
+        .sub-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .subtab-content { display: none; }
+        .subtab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+
         @media (max-width: 768px) {
             .tab-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
             .tab-btn { font-size: 13px; padding: 10px 5px; }
             .container { padding: 20px 15px; }
+            .sub-tab-nav { justify-content: center; }
         }
         @media (max-width: 450px) {
             .tab-nav { grid-template-columns: 1fr; }
@@ -514,11 +528,9 @@
     <!-- TABS NAVIGATION -->
     <div class="tab-nav">
         <button id="btn-tab-adh" class="tab-btn active" onclick="switchTab('adh')">AdH Simulator</button>
+        <button id="btn-tab-verfahren" class="tab-btn" onclick="switchTab('verfahren')">Daten & Trends</button>
         <button id="btn-tab-ranking" class="tab-btn" onclick="switchTab('ranking')">Studienort-Ranking</button>
-        <button id="btn-tab-nachruecken" class="tab-btn" onclick="switchTab('nachruecken')">Nachrücker-Zahlen</button>
         <button id="btn-tab-tausch" class="tab-btn" onclick="switchTab('tausch')">Studienplatztausch + Regelung</button>
-        <button id="btn-tab-info" class="tab-btn" onclick="switchTab('info')">Infos zum Vergabesystem</button>
-        <!-- NEUER ERSTI-GUIDE TAB -->
         <button id="btn-tab-ersti" class="tab-btn" onclick="switchTab('ersti')">Ersti-Guide</button>
     </div>
 
@@ -552,7 +564,7 @@
                     <li style="color: var(--success-text);"><strong>Wichtig für Auslandsabiturienten:</strong> Auch mit einem im Ausland erworbenen Abitur kannst du den Prozentrang exakt so nutzen. Es ist dabei völlig egal, welchem Bundesland du per Losverfahren zugeteilt wurdest.</li>
                 </ul>
                 <div style="margin-top: 15px; text-align: center;">
-                    <button onclick="switchTab('info')" style="background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 13px;">📖 Mehr zum Vergabeverfahren & was der PR aussagt</button>
+                    <button onclick="switchSubTab('info')" style="background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 13px;">📖 Mehr zum Vergabeverfahren & was der PR aussagt</button>
                 </div>
             </div>
 
@@ -835,7 +847,20 @@
         <!-- =========================================================================
              TAB 3: NACHRÜCKVERFAHREN
              ========================================================================= -->
-        <div id="tab-nachruecken" class="tab-content text-content">
+        <!-- =========================================================================
+             ZUSAMMENGEFASSTER TAB: VERFAHREN & ZAHLEN
+             (enthält als Unter-Reiter: Nachrücker-Zahlen, Studienplatztausch,
+              Infos zum Vergabesystem, TMS-Trends)
+             ========================================================================= -->
+        <div id="tab-verfahren" class="tab-content text-content">
+            <div class="sub-tab-nav">
+                <button id="btn-subtab-nachruecken" class="sub-tab-btn active" onclick="switchSubTab('nachruecken')">Nachrücker-Zahlen</button>
+                <button id="btn-subtab-beliebtheit" class="sub-tab-btn" onclick="switchSubTab('beliebtheit')">Uni-Beliebtheit</button>
+                <button id="btn-subtab-trends" class="sub-tab-btn" onclick="switchSubTab('trends')">TMS-Trends</button>
+                <button id="btn-subtab-info" class="sub-tab-btn" onclick="switchSubTab('info')">Infos zum Vergabesystem</button>
+            </div>
+
+        <div id="subtab-nachruecken" class="subtab-content active">
             <h2>Nachrücker-Zahlen Medizin (WS 25/26)</h2>
             <div class="info-box">
                 <p style="margin:0;">Die offizielle Datenlage zum Nachrückverfahren wird von Hochschulstart nicht detailliert je Uni veröffentlicht. Die folgenden Daten und Tabellen basieren auf einer gemeinsamen Datenanalyse von <strong>Kevin Kumar und mir (Flavio "Ritsch")</strong>. <br><br>👉 <a href="https://www.future-doctor.de/nachruecker-zahlen-medizin/" target="_blank">Lies dir hier unbedingt unseren vollständigen Beitrag auf future-doctor.de durch!</a></p>
@@ -909,6 +934,169 @@
                 </table>
             </div>
         </div>
+
+        <!-- =========================================================================
+             TAB: UNI-BELIEBTHEIT (Binnenpriorität-Ranking)
+             ========================================================================= -->
+        <div id="subtab-beliebtheit" class="subtab-content">
+            <h2>Beliebtheits-Ranking Humanmedizin: Wo wollen die meisten wirklich hin?</h2>
+
+            <div class="info-box">
+                <p style="margin:0;">Datenquelle: die offiziellen <strong>„Statistiken des Zentralen Verfahrens"</strong> von hochschulstart.de, Tabelle „Bewerbungen nach Binnenpriorität" für den Studiengang <strong>Humanmedizin</strong>. Diese Auswertung nutzt ausschließlich die offiziell einzeln ausgewiesenen Prio 1 bis 3, weil Hochschulstart alles ab Prio 4 nur noch als Sammelwert veröffentlicht.</p>
+            </div>
+
+            <div class="input-box" style="margin-bottom: 15px;">
+                <label style="font-weight: bold; color: var(--text-main);">Semester (bitte zuerst wählen)</label>
+                <select id="bel-semester" onchange="renderBelTable()">
+                    <option value="winter" selected>Wintersemester (Hauptverfahren, 41 Studienorte)</option>
+                    <option value="sommer">Sommersemester (nur 10 Studienorte bieten Plätze an)</option>
+                </select>
+            </div>
+
+            <div class="grid-2col" style="margin-bottom: 15px;">
+                <div class="input-box">
+                    <label>Zeitraum</label>
+                    <select id="bel-zeitraum" onchange="renderBelTable()">
+                        <option value="aktuell">Nur aktuellstes Semester</option>
+                        <option value="getrennt">Beide Semester nebeneinander (Trend sichtbar)</option>
+                        <option value="kombiniert" selected>Beide Semester kombiniert (stabileres Ranking)</option>
+                    </select>
+                </div>
+                <div class="input-box">
+                    <label>Normalisierung</label>
+                    <select id="bel-norm" onchange="renderBelTable()">
+                        <option value="absolut" selected>Absolute Punktzahl</option>
+                        <option value="proplatz">Punkte pro Studienplatz</option>
+                        <option value="anteil">Anteil an Gesamtbewerbungen am Ort</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="info-box info-blue" style="font-size: 13px; margin-bottom: 20px;">
+                <p style="margin:0;">🔒 <strong>Fest eingestellt (nicht veränderbar):</strong> Die Gewichtung läuft immer über einen Score aus <strong>Prio 1 × 3 + Prio 2 × 2 + Prio 3 × 1</strong> Punkten (Borda-Prinzip). Das ändert sich bei keiner Einstellung. Verbund-Studienorte (z. B. Erlangen-Nürnberg/Bayreuth, Heidelberg/Mannheim) werden immer einzeln geführt und nie zusammengezählt. Winter- und Sommersemester werden nie miteinander vermischt, weil beide Verfahren völlig unterschiedlich groß sind. Die Option „Anteil an Gesamtbewerbungen" setzt den Score ins Verhältnis zur theoretisch maximal möglichen Punktzahl an diesem Ort, also dem Fall, dass wirklich jede Bewerbung dort Prio 1 gewesen wäre. Sie zeigt also, wie stark eine Uni im Schnitt bevorzugt wird, unabhängig von ihrer Größe.</p>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="ranking-table" id="bel-table">
+                    <thead id="bel-thead"></thead>
+                    <tbody id="bel-tbody"></tbody>
+                </table>
+            </div>
+
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 15px;">* Für diesen Studienort liegen aus dem Vergleichssemester keine Daten vor (z. B. weil er neu hinzugekommen ist). Er ist trotzdem mit aufgeführt und entsprechend gekennzeichnet.</p>
+        </div>
+
+        <!-- =========================================================================
+             TAB: TMS-TRENDS (Anmeldezahlen im Zeitverlauf)
+             ========================================================================= -->
+        <div id="subtab-trends" class="subtab-content">
+            <h2>TMS-Anmelde- & Teilnehmerzahlen im Zeitverlauf</h2>
+
+            <div class="info-box info-blue">
+                <p style="margin:0;"><strong>Wichtig:</strong> <em>Anmeldungen</em> sind nicht gleichbedeutend mit <em>Teilnehmer:innen</em>, nicht jede:r Angemeldete tritt am Testtag auch tatsächlich an. Die Daten stammen von der offiziellen Quelle <a href="https://www.tms-info.org/" target="_blank">tms-info.org</a>.</p>
+            </div>
+
+            <p>Die folgende Grafik fasst die bisher bekannten TMS-Anmelde- und Teilnehmerzahlen der letzten Testtermine zusammen und macht die Entwicklung über die Halbjahre hinweg sichtbar:</p>
+
+            <div style="background: #0b1120; border: 1px solid var(--box-border); border-radius: 8px; padding: 20px 15px; margin-bottom: 20px;">
+                <canvas id="tmsTrendCanvas" width="700" height="300" style="display:block;"></canvas>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Termin</th>
+                            <th style="color: var(--warning-text);">Teilnehmer</th>
+                            <th style="color: #3b82f6;">Anmeldungen</th>
+                            <th>davon Wiederholer*innen</th>
+                            <th>Anteil Wiederholer</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tmsTrendTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Ende Unter-Reiter TMS-Trends -->
+
+        <!-- =========================================================================
+             TAB: INFOS ZUM VERGABESYSTEM
+             ========================================================================= -->
+        <div id="subtab-info" class="subtab-content">
+            <h2>Hinter den Kulissen: Wie das Vergabesystem funktioniert</h2>
+
+            <h3>Schritt 1: Von der Gesamtplatzzahl zur Quote</h3>
+            <p>Die Platzzahl auf der Uni-Website ist nicht die Zahl, die in der Auswahl tatsächlich ankommt. Die Plätze schrumpfen vorher schrittweise durch feste Vorab-Abzüge:</p>
+            <ul>
+                <li><strong>Der internationale Abzug:</strong> Zuerst fallen etwa 5 % der Plätze für internationale Bewerber:innen weg. In Aachen gingen im WS 25/26 zum Beispiel 13 von 288 Plätzen direkt an internationale Studierende.</li>
+                <li><strong>Die Vorabquoten:</strong> Zusammen mit dieser internationalen Quote gehen bis zu 20 % der Plätze in diverse Vorabquoten auf, etwa für Härtefälle, die Landarztquote oder ein Zweitstudium.</li>
+                <li><strong>Der 30-10-60-Schlüssel:</strong> Erst was nach diesen Abzügen übrig bleibt, verteilt sich strikt nach dem gesetzlichen Schlüssel: 30 % Abiturbestenquote, 60 % Auswahlverfahren der Hochschulen und 10 % Zusätzliche Eignungsquote.</li>
+            </ul>
+
+            <p>Wie stark diese Vorabquoten die Verteilung in der Praxis verzerren, zeigt die RWTH Aachen. Hier haben wir als Beispiel Aachen durchgerechnet:</p>
+
+            <!-- Original Grafik -->
+            <div style="text-align: center; margin: 25px 0; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <img src="https://www.future-doctor.de/wp-content/uploads/2026/07/nachruecker-aachen-quoten-ws2526.png" alt="Halbkreis-Diagramm der echten Platzverteilung an der RWTH Aachen im WS 25/26: 48 % AdH, 24 % ABQ, 8 % ZEQ, der Rest geht in Vorabquoten" style="max-width: 100%; height: auto;" onerror="this.style.display='none'; document.getElementById('fallback-chart').style.display='block';">
+            </div>
+
+            <!-- CSS Ersatzgrafik (Wird standardmäßig angezeigt oder als Ergänzung) -->
+            <div id="fallback-chart" style="margin-bottom: 25px;">
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;"><em>Ersatzgrafik: Wahre Platzverteilung in Aachen nach Abzügen</em></p>
+                <div style="display: flex; height: 35px; border-radius: 6px; overflow: hidden; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                    <div style="width: 48%; background: #007bff; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="AdH (48%)">AdH 48%</div>
+                    <div style="width: 24%; background: #10b981; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="ABQ (24%)">ABQ 24%</div>
+                    <div style="width: 8%; background: #8b5cf6; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="ZEQ (8%)">ZEQ 8%</div>
+                    <div style="width: 20%; background: #f59e0b; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="Vorabquoten & International (20%)">Vorab 20%</div>
+                </div>
+            </div>
+
+            <div class="info-box info-blue">
+                <p style="margin: 0;"><strong>Das Ergebnis:</strong> Die ABQ schrumpft von theoretisch 30 % auf real 24 % zusammen. Statt 60 % AdH bleiben nur noch 48 % der Plätze übrig. Aus theoretisch 10 % ZEQ werden am Ende magere 8 %. <em>(Quelle: Gemeinsame Analyse von Kevin Kumar und Flavio "Ritsch", future-doctor.de)</em></p>
+            </div>
+
+            <h3>Abitur ist nicht gleich Abitur (Die Mathematik im AdH)</h3>
+            <p><strong>Von Flavio "Ritsch"</strong></p>
+            <p>Für die Bepunktung des Abiturs im AdH ist nur das Bundesland wichtig, in dem man das Abitur gemacht hat. Wie viele Punkte man letztlich dafür bekommt, hängt einzig und allein von der Konkurrenz des jeweiligen Bundeslandes ab.</p>
+            <p>Ab Mitte/Ende Juli veröffentlicht Hochschulstart in deinem Profil einen unscheinbaren, aber alles entscheidenden Wert. Gerankt wird über den Prozentrang (PR) der Hochschulzugangsberechtigung aller Bewerber, die sich auf Hochschulstart für Humanmedizin, Zahnmedizin, Tiermedizin und Pharmazie bewerben. Daraus wird dann ein gemeinsamer Topf gemacht.</p>
+
+            <p><strong>Wo finde ich meinen Prozentrang?</strong></p>
+            <ul>
+                <li>Logge dich ins Bewerbungsportal bei Hochschulstart ein und gehe oben im Menü auf „Meine Daten“.</li>
+                <li>Klicke auf den Reiter „Feste Bewerbungsbestandteile“.</li>
+                <li>Klappe den Bereich „Hochschulzugangsberechtigung“ auf und suche den Abschnitt „Erweiterte Angaben zur Hochschulzugangsberechtigung“.</li>
+                <li>Lies den Prozent-Wert in der Zeile „Notenausgleich: prozentualer / absoluter Rang der HZB“ ab.</li>
+            </ul>
+
+            <p>Dieser Wert gibt an, wo man im direkten Vergleich in seinem Bundesland steht. Die Vergabe der Punkte im AdH basiert mathematisch exakt auf diesem Prozentrang. Dabei erhält man die Punkte anhand der <strong>Gaußschen Normalverteilung</strong>, ähnlich wie beim TMS wird der PR so in nackte AdH-Punkte umgerechnet.</p>
+
+            <p><strong>Beispiel an der Uni Würzburg (Maximal 60 Punkte für das Abitur):</strong></p>
+            <ul>
+                <li>Für PR 15 erhält man 19,65 von 60 Punkten.</li>
+                <li>Für PR 50 bekommt man 30 von 60 Punkten.</li>
+                <li>Für PR 75 bekommt man 36,70 von 60 Punkten.</li>
+                <li>Für PR 100 bekommt man 60 von 60 Punkten.</li>
+            </ul>
+
+            <p><strong>Warum bekommt man bei einem PR von 75 nicht einfach 75 % der Punkte (also 45 von 60)?</strong><br>
+            Das liegt an der Mathematik der Gaußschen Normalverteilung. Das Punktesystem verläuft nicht linear, sondern in Form einer Glockenkurve. Die allermeisten Bewerber tummeln sich in der Mitte um den Durchschnitt (PR 50). Um von PR 50 auf PR 75 zu klettern, muss man im Verhältnis nur eine etwas bessere Note haben, weil man hier lediglich die große "Masse" an durchschnittlichen Bewerbern überholt.</p>
+            
+            <p>Diese außergewöhnliche Leistung an den beiden extremen Rändern wird durch das mathematische Modell überproportional stark mit Punkten bestraft oder belohnt. Daher ist der Punkteabstand zwischen PR 75 und PR 100 deutlich gewaltiger als zwischen PR 50 und PR 75.</p>
+
+            <p>Das führt dazu, dass man in jedem Bewerbungssemester mit dem gleichen Notenschnitt eine andere Punktzahl für das Abitur erhält. Die Bonuspunkte für den TMS, eine Ausbildung oder ein FSJ sind ohnehin fest normiert. Die gewertete Abiturleistung hingegen schwankt dynamisch mit dem aktuellen Bewerberjahrgang.</p>
+
+            <div class="info-box">
+                <h3 style="color: var(--success-text);">Häufige Frage: Was passiert bei schwachen Jahrgängen?</h3>
+                <p style="margin: 0;"><strong>Frage:</strong> Wenn sich weniger Abiturienten aus anderen Bundesländern bewerben, hat man dann auch einen Vorteil, wenn man aus einem Bundesland kommt, das zum Beispiel keinen G8 auf G9 Wechsel hatte?</p>
+                <p style="margin-top: 10px;"><strong>Antwort:</strong> Dein PR wird ausschließlich im Vergleich zu den Bewerbern aus deinem eigenen Bundesland berechnet. Sobald alle Bewerber aus allen Bundesländern ihre AdH-Punkte haben, werden sie in den bundesweiten Topf geworfen. Du hast also mit exakt derselben errechneten Punktzahl plötzlich eventuell bessere Chancen, zugelassen zu werden, weil schlichtweg Mitbewerber fehlen, die sich sonst vor dich geschoben hätten.</p>
+            </div>
+            
+            <p>Aus diesem Grund habe ich den Simulator entwickelt, mit dem man über den PR-Wert die eigenen Chancen an jeder Uni simulieren und den Effekt sofort sehen kann. So lässt sich schon vor dem Start bzw. während des laufenden Verfahrens der Grenzrang im Vergleich zum letzten Jahr exakt ablesen.</p>
+        </div>
+        <!-- Ende Unter-Reiter Infos zum Vergabesystem -->
+
+        </div>
+        <!-- Ende zusammengefasster Tab: Verfahren & Zahlen -->
 
         <!-- =========================================================================
              TAB 4: STUDIENPLATZTAUSCH
@@ -1050,81 +1238,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-
-        <!-- =========================================================================
-             TAB 5: INFO ZUM VERGABESYSTEM
-             ========================================================================= -->
-        <div id="tab-info" class="tab-content text-content">
-            <h2>Hinter den Kulissen: Wie das Vergabesystem funktioniert</h2>
-
-            <h3>Schritt 1: Von der Gesamtplatzzahl zur Quote</h3>
-            <p>Die Platzzahl auf der Uni-Website ist nicht die Zahl, die in der Auswahl tatsächlich ankommt. Die Plätze schrumpfen vorher schrittweise durch feste Vorab-Abzüge:</p>
-            <ul>
-                <li><strong>Der internationale Abzug:</strong> Zuerst fallen etwa 5 % der Plätze für internationale Bewerber:innen weg. In Aachen gingen im WS 25/26 zum Beispiel 13 von 288 Plätzen direkt an internationale Studierende.</li>
-                <li><strong>Die Vorabquoten:</strong> Zusammen mit dieser internationalen Quote gehen bis zu 20 % der Plätze in diverse Vorabquoten auf, etwa für Härtefälle, die Landarztquote oder ein Zweitstudium.</li>
-                <li><strong>Der 30-10-60-Schlüssel:</strong> Erst was nach diesen Abzügen übrig bleibt, verteilt sich strikt nach dem gesetzlichen Schlüssel: 30 % Abiturbestenquote, 60 % Auswahlverfahren der Hochschulen und 10 % Zusätzliche Eignungsquote.</li>
-            </ul>
-
-            <p>Wie stark diese Vorabquoten die Verteilung in der Praxis verzerren, zeigt die RWTH Aachen. Hier haben wir als Beispiel Aachen durchgerechnet:</p>
-
-            <!-- Original Grafik -->
-            <div style="text-align: center; margin: 25px 0; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                <img src="https://www.future-doctor.de/wp-content/uploads/2026/07/nachruecker-aachen-quoten-ws2526.png" alt="Halbkreis-Diagramm der echten Platzverteilung an der RWTH Aachen im WS 25/26: 48 % AdH, 24 % ABQ, 8 % ZEQ, der Rest geht in Vorabquoten" style="max-width: 100%; height: auto;" onerror="this.style.display='none'; document.getElementById('fallback-chart').style.display='block';">
-            </div>
-
-            <!-- CSS Ersatzgrafik (Wird standardmäßig angezeigt oder als Ergänzung) -->
-            <div id="fallback-chart" style="margin-bottom: 25px;">
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;"><em>Ersatzgrafik: Wahre Platzverteilung in Aachen nach Abzügen</em></p>
-                <div style="display: flex; height: 35px; border-radius: 6px; overflow: hidden; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-                    <div style="width: 48%; background: #007bff; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="AdH (48%)">AdH 48%</div>
-                    <div style="width: 24%; background: #10b981; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="ABQ (24%)">ABQ 24%</div>
-                    <div style="width: 8%; background: #8b5cf6; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="ZEQ (8%)">ZEQ 8%</div>
-                    <div style="width: 20%; background: #f59e0b; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="Vorabquoten & International (20%)">Vorab 20%</div>
-                </div>
-            </div>
-
-            <div class="info-box info-blue">
-                <p style="margin: 0;"><strong>Das Ergebnis:</strong> Die ABQ schrumpft von theoretisch 30 % auf real 24 % zusammen. Statt 60 % AdH bleiben nur noch 48 % der Plätze übrig. Aus theoretisch 10 % ZEQ werden am Ende magere 8 %. <em>(Quelle: Gemeinsame Analyse von Kevin Kumar und Flavio "Ritsch", future-doctor.de)</em></p>
-            </div>
-
-            <h3>Abitur ist nicht gleich Abitur (Die Mathematik im AdH)</h3>
-            <p><strong>Von Flavio "Ritsch"</strong></p>
-            <p>Für die Bepunktung des Abiturs im AdH ist nur das Bundesland wichtig, in dem man das Abitur gemacht hat. Wie viele Punkte man letztlich dafür bekommt, hängt einzig und allein von der Konkurrenz des jeweiligen Bundeslandes ab.</p>
-            <p>Ab Mitte/Ende Juli veröffentlicht Hochschulstart in deinem Profil einen unscheinbaren, aber alles entscheidenden Wert. Gerankt wird über den Prozentrang (PR) der Hochschulzugangsberechtigung aller Bewerber, die sich auf Hochschulstart für Humanmedizin, Zahnmedizin, Tiermedizin und Pharmazie bewerben. Daraus wird dann ein gemeinsamer Topf gemacht.</p>
-
-            <p><strong>Wo finde ich meinen Prozentrang?</strong></p>
-            <ul>
-                <li>Logge dich ins Bewerbungsportal bei Hochschulstart ein und gehe oben im Menü auf „Meine Daten“.</li>
-                <li>Klicke auf den Reiter „Feste Bewerbungsbestandteile“.</li>
-                <li>Klappe den Bereich „Hochschulzugangsberechtigung“ auf und suche den Abschnitt „Erweiterte Angaben zur Hochschulzugangsberechtigung“.</li>
-                <li>Lies den Prozent-Wert in der Zeile „Notenausgleich: prozentualer / absoluter Rang der HZB“ ab.</li>
-            </ul>
-
-            <p>Dieser Wert gibt an, wo man im direkten Vergleich in seinem Bundesland steht. Die Vergabe der Punkte im AdH basiert mathematisch exakt auf diesem Prozentrang. Dabei erhält man die Punkte anhand der <strong>Gaußschen Normalverteilung</strong>, ähnlich wie beim TMS wird der PR so in nackte AdH-Punkte umgerechnet.</p>
-
-            <p><strong>Beispiel an der Uni Würzburg (Maximal 60 Punkte für das Abitur):</strong></p>
-            <ul>
-                <li>Für PR 15 erhält man 19,65 von 60 Punkten.</li>
-                <li>Für PR 50 bekommt man 30 von 60 Punkten.</li>
-                <li>Für PR 75 bekommt man 36,70 von 60 Punkten.</li>
-                <li>Für PR 100 bekommt man 60 von 60 Punkten.</li>
-            </ul>
-
-            <p><strong>Warum bekommt man bei einem PR von 75 nicht einfach 75 % the Punkte (also 45 von 60)?</strong><br>
-            Das liegt an der Mathematik der Gaußschen Normalverteilung. Das Punktesystem verläuft nicht linear, sondern in Form einer Glockenkurve. Die allermeisten Bewerber tummeln sich in der Mitte um den Durchschnitt (PR 50). Um von PR 50 auf PR 75 zu klettern, muss man im Verhältnis nur eine etwas bessere Note haben, weil man hier lediglich die große "Masse" an durchschnittlichen Bewerbern überholt.</p>
-            
-            <p>Diese außergewöhnliche Leistung an den beiden extremen Rändern wird durch das mathematische Modell überproportional stark mit Punkten bestraft oder belohnt. Daher ist der Punkteabstand zwischen PR 75 und PR 100 deutlich gewaltiger als zwischen PR 50 und PR 75.</p>
-
-            <p>Das führt dazu, dass man in jedem Bewerbungssemester mit dem gleichen Notenschnitt eine andere Punktzahl für das Abitur erhält. Die Bonuspunkte für den TMS, eine Ausbildung oder ein FSJ sind ohnehin fest normiert. Die gewertete Abiturleistung hingegen schwankt dynamisch mit dem aktuellen Bewerberjahrgang.</p>
-
-            <div class="info-box">
-                <h3 style="color: var(--success-text);">Häufige Frage: Was passiert bei schwachen Jahrgängen?</h3>
-                <p style="margin: 0;"><strong>Frage:</strong> Wenn sich weniger Abiturienten aus anderen Bundesländern bewerben, hat man dann auch einen Vorteil, wenn man aus einem Bundesland kommt, das zum Beispiel keinen G8 auf G9 Wechsel hatte?</p>
-                <p style="margin-top: 10px;"><strong>Antwort:</strong> Dein PR wird ausschließlich im Vergleich zu den Bewerbern aus deinem eigenen Bundesland berechnet. Sobald alle Bewerber aus allen Bundesländern ihre AdH-Punkte haben, werden sie in den bundesweiten Topf geworfen. Du hast also mit exakt derselben errechneten Punktzahl plötzlich eventuell bessere Chancen, zugelassen zu werden, weil schlichtweg Mitbewerber fehlen, die sich sonst vor dich geschoben hätten.</p>
-            </div>
-            
-            <p>Aus diesem Grund habe ich den Simulator entwickelt, mit dem man über den PR-Wert die eigenen Chancen at jeder Uni simulieren und den Effekt sofort sehen kann. So lässt sich schon vor dem Start bzw. während des laufenden Verfahrens der Grenzrang im Vergleich zum letzten Jahr exakt ablesen.</p>
         </div>
 
         <!-- =========================================================================
@@ -1412,10 +1525,13 @@
     <!-- TABS LOGIC -->
     <script>
         let mapInitialized = false;
+        let leafletMap = null, homeMarker = null;
+        let trendsInitialized = false;
+
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
+
             document.getElementById('tab-' + tabId).classList.add('active');
             document.getElementById('btn-tab-' + tabId).classList.add('active');
 
@@ -1425,12 +1541,212 @@
                 if (!mapInitialized) {
                     initMap();
                     mapInitialized = true;
-                } else {
-                    setTimeout(() => map.invalidateSize(), 100);
+                } else if (typeof leafletMap !== 'undefined' && leafletMap) {
+                    setTimeout(() => leafletMap.invalidateSize(), 100);
                 }
+            } else if (tabId === 'verfahren') {
+                container.style.maxWidth = '1100px';
             } else {
                 container.style.maxWidth = '800px';
             }
+        }
+
+        // Wechselt zwischen den Unter-Reitern innerhalb von "Verfahren & Zahlen"
+        function switchSubTab(subId) {
+            switchTab('verfahren');
+            document.querySelectorAll('.subtab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sub-tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById('subtab-' + subId).classList.add('active');
+            document.getElementById('btn-subtab-' + subId).classList.add('active');
+
+            if (subId === 'trends' && !trendsInitialized) {
+                drawTmsTrendChart();
+                trendsInitialized = true;
+            }
+        }
+    </script>
+
+    <!-- =========================================================================
+         SCRIPT: TMS-TRENDS CHART (eigenes Canvas-Rendering, ohne externe Library)
+         ========================================================================= -->
+    <script>
+        // Datenbasis je Testtermin: teilnehmer (Teilnehmerzahl aus den Original-Diagrammen,
+        // die selbst "TMS-Teilnehmerzahlen"/"Teilnahmezahlen" heißen) und anmeldung
+        // (offiziell bestätigte Anmeldezahl, z.B. von tms-info.org).
+        // Für Mai/Nov 2025 liegen BEIDE Werte vor -> Differenz sichtbar.
+        // Für Mai 2022 - Nov 2024 liegt nur die Teilnehmerzahl vor.
+        // Für Mai/Nov 2026 liegt nur die Anmeldezahl vor (noch keine Teilnehmerzahl bekannt).
+        // Die approx-Werte (2022-2025, Teilnehmer) wurden per Pixel-Analyse der Original-
+        // Diagramme ermittelt (Gitterlinien-Kalibrierung), nicht nur grob per Augenmaß geschätzt.
+        // approx:true = aus Diagramm präzise abgelesener Näherungswert, sonst exakte/offizielle Zahl.
+        const TMS_TREND_DATA = [
+            { label: "Mai '22", teilnehmer: 22578, teilnehmerApprox: true,  anmeldung: null,  anmeldungApprox: null,  wiederholer: 2060, wiederholerApprox: true },
+            { label: "Nov '22", teilnehmer: 14716, teilnehmerApprox: true,  anmeldung: null,  anmeldungApprox: null,  wiederholer: 3263, wiederholerApprox: true },
+            { label: "Mai '23", teilnehmer: 17589, teilnehmerApprox: true,  anmeldung: null,  anmeldungApprox: null,  wiederholer: 4234, wiederholerApprox: true },
+            { label: "Nov '23", teilnehmer: 14781, teilnehmerApprox: true,  anmeldung: null,  anmeldungApprox: null,  wiederholer: 2875, wiederholerApprox: true },
+            { label: "Mai '24", teilnehmer: 15775, teilnehmerApprox: true,  anmeldung: null,  anmeldungApprox: null,  wiederholer: 3766, wiederholerApprox: true },
+            { label: "Nov '24", teilnehmer: 13924, teilnehmerApprox: true,  anmeldung: null,  anmeldungApprox: null,  wiederholer: 2388, wiederholerApprox: true },
+            { label: "Mai '25", teilnehmer: 15991, teilnehmerApprox: true,  anmeldung: 15967, anmeldungApprox: false, wiederholer: 3593, wiederholerApprox: true },
+            { label: "Nov '25", teilnehmer: 14958, teilnehmerApprox: true,  anmeldung: 14934, anmeldungApprox: false, wiederholer: 2560, wiederholerApprox: true },
+            { label: "Mai '26", teilnehmer: null,  teilnehmerApprox: null, anmeldung: 18411, anmeldungApprox: false, wiederholer: null, wiederholerApprox: null },
+            { label: "Nov '26", teilnehmer: null,  teilnehmerApprox: null, anmeldung: 25000, anmeldungApprox: true,  wiederholer: null, wiederholerApprox: null }
+        ];
+
+        function drawTmsTrendChart() {
+            const canvas = document.getElementById('tmsTrendCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+            ctx.clearRect(0, 0, W, H);
+
+            const padding = { top: 34, right: 20, bottom: 34, left: 52 };
+            const chartW = W - padding.left - padding.right;
+            const chartH = H - padding.top - padding.bottom;
+            const maxY = 28000, stepY = 4000;
+            const n = TMS_TREND_DATA.length;
+            const xStep = chartW / (n - 1);
+
+            const xPos = i => padding.left + i * xStep;
+            const yPos = val => padding.top + chartH - (val / maxY) * chartH;
+
+            // Gitterlinien + Y-Achsenbeschriftung
+            ctx.font = '11px sans-serif';
+            for (let v = 0; v <= maxY; v += stepY) {
+                const y = yPos(v);
+                ctx.strokeStyle = 'rgba(148,163,184,0.15)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(padding.left + chartW, y);
+                ctx.stroke();
+                ctx.fillStyle = '#94a3b8';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(v.toLocaleString('de-DE'), padding.left - 8, y);
+            }
+
+            // X-Achsenbeschriftung
+            ctx.fillStyle = '#94a3b8';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            TMS_TREND_DATA.forEach((d, i) => {
+                ctx.fillText(d.label, xPos(i), padding.top + chartH + 8);
+            });
+
+            function drawLine(getVal, color, dashed) {
+                ctx.beginPath();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = dashed ? 2 : 3;
+                ctx.setLineDash(dashed ? [6, 4] : []);
+                let started = false;
+                TMS_TREND_DATA.forEach((d, i) => {
+                    const val = getVal(d);
+                    if (val === null || val === undefined) { started = false; return; }
+                    const x = xPos(i), y = yPos(val);
+                    if (!started) { ctx.moveTo(x, y); started = true; }
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                TMS_TREND_DATA.forEach((d, i) => {
+                    const val = getVal(d);
+                    if (val === null || val === undefined) return;
+                    const x = xPos(i), y = yPos(val);
+                    ctx.beginPath();
+                    ctx.fillStyle = color;
+                    ctx.arc(x, y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            const COLOR_TEILNEHMER = '#ef4444';
+            const COLOR_ANMELDUNGEN = '#3b82f6';
+
+            // Eine Linie pro Zeitpunkt: bevorzugt die Teilnehmerzahl (rot), wo bekannt.
+            // Nur wo keine Teilnehmerzahl vorliegt (Mai/Nov 2026), wird auf die Anmeldezahl (blau) ausgewichen.
+            function primaryValue(d) { return d.teilnehmer != null ? d.teilnehmer : d.anmeldung; }
+            function primaryColor(d) { return d.teilnehmer != null ? COLOR_TEILNEHMER : COLOR_ANMELDUNGEN; }
+
+            function drawPrimaryLine() {
+                ctx.lineWidth = 3;
+                for (let i = 0; i < TMS_TREND_DATA.length - 1; i++) {
+                    const a = TMS_TREND_DATA[i], b = TMS_TREND_DATA[i + 1];
+                    const va = primaryValue(a), vb = primaryValue(b);
+                    if (va == null || vb == null) continue;
+                    ctx.beginPath();
+                    ctx.strokeStyle = primaryColor(b);
+                    ctx.moveTo(xPos(i), yPos(va));
+                    ctx.lineTo(xPos(i + 1), yPos(vb));
+                    ctx.stroke();
+                }
+                TMS_TREND_DATA.forEach((d, i) => {
+                    const v = primaryValue(d);
+                    if (v == null) return;
+                    ctx.beginPath();
+                    ctx.fillStyle = primaryColor(d);
+                    ctx.arc(xPos(i), yPos(v), 4, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            drawLine(d => d.wiederholer, '#94a3b8', true);
+            drawPrimaryLine();
+
+            // Legende
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.font = '11px sans-serif';
+            ctx.fillStyle = COLOR_TEILNEHMER;
+            ctx.fillRect(padding.left, 8, 14, 3);
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillText('Teilnehmerzahlen', padding.left + 20, 10);
+
+            ctx.fillStyle = COLOR_ANMELDUNGEN;
+            ctx.fillRect(padding.left + 130, 8, 14, 3);
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillText('Anmeldezahlen', padding.left + 150, 10);
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(padding.left, 22, 14, 3);
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillText('davon Wiederholer*innen', padding.left + 20, 24);
+
+            renderTmsTrendTable();
+        }
+
+        function renderTmsTrendTable() {
+            const tbody = document.getElementById('tmsTrendTableBody');
+            if (!tbody) return;
+            const dash = '<span style="color:var(--text-muted);">–</span>';
+            const roundTo100 = v => Math.round(v / 100) * 100;
+
+            tbody.innerHTML = TMS_TREND_DATA.map(d => {
+                const teil = d.teilnehmer == null
+                    ? dash
+                    : (d.teilnehmerApprox ? 'ca. ' + roundTo100(d.teilnehmer).toLocaleString('de-DE') : d.teilnehmer.toLocaleString('de-DE'));
+                const anm = d.anmeldung == null
+                    ? dash
+                    : (d.anmeldungApprox ? 'ca. ' + roundTo100(d.anmeldung).toLocaleString('de-DE') : d.anmeldung.toLocaleString('de-DE'));
+                const wied = d.wiederholer == null
+                    ? dash
+                    : (d.wiederholerApprox ? 'ca. ' + roundTo100(d.wiederholer).toLocaleString('de-DE') : d.wiederholer.toLocaleString('de-DE'));
+
+                // Anteil Wiederholer: bezogen auf Teilnehmer, ersatzweise auf Anmeldungen (Mai/Nov 2026)
+                const bezug = d.teilnehmer != null ? d.teilnehmer : d.anmeldung;
+                const anteil = (d.wiederholer == null || bezug == null)
+                    ? dash
+                    : (d.wiederholer / bezug * 100).toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' %';
+
+                return `<tr>
+                    <td data-label="Termin" style="font-weight:bold;">${d.label}</td>
+                    <td data-label="Teilnehmer" style="color:var(--warning-text); font-weight:bold;">${teil}</td>
+                    <td data-label="Anmeldungen" style="color:#3b82f6; font-weight:bold;">${anm}</td>
+                    <td data-label="Wiederholer">${wied}</td>
+                    <td data-label="Anteil Wiederholer" style="color:var(--text-main); font-weight:bold;">${anteil}</td>
+                </tr>`;
+            }).join('');
         }
     </script>
 
@@ -1751,10 +2067,54 @@
         ];
 
         function initMap() {
-            map = L.map('map').setView([48.1351, 11.5820], 6);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
-            homeMarker = L.marker([48.1351, 11.5820]).addTo(map); renderRankingTable(); updateDistances(48.1351, 11.5820);
-            map.on('click', function(e) { if(homeMarker) map.removeLayer(homeMarker); homeMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map); updateDistances(e.latlng.lat, e.latlng.lng); });
+            const mapEl = document.getElementById('map');
+            const useMunichFallback = () => {
+                renderRankingTable();
+                updateDistances(48.1351, 11.5820);
+            };
+
+            if (typeof L === 'undefined') {
+                // Evtl. lädt die Fallback-CDN (jsDelivr) noch – kurz erneut versuchen, bevor wir aufgeben
+                setTimeout(() => {
+                    if (typeof L === 'undefined') {
+                        showMapFallback(mapEl, 'Die Kartenbibliothek (Leaflet) konnte nicht geladen werden – vermutlich blockiert dein Netzwerk externe Skripte oder es besteht keine Internetverbindung.');
+                        useMunichFallback();
+                    } else {
+                        buildLeafletMap(mapEl, useMunichFallback);
+                    }
+                }, 1200);
+                return;
+            }
+
+            buildLeafletMap(mapEl, useMunichFallback);
+        }
+
+        function buildLeafletMap(mapEl, useMunichFallback) {
+            try {
+                leafletMap = L.map('map').setView([48.1351, 11.5820], 6);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                    subdomains: 'abcd',
+                    maxZoom: 19
+                }).addTo(leafletMap);
+                homeMarker = L.marker([48.1351, 11.5820]).addTo(leafletMap);
+                leafletMap.on('click', function(e) { if(homeMarker) leafletMap.removeLayer(homeMarker); homeMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(leafletMap); updateDistances(e.latlng.lat, e.latlng.lng); });
+                renderRankingTable();
+                updateDistances(48.1351, 11.5820);
+            } catch (err) {
+                console.error('Kartenfehler:', err);
+                showMapFallback(mapEl, 'Die Karte konnte nicht initialisiert werden.');
+                useMunichFallback();
+            }
+        }
+
+        function showMapFallback(mapEl, message) {
+            if (!mapEl) return;
+            mapEl.innerHTML = `<div style="display:flex; flex-direction:column; gap:8px; align-items:center; justify-content:center; height:100%; min-height:200px; text-align:center; padding:15px; color:var(--text-muted); font-size:13px; background:#0b1120; border-radius:8px; border:1px dashed var(--box-border);">
+                <span style="font-size:22px;">🗺️</span>
+                <span>${message}</span>
+                <span>Dein Heimatort wird standardmäßig auf <strong style="color:var(--text-main);">München</strong> gesetzt – die Rangliste unten funktioniert trotzdem ganz normal mit Luftlinien-Distanzen.</span>
+            </div>`;
         }
 
         async function updateDistances(hLat, hLon) {
@@ -1910,5 +2270,318 @@
             });
         });
     </script>
+
+    <!-- =========================================================================
+         SCRIPT: UNI-BELIEBTHEIT (Binnenpriorität-Ranking Humanmedizin)
+         Quelle: hochschulstart.de, "Statistiken des Zentralen Verfahrens"
+         Wintersemester 2024/25 & 2025/26, Sommersemester 2025 & 2026
+         Tabelle "Bewerbungen nach Binnenpriorität"
+         ========================================================================= -->
+    <script>
+        // Format je Studienort: [Prio1, Prio2, Prio3, Studienplätze, BewerbungenGesamt]
+
+        // --- Wintersemester (Hauptverfahren, 41 Studienorte) ---
+        const BEL_2526 = {
+            'Aachen RWTH': [1245, 834, 892, 285, 18177],
+            'Augsburg U': [571, 1210, 661, 168, 17502],
+            'Berlin U': [3330, 1569, 1746, 318, 21416],
+            'Bielefeld U': [403, 274, 315, 120, 16697],
+            'Bochum U': [672, 569, 590, 353, 17488],
+            'Bonn U': [670, 840, 832, 335, 18834],
+            'Dresden TU': [484, 420, 468, 230, 16361],
+            'Dresden/Chemnitz TU': [192, 335, 340, 50, 15901],
+            'Duisburg-Essen U': [517, 717, 505, 226, 17109],
+            'Düsseldorf U': [1297, 1086, 1318, 399, 19085],
+            'Erlangen-Nürnberg U': [439, 431, 533, 173, 17548],
+            'Erlangen-Nürnberg/Bayreuth U': [60, 257, 197, 55, 15928],
+            'Frankfurt am Main U': [892, 625, 745, 383, 18580],
+            'Freiburg U': [1107, 870, 927, 367, 19087],
+            'Giessen U': [345, 438, 427, 180, 17398],
+            'Greifswald U': [406, 477, 424, 196, 16760],
+            'Göttingen U': [436, 658, 591, 179, 17985],
+            'Halle-Wittenberg U': [313, 497, 368, 223, 16457],
+            'Hamburg U': [2150, 1269, 1110, 364, 20091],
+            'Hannover MedH': [949, 696, 559, 320, 17580],
+            'Heidelberg U': [2400, 2037, 1621, 350, 21275],
+            'Heidelberg/Mannheim U': [463, 903, 753, 270, 17622],
+            'Jena U': [309, 272, 416, 286, 17029],
+            'Kiel U': [487, 424, 513, 205, 17184],
+            'Köln U': [1219, 1428, 1157, 194, 19561],
+            'Leipzig U': [861, 847, 768, 340, 17921],
+            'Lübeck U': [392, 707, 654, 197, 17442],
+            'Magdeburg U': [291, 542, 329, 196, 16002],
+            'Mainz U': [678, 689, 629, 195, 17691],
+            'Mainz/MC Trier U': [50, 173, 170, 30, 15020],
+            'Marburg U': [354, 417, 443, 407, 17355],
+            'München U': [2375, 1275, 1185, 870, 20004],
+            'Münster U': [1232, 879, 896, 147, 18825],
+            'Oldenburg U': [438, 278, 346, 120, 16440],
+            'Regensburg U': [583, 628, 696, 232, 17456],
+            'Regensburg/MCN U': [109, 266, 273, 110, 14956],
+            'Rostock U': [315, 388, 397, 223, 16834],
+            'Saarbrücken U': [356, 139, 154, 298, 15881],
+            'Tübingen U': [932, 749, 756, 179, 18396],
+            'Ulm U': [569, 556, 587, 355, 17939],
+            'Würzburg U': [497, 480, 580, 153, 18040]
+        };
+
+        const BEL_2425 = {
+            'Aachen RWTH': [1461, 895, 1103, 285, 18889],
+            'Augsburg U': [593, 1345, 710, 168, 18114],
+            'Berlin U': [3647, 1687, 1923, 325, 22188],
+            'Bielefeld U': [368, 296, 343, 60, 17161],
+            'Bochum U': [676, 605, 586, 349, 17947],
+            'Bonn U': [762, 896, 874, 330, 19536],
+            'Dresden TU': [479, 454, 452, 230, 16795],
+            'Dresden/Chemnitz TU': [176, 315, 348, 50, 16409],
+            'Duisburg-Essen U': [530, 757, 572, 226, 17662],
+            'Düsseldorf U': [1179, 1066, 1397, 400, 19462],
+            'Erlangen-Nürnberg U': [580, 420, 549, 173, 18032],
+            'Erlangen-Nürnberg/Bayreuth U': [60, 317, 260, 55, 16624],
+            'Frankfurt am Main U': [940, 684, 737, 383, 19044],
+            'Freiburg U': [1155, 855, 963, 367, 19327],
+            'Giessen U': [357, 473, 479, 180, 17943],
+            'Greifswald U': [376, 464, 407, 197, 17161],
+            'Göttingen U': [588, 695, 656, 178, 18660],
+            'Halle-Wittenberg U': [280, 490, 366, 221, 16927],
+            'Hamburg U': [2097, 1402, 1166, 355, 20642],
+            'Hannover MedH': [981, 763, 642, 320, 18168],
+            'Heidelberg U': [2409, 2142, 1596, 350, 21727],
+            'Heidelberg/Mannheim U': [435, 882, 742, 270, 18101],
+            'Jena U': [385, 314, 403, 286, 17527],
+            'Kiel U': [488, 449, 504, 210, 17552],
+            'Köln U': [1273, 1452, 1151, 194, 20090],
+            'Leipzig U': [890, 925, 722, 340, 18359],
+            'Lübeck U': [454, 760, 688, 191, 18044],
+            'Magdeburg U': [285, 415, 276, 196, 16462],
+            'Mainz U': [655, 717, 576, 225, 18213],
+            'Marburg U': [431, 481, 481, 414, 17967],
+            'München U': [2425, 1198, 1165, 879, 20348],
+            'Münster U': [1510, 995, 1038, 147, 19491],
+            'Oldenburg U': [487, 285, 341, 120, 16832],
+            'Regensburg U': [506, 539, 533, 232, 16277],
+            'Regensburg/MCN U': [187, 295, 311, 110, 15401],
+            'Rostock U': [327, 321, 395, 221, 17283],
+            'Saarbrücken U': [413, 143, 166, 293, 16499],
+            'Tübingen U': [948, 791, 807, 179, 18925],
+            'Ulm U': [541, 556, 564, 355, 18258],
+            'Würzburg U': [483, 451, 606, 155, 18484]
+        };
+
+        // --- Sommersemester (nur die Studienorte, die im SoSe Plätze anbieten) ---
+        const BEL_SOSE26 = {
+            'Berlin U': [3320, 937, 855, 317, 9352],
+            'Erlangen-Nürnberg U': [525, 1129, 778, 172, 8085],
+            'Erlangen-Nürnberg/Bayreuth U': [113, 451, 968, 55, 7737],
+            'Giessen U': [572, 647, 855, 180, 8115],
+            'Göttingen U': [713, 841, 736, 178, 8245],
+            'Köln U': [1839, 1635, 993, 194, 9014],
+            'Mainz U': [933, 871, 941, 194, 8416],
+            'Mainz/MC Trier U': [112, 458, 438, 30, 7682],
+            'Münster U': [1387, 1367, 1027, 148, 8785],
+            'Tübingen U': [1013, 578, 587, 178, 8360],
+            'Würzburg U': [524, 779, 940, 153, 8253]
+        };
+
+        const BEL_SOSE25 = {
+            'Berlin U': [3831, 1076, 1005, 325, 10659],
+            'Erlangen-Nürnberg U': [795, 1369, 918, 173, 9251],
+            'Erlangen-Nürnberg/Bayreuth U': [159, 632, 1152, 55, 8821],
+            'Giessen U': [507, 676, 842, 180, 9107],
+            'Göttingen U': [873, 940, 872, 178, 9329],
+            'Köln U': [1940, 1825, 1096, 194, 10115],
+            'Mainz U': [964, 903, 1076, 195, 9389],
+            'Mainz/MC Trier U': [121, 335, 507, 30, 8607],
+            'Münster U': [1566, 1663, 1134, 148, 9897],
+            'Tübingen U': [1208, 696, 708, 178, 9456],
+            'Würzburg U': [653, 877, 1033, 155, 9403]
+        };
+
+        function belAllOrte(a, b) {
+            return Array.from(new Set([...Object.keys(a), ...Object.keys(b)])).sort();
+        }
+        const BEL_ALL_ORTE_WINTER = belAllOrte(BEL_2526, BEL_2425);
+        const BEL_ALL_ORTE_SOMMER = belAllOrte(BEL_SOSE26, BEL_SOSE25);
+
+        // Liefert die beiden zu vergleichenden Datensätze + Labels für das gewählte Semester.
+        // Winter und Sommer werden hier bewusst NIE gemischt (unterschiedlich große Verfahren).
+        function belGetSemesterConfig(semester) {
+            if (semester === 'sommer') {
+                return { recent: BEL_SOSE26, older: BEL_SOSE25, recentLabel: 'SoSe 26', olderLabel: 'SoSe 25', allOrte: BEL_ALL_ORTE_SOMMER };
+            }
+            return { recent: BEL_2526, older: BEL_2425, recentLabel: '25/26', olderLabel: '24/25', allOrte: BEL_ALL_ORTE_WINTER };
+        }
+
+        let belSort = { col: 'score', dir: 'desc' };
+
+        // Borda-Score (fest: Prio1*3 + Prio2*2 + Prio3*1), danach je nach norm skaliert.
+        // entry = [p1, p2, p3, plaetze, bew]
+        function belScoreFromEntry(entry, norm) {
+            if (!entry) return null;
+            const [p1, p2, p3, plaetze, bew] = entry;
+            const score = p1 * 3 + p2 * 2 + p3;
+            if (norm === 'absolut') return score;
+            if (norm === 'proplatz') return plaetze ? score / plaetze : null;
+            if (norm === 'anteil') return bew ? (score / (bew * 3)) * 100 : null;
+            return score;
+        }
+
+        function belCombineEntries(a, b) {
+            // Summiert zwei Semester-Einträge (fehlendes Semester = 0), für den "kombiniert"-Modus
+            const A = a || [0, 0, 0, 0, 0];
+            const B = b || [0, 0, 0, 0, 0];
+            return [A[0] + B[0], A[1] + B[1], A[2] + B[2], A[3] + B[3], A[4] + B[4]];
+        }
+
+        function belFormatInt(n) {
+            if (n === null || n === undefined) return 'k. A.';
+            return n.toLocaleString('de-DE');
+        }
+
+        function belFormatScore(n, norm) {
+            if (n === null || n === undefined) return 'k. A.';
+            if (norm === 'absolut') return belFormatInt(Math.round(n));
+            if (norm === 'proplatz') return n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            if (norm === 'anteil') return n.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' %';
+            return String(n);
+        }
+
+        function belRankBadgeStyle(rang) {
+            if (rang === 1) return 'color:#fbbf24; font-weight:900;';
+            if (rang === 2) return 'color:#cbd5e1; font-weight:900;';
+            if (rang === 3) return 'color:#d97706; font-weight:900;';
+            return 'color:var(--text-muted); font-weight:bold;';
+        }
+
+        function belComputeRankMap(yearData, norm) {
+            const arr = Object.keys(yearData).map(ort => ({ ort, score: belScoreFromEntry(yearData[ort], norm) }));
+            arr.sort((x, y) => (y.score ?? -Infinity) - (x.score ?? -Infinity));
+            const map = {};
+            arr.forEach((r, i) => { map[r.ort] = i + 1; });
+            return map;
+        }
+
+        function setBelSort(col) {
+            if (belSort.col === col) {
+                belSort.dir = belSort.dir === 'desc' ? 'asc' : 'desc';
+            } else {
+                belSort.col = col;
+                belSort.dir = 'desc';
+            }
+            renderBelTable();
+        }
+
+        function renderBelTable() {
+            const semester = document.getElementById('bel-semester').value;
+            const zeitraum = document.getElementById('bel-zeitraum').value;
+            const norm = document.getElementById('bel-norm').value;
+            const cfg = belGetSemesterConfig(semester);
+            const thead = document.getElementById('bel-thead');
+            const tbody = document.getElementById('bel-tbody');
+            const arrow = (col) => belSort.col === col ? `<span class="sort-arrow">${belSort.dir === 'desc' ? '▼' : '▲'}</span>` : '<span class="sort-arrow"></span>';
+
+            let rows = [];
+
+            if (zeitraum === 'aktuell') {
+                rows = cfg.allOrte.filter(ort => cfg.recent[ort]).map(ort => {
+                    const e = cfg.recent[ort];
+                    return { ort, p1: e[0], p2: e[1], p3: e[2], plaetze: e[3], bew: e[4], score: belScoreFromEntry(e, norm) };
+                });
+                thead.innerHTML = `<tr>
+                    <th onclick="setBelSort('rank')">Rang ${arrow('rank')}</th>
+                    <th onclick="setBelSort('ort')">Studienort ${arrow('ort')}</th>
+                    <th onclick="setBelSort('score')">Score ${arrow('score')}</th>
+                    <th onclick="setBelSort('p1')">Prio 1 ${arrow('p1')}</th>
+                    <th onclick="setBelSort('p2')">Prio 2 ${arrow('p2')}</th>
+                    <th onclick="setBelSort('p3')">Prio 3 ${arrow('p3')}</th>
+                    <th onclick="setBelSort('plaetze')">Studienplätze ${arrow('plaetze')}</th>
+                </tr>`;
+                belSortRows(rows, ['score', 'p1', 'p2', 'p3', 'plaetze'].includes(belSort.col) ? belSort.col : 'score');
+                tbody.innerHTML = rows.map((r, i) => `<tr>
+                    <td data-label="Rang" style="${belRankBadgeStyle(i + 1)}">${i + 1}</td>
+                    <td data-label="Studienort" style="font-weight:bold; color:var(--text-main);">${r.ort}${!cfg.older[r.ort] ? ' *' : ''}</td>
+                    <td data-label="Score" style="font-size:16px; font-weight:900; color:var(--success-text);">${belFormatScore(r.score, norm)}</td>
+                    <td data-label="Prio 1">${belFormatInt(r.p1)}</td>
+                    <td data-label="Prio 2">${belFormatInt(r.p2)}</td>
+                    <td data-label="Prio 3">${belFormatInt(r.p3)}</td>
+                    <td data-label="Studienplätze">${belFormatInt(r.plaetze)}</td>
+                </tr>`).join('');
+
+            } else if (zeitraum === 'kombiniert') {
+                rows = cfg.allOrte.map(ort => {
+                    const combined = belCombineEntries(cfg.recent[ort], cfg.older[ort]);
+                    const onlyOneSemester = !cfg.recent[ort] || !cfg.older[ort];
+                    return { ort, p1: combined[0], p2: combined[1], p3: combined[2], plaetze: combined[3], bew: combined[4], score: belScoreFromEntry(combined, norm), onlyOneSemester };
+                });
+                thead.innerHTML = `<tr>
+                    <th onclick="setBelSort('rank')">Rang ${arrow('rank')}</th>
+                    <th onclick="setBelSort('ort')">Studienort ${arrow('ort')}</th>
+                    <th onclick="setBelSort('score')">Score (beide Semester) ${arrow('score')}</th>
+                    <th onclick="setBelSort('p1')">Prio 1 Σ ${arrow('p1')}</th>
+                    <th onclick="setBelSort('p2')">Prio 2 Σ ${arrow('p2')}</th>
+                    <th onclick="setBelSort('p3')">Prio 3 Σ ${arrow('p3')}</th>
+                    <th onclick="setBelSort('plaetze')">Studienplätze Σ ${arrow('plaetze')}</th>
+                </tr>`;
+                belSortRows(rows, ['score', 'p1', 'p2', 'p3', 'plaetze'].includes(belSort.col) ? belSort.col : 'score');
+                tbody.innerHTML = rows.map((r, i) => `<tr>
+                    <td data-label="Rang" style="${belRankBadgeStyle(i + 1)}">${i + 1}</td>
+                    <td data-label="Studienort" style="font-weight:bold; color:var(--text-main);">${r.ort}${r.onlyOneSemester ? ' *' : ''}</td>
+                    <td data-label="Score" style="font-size:16px; font-weight:900; color:var(--success-text);">${belFormatScore(r.score, norm)}</td>
+                    <td data-label="Prio 1 Σ">${belFormatInt(r.p1)}</td>
+                    <td data-label="Prio 2 Σ">${belFormatInt(r.p2)}</td>
+                    <td data-label="Prio 3 Σ">${belFormatInt(r.p3)}</td>
+                    <td data-label="Studienplätze Σ">${belFormatInt(r.plaetze)}</td>
+                </tr>`).join('');
+
+            } else { // getrennt
+                const rankMapRecent = belComputeRankMap(cfg.recent, norm);
+                const rankMapOlder = belComputeRankMap(cfg.older, norm);
+                rows = cfg.allOrte.map(ort => {
+                    const eRecent = cfg.recent[ort], eOlder = cfg.older[ort];
+                    const scoreRecent = belScoreFromEntry(eRecent, norm);
+                    const scoreOlder = belScoreFromEntry(eOlder, norm);
+                    const rankRecent = eRecent ? rankMapRecent[ort] : null;
+                    const rankOlder = eOlder ? rankMapOlder[ort] : null;
+                    let trend = '<span style="color:var(--text-muted);">neu</span>';
+                    if (rankRecent && rankOlder) {
+                        const delta = rankOlder - rankRecent; // positiv = im Rang aufgestiegen (beliebter geworden)
+                        if (delta > 0) trend = `<span class="diff-pos">▲ ${delta}</span>`;
+                        else if (delta < 0) trend = `<span class="diff-neg">▼ ${Math.abs(delta)}</span>`;
+                        else trend = '<span style="color:var(--text-muted);">unverändert</span>';
+                    }
+                    return { ort, scoreRecent, scoreOlder, trend };
+                });
+                thead.innerHTML = `<tr>
+                    <th onclick="setBelSort('rank')">Rang ${arrow('rank')}</th>
+                    <th onclick="setBelSort('ort')">Studienort ${arrow('ort')}</th>
+                    <th onclick="setBelSort('scoreRecent')">Score ${cfg.recentLabel} ${arrow('scoreRecent')}</th>
+                    <th onclick="setBelSort('scoreOlder')">Score ${cfg.olderLabel} ${arrow('scoreOlder')}</th>
+                    <th>Trend</th>
+                </tr>`;
+                belSortRows(rows, ['scoreRecent', 'scoreOlder'].includes(belSort.col) ? belSort.col : 'scoreRecent');
+                tbody.innerHTML = rows.map((r, i) => `<tr>
+                    <td data-label="Rang" style="${belRankBadgeStyle(i + 1)}">${i + 1}</td>
+                    <td data-label="Studienort" style="font-weight:bold; color:var(--text-main);">${r.ort}${!cfg.older[r.ort] ? ' *' : ''}</td>
+                    <td data-label="Score ${cfg.recentLabel}" style="font-size:15px; font-weight:900; color:var(--success-text);">${belFormatScore(r.scoreRecent, norm)}</td>
+                    <td data-label="Score ${cfg.olderLabel}" style="color:var(--text-muted);">${belFormatScore(r.scoreOlder, norm)}</td>
+                    <td data-label="Trend">${r.trend}</td>
+                </tr>`).join('');
+            }
+        }
+
+        function belSortRows(rows, defaultKey) {
+            const validKey = (rows.length > 0 && Object.prototype.hasOwnProperty.call(rows[0], belSort.col)) ? belSort.col : defaultKey;
+            rows.sort((a, b) => {
+                if (belSort.col === 'ort') return (belSort.dir === 'desc' ? -1 : 1) * a.ort.localeCompare(b.ort, 'de');
+                const key = (belSort.col === 'rank') ? defaultKey : validKey;
+                const va = a[key] ?? -Infinity, vb = b[key] ?? -Infinity;
+                return (belSort.dir === 'desc') ? (vb - va) : (va - vb);
+            });
+        }
+
+        // Initial rendern (Tab ist beim Laden noch nicht sichtbar, das ist für innerHTML kein Problem)
+        renderBelTable();
+    </script>
+
 </body>
 </html>
