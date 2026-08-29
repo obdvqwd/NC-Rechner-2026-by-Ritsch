@@ -417,6 +417,14 @@
                 text-align: right;
                 white-space: nowrap;
             }
+            /* Variante mit Beschriftung davor, wenn aus der Zahl allein nicht
+               hervorgeht, was sie bedeutet (z. B. die Teilnehmerzahl beim TMS) */
+            .ranking-table td.m-score-label::before {
+                content: attr(data-label) ": ";
+                font-size: 11.5px;
+                font-weight: 600;
+                color: var(--text-muted);
+            }
             /* Detailzahlen als kleine Zeile darunter, durch · getrennt */
             .ranking-table td.m-sub {
                 order: 60;
@@ -751,9 +759,12 @@
             <div class="control-group">
                 <div class="slider-label">
                     <span>Dein TMS-Standardwert</span>
-                    <span class="val-display" id="tms-value">110</span>
+                    <div class="pr-input-wrapper">
+                        <input type="number" id="tms-number" min="70" max="130" step="1" value="110" inputmode="numeric">
+                    </div>
                 </div>
                 <input type="range" id="tms-slider" min="70" max="130" step="1" value="110">
+                <p style="font-size: 12px; color: var(--text-muted); margin: 8px 0 0 0;">Regler nutzen oder Wert direkt eintippen (70 bis 130).</p>
             </div>
 
             <!-- Dynamische Zusatz-Slider -->
@@ -1721,11 +1732,30 @@
         function drawTmsTrendChart() {
             const canvas = document.getElementById('tmsTrendCanvas');
             if (!canvas) return;
+
+            // Groesse an den verfuegbaren Platz anpassen. Auf dem Handy wird die Grafik
+            // bewusst hoch statt breit, sonst schrumpft die Kurve zu einem flachen Strich.
+            let cssW = canvas.clientWidth || (canvas.parentElement ? canvas.parentElement.clientWidth - 30 : 0) || 700;
+            cssW = Math.max(260, cssW);
+            const narrow = cssW < 560;
+            const cssH = narrow ? Math.min(470, Math.max(360, Math.round(cssW * 1.2))) : 300;
+
+            // Auf Retina-Displays scharf zeichnen
+            const dpr = Math.min(window.devicePixelRatio || 1, 3);
+            canvas.width = Math.round(cssW * dpr);
+            canvas.height = Math.round(cssH * dpr);
+            canvas.style.height = cssH + 'px';
+
             const ctx = canvas.getContext('2d');
-            const W = canvas.width, H = canvas.height;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            const W = cssW, H = cssH;
             ctx.clearRect(0, 0, W, H);
 
-            const padding = { top: 34, right: 20, bottom: 34, left: 52 };
+            // Auf schmalen Schirmen mehr Luft: oben fuer die gestapelte Legende,
+            // unten fuer die schraeg gestellten Datumsangaben.
+            const padding = narrow
+                ? { top: 62, right: 14, bottom: 52, left: 48 }
+                : { top: 34, right: 20, bottom: 34, left: 52 };
             const chartW = W - padding.left - padding.right;
             const chartH = H - padding.top - padding.bottom;
             const maxY = 28000, stepY = 4000;
@@ -1751,12 +1781,23 @@
                 ctx.fillText(v.toLocaleString('de-DE'), padding.left - 8, y);
             }
 
-            // X-Achsenbeschriftung
+            // X-Achsenbeschriftung. Auf dem Handy schraeg gestellt, sonst ueberlappen
+            // die zehn Termine auf der schmalen Breite zu einem Brei.
             ctx.fillStyle = '#94a3b8';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'top';
             TMS_TREND_DATA.forEach((d, i) => {
-                ctx.fillText(d.label, xPos(i), padding.top + chartH + 8);
+                if (narrow) {
+                    ctx.save();
+                    ctx.translate(xPos(i), padding.top + chartH + 10);
+                    ctx.rotate(-Math.PI / 4);
+                    ctx.textAlign = 'right';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(d.label, 0, 0);
+                    ctx.restore();
+                } else {
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(d.label, xPos(i), padding.top + chartH + 8);
+                }
             });
 
             function drawLine(getVal, color, dashed) {
@@ -1819,27 +1860,43 @@
             drawLine(d => d.wiederholer, '#94a3b8', true);
             drawPrimaryLine();
 
-            // Legende
+            // Legende. Breit: zwei Spalten. Schmal: alles untereinander,
+            // sonst laeuft der zweite Eintrag rechts aus dem Bild.
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
             ctx.font = '11px sans-serif';
-            ctx.fillStyle = COLOR_TEILNEHMER;
-            ctx.fillRect(padding.left, 8, 14, 3);
-            ctx.fillStyle = '#f8fafc';
-            ctx.fillText('Teilnehmerzahlen', padding.left + 20, 10);
 
-            ctx.fillStyle = COLOR_ANMELDUNGEN;
-            ctx.fillRect(padding.left + 130, 8, 14, 3);
-            ctx.fillStyle = '#f8fafc';
-            ctx.fillText('Anmeldezahlen', padding.left + 150, 10);
-
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillRect(padding.left, 22, 14, 3);
-            ctx.fillStyle = '#f8fafc';
-            ctx.fillText('davon Wiederholer*innen', padding.left + 20, 24);
+            const legend = [
+                [COLOR_TEILNEHMER,  'Teilnehmerzahlen'],
+                [COLOR_ANMELDUNGEN, 'Anmeldezahlen'],
+                ['#94a3b8',         'davon Wiederholer*innen']
+            ];
+            legend.forEach(([color, text], i) => {
+                let x, y;
+                if (narrow) {
+                    x = padding.left; y = 10 + i * 15;
+                } else {
+                    x = padding.left + (i === 1 ? 130 : 0);
+                    y = i === 2 ? 24 : 10;
+                }
+                ctx.fillStyle = color;
+                ctx.fillRect(x, y - 2, 14, 3);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillText(text, x + 20, y);
+            });
 
             renderTmsTrendTable();
         }
+
+        // Beim Drehen des Handys bzw. Groessenaenderung neu zeichnen, damit die
+        // Grafik nicht verzerrt oder in der alten Groesse stehen bleibt.
+        let tmsResizeTimer = null;
+        window.addEventListener('resize', function() {
+            const el = document.getElementById('subtab-trends');
+            if (!el || !el.classList.contains('active')) return;
+            clearTimeout(tmsResizeTimer);
+            tmsResizeTimer = setTimeout(drawTmsTrendChart, 200);
+        });
 
         function renderTmsTrendTable() {
             const tbody = document.getElementById('tmsTrendTableBody');
@@ -1866,7 +1923,7 @@
 
                 return `<tr>
                     <td class="m-name" data-label="Termin" style="font-weight:bold;">${d.label}</td>
-                    <td class="m-score" data-label="Teilnehmer" style="color:var(--warning-text); font-weight:bold;">${teil}</td>
+                    <td class="m-score m-score-label" data-label="Teilnehmer" style="color:var(--warning-text); font-weight:bold;">${teil}</td>
                     <td class="m-sub" data-label="Anmeldungen" style="color:#3b82f6; font-weight:bold;">${anm}</td>
                     <td class="m-sub" data-label="Wiederholer">${wied}</td>
                     <td class="m-sub" data-label="Anteil Wiederholer" style="color:var(--text-main); font-weight:bold;">${anteil}</td>
@@ -1966,6 +2023,7 @@
         const elPrNumber = document.getElementById('pr-number');
         
         const elTmsSlider = document.getElementById('tms-slider');
+        const elTmsNumber = document.getElementById('tms-number');
         const elHamnatSlider = document.getElementById('hamnat-slider');
         const elHamsjtSlider = document.getElementById('hamsjt-slider');
         const elInterviewSlider = document.getElementById('interview-slider');
@@ -2050,7 +2108,10 @@
                 hzbPoints = Math.max(0, Math.min(mu + (z * sigma), uni.hzb));
             }
 
-            let tms = parseInt(elTmsSlider.value); document.getElementById('tms-value').innerText = tms;
+            // TMS-Wert: das Eingabefeld hat Vorrang, bei leerem/ungueltigem Feld gilt der Regler.
+            let tms = parseInt(elTmsNumber.value);
+            if (isNaN(tms)) tms = parseInt(elTmsSlider.value);
+            tms = Math.max(70, Math.min(130, tms));
             let tmsPoints = 0; if (uni.tms > 0 && tms > 70) tmsPoints = Math.min(((tms - 70) / 60.0) * uni.tms, uni.tms);
 
             let hamnatPoints = 0; if (hamnatMax > 0) { let val = parseInt(elHamnatSlider.value); document.getElementById('hamnat-value').innerText = val; hamnatPoints = (val / 100.0) * hamnatMax; }
@@ -2133,9 +2194,31 @@
             updateAdhAll();
         });
 
+        // TMS Event Listener (Regler und Eingabefeld halten sich gegenseitig aktuell)
+        elTmsSlider.addEventListener('input', function() {
+            elTmsNumber.value = this.value;
+            updateAdhAll();
+        });
+        elTmsNumber.addEventListener('input', function() {
+            let val = parseInt(this.value);
+            if (!isNaN(val) && val >= 70 && val <= 130) {
+                elTmsSlider.value = val;
+            }
+            updateAdhAll();
+        });
+        // Beim Verlassen des Feldes auf den gueltigen Bereich zurechtruecken
+        elTmsNumber.addEventListener('change', function() {
+            let val = parseInt(this.value);
+            if (isNaN(val)) val = parseInt(elTmsSlider.value);
+            val = Math.max(70, Math.min(130, val));
+            this.value = val;
+            elTmsSlider.value = val;
+            updateAdhAll();
+        });
+
         // Other Event Listeners
         elSemester.addEventListener('change', updateAdhUniList); elUni.addEventListener('change', updateAdhAll);
-        elTmsSlider.addEventListener('input', updateAdhAll); elHamnatSlider.addEventListener('input', updateAdhAll); elHamsjtSlider.addEventListener('input', updateAdhAll);
+        elHamnatSlider.addEventListener('input', updateAdhAll); elHamsjtSlider.addEventListener('input', updateAdhAll);
         elInterviewSlider.addEventListener('input', updateAdhAll); chkAusb.addEventListener('change', updateAdhAll); chkBeruf.addEventListener('change', updateAdhAll);
         chkDienst.addEventListener('change', updateAdhAll); chkPreis.addEventListener('change', updateAdhAll);
 
