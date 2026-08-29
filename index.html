@@ -4,7 +4,17 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="color-scheme" content="dark">
+    <!-- iOS: Als App zum Homescreen hinzufügbar, Statusleiste ans dunkle Design angepasst -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MedStud Zentrale">
+    <!-- Android: gleiche Funktion für Chrome/Homescreen -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <!-- Verhindert, dass iOS/Android Zahlen, Adressen etc. automatisch in klickbare Links verwandeln -->
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
     <title>Medizinstudium Zentrale | by Flavio "Ritsch"</title>
 
     <!-- Vercel Web Analytics -->
@@ -43,10 +53,20 @@
             --lvl-na: #64748b; /* k.A. */
         }
         
-        * { box-sizing: border-box; }
-        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        /* Sicherheitsnetz: alle klickbaren Elemente reagieren sofort (kein 300ms-Tap-Delay,
+           kein versehentliches Doppeltipp-Zoom auf iOS/Android) */
+        button, a, [onclick], input, select, label, li { touch-action: manipulation; }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            overflow-x: hidden;
+        }
+
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             display: flex;
@@ -54,16 +74,21 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 70px 15px 20px 15px; /* Top-Padding wegen der fixed Links-Box */
+            width: 100%;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior-y: contain;
+            /* Top-Padding wegen der fixed Links-Box, plus Safe-Area für Notch/Dynamic Island */
+            padding: calc(70px + env(safe-area-inset-top)) calc(15px + env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) calc(15px + env(safe-area-inset-left));
         }
 
         /* ==========================================
            2. WICHTIGE LINKS DROPDOWN (Oben Rechts)
            ========================================== */
         .links-dropdown-container {
-            position: absolute; 
-            top: 15px;
-            right: 15px;
+            position: absolute;
+            top: calc(15px + env(safe-area-inset-top));
+            right: calc(15px + env(safe-area-inset-right));
             z-index: 2000;
         }
         .links-toggle-btn {
@@ -80,6 +105,8 @@
             align-items: center;
             gap: 8px;
             transition: all 0.2s;
+            touch-action: manipulation;
+            min-height: 44px;
         }
         .links-toggle-btn:hover { background: var(--accent); color: white; }
         
@@ -105,9 +132,13 @@
         .link-item p { margin: 0; font-size: 12px; color: var(--text-muted); line-height: 1.4; }
 
         @media (max-width: 600px) {
-            .links-dropdown-container { top: 10px; right: 10px; position: fixed; }
+            .links-dropdown-container {
+                top: calc(10px + env(safe-area-inset-top));
+                right: calc(10px + env(safe-area-inset-right));
+                position: fixed;
+            }
             .links-toggle-btn { padding: 8px 12px; font-size: 13px; }
-            .links-dropdown { width: calc(100vw - 20px); right: 0; max-height: 80vh; overflow-y: auto; }
+            .links-dropdown { width: calc(100vw - 20px); right: 0; max-height: 80vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         }
 
         /* ==========================================
@@ -168,11 +199,12 @@
         }
 
         .tab-nav { display: flex; gap: 8px; margin-bottom: 25px; justify-content: center; width: 100%; max-width: 1000px; flex-wrap: wrap; }
-        .tab-btn { 
-            background: #0b1120; color: var(--text-muted); border: 1px solid var(--box-border); 
-            padding: 12px 10px; border-radius: 8px; font-size: 14.5px; font-weight: bold; 
-            cursor: pointer; transition: all 0.2s; flex-grow: 1; text-align: center; 
+        .tab-btn {
+            background: #0b1120; color: var(--text-muted); border: 1px solid var(--box-border);
+            padding: 12px 10px; border-radius: 8px; font-size: 14.5px; font-weight: bold;
+            cursor: pointer; transition: all 0.2s; flex-grow: 1; text-align: center;
             display: flex; align-items: center; justify-content: center; min-height: 44px;
+            touch-action: manipulation;
         }
         .tab-btn:hover { border-color: var(--text-muted); color: var(--text-main); }
         .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
@@ -185,7 +217,7 @@
         .sub-tab-btn {
             background: transparent; color: var(--text-muted); border: 1px solid var(--box-border);
             padding: 8px 14px; border-radius: 20px; font-size: 13.5px; font-weight: 600;
-            cursor: pointer; transition: all 0.2s;
+            cursor: pointer; transition: all 0.2s; touch-action: manipulation; min-height: 44px;
         }
         .sub-tab-btn:hover { border-color: var(--accent); color: var(--text-main); }
         .sub-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
@@ -225,12 +257,14 @@
             width: 100%; background: transparent; border: none; color: var(--text-main);
             font-size: 16px; font-weight: bold; outline: none; border-bottom: 2px solid var(--accent);
             padding-bottom: 5px; font-family: inherit; -webkit-appearance: none; appearance: none; min-height: 35px;
+            touch-action: manipulation;
         }
+        /* font-size bleibt bewusst bei 16px+ (siehe oben) – darunter zoomt iOS Safari beim Fokussieren automatisch rein */
         select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f8fafc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 5px center; background-size: 1em; padding-right: 25px; }
         option { background: var(--panel-bg); color: var(--text-main); }
         
         .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .checkbox-item { display: flex; align-items: center; gap: 8px; background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid var(--box-border); cursor: pointer; transition: all 0.2s; min-height: 44px; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid var(--box-border); cursor: pointer; transition: all 0.2s; min-height: 44px; touch-action: manipulation; }
         .checkbox-item:hover { border-color: var(--accent); }
         .checkbox-item input { width: 20px; height: 20px; cursor: pointer; accent-color: var(--accent); }
         .checkbox-item span { font-size: 13px; font-weight: bold; }
@@ -247,12 +281,18 @@
         .slider-label .val-display { color: var(--accent); font-size: 20px; font-weight: bold; }
         
         /* SLIDER CSS (Chrome + Firefox + Safari kompatibel) */
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; height: 24px; margin-top: 5px; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; height: 24px; margin-top: 5px; touch-action: pan-x; }
         input[type=range]:focus { outline: none; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: var(--box-border); border-radius: 4px; }
         input[type=range]::-webkit-slider-thumb { height: 24px; width: 24px; border-radius: 50%; background: var(--accent); cursor: pointer; -webkit-appearance: none; margin-top: -8px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
         input[type=range]::-moz-range-track { width: 100%; height: 8px; cursor: pointer; background: var(--box-border); border-radius: 4px; }
         input[type=range]::-moz-range-thumb { height: 24px; width: 24px; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        /* Größere Touch-Fläche auf dem Handy, damit der Slider leichter zu greifen ist */
+        @media (max-width: 600px) {
+            input[type=range] { height: 30px; }
+            input[type=range]::-webkit-slider-thumb { height: 30px; width: 30px; margin-top: -11px; }
+            input[type=range]::-moz-range-thumb { height: 30px; width: 30px; }
+        }
         
         .result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
         @media (max-width: 600px) { .result-grid { grid-template-columns: 1fr 1fr; } }
@@ -275,17 +315,19 @@
         /* ==========================================
            6. RANKING MAP & TABELLEN (MOBILE OPTIMIERT)
            ========================================== */
-        #map { width: 100%; height: 200px; border-radius: 6px; border: 1px solid var(--box-border); margin-bottom: 10px; z-index: 1; }
+        #map { width: 100%; height: 200px; border-radius: 6px; border: 1px solid var(--box-border); margin-bottom: 10px; z-index: 1; touch-action: pan-x pan-y; }
         .leaflet-layer, .leaflet-control-zoom-in, .leaflet-control-zoom-out, .leaflet-control-attribution { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
+        /* Größere Zoom-Buttons auf der Karte, leichter mit dem Finger zu treffen */
+        .leaflet-control-zoom-in, .leaflet-control-zoom-out { width: 36px !important; height: 36px !important; line-height: 34px !important; font-size: 18px !important; }
         #routingStatus { font-size: 13px; color: var(--accent); font-weight: bold; margin-bottom: 10px; display: none; }
         .vibe-row { display: flex; align-items: center; gap: 15px; margin-bottom: 12px; }
         .vibe-row input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
         .vibe-row > div { flex-grow: 1; transition: opacity 0.2s; }
         .vibe-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
         
-        .table-wrapper { overflow-x: auto; max-height: 700px; overflow-y: auto; background: #0b1120; border-radius: 8px; border: 1px solid var(--box-border); margin-top: 20px;}
+        .table-wrapper { overflow-x: auto; max-height: 700px; overflow-y: auto; background: #0b1120; border-radius: 8px; border: 1px solid var(--box-border); margin-top: 20px; -webkit-overflow-scrolling: touch; }
         .ranking-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; min-width: 600px; }
-        .ranking-table th { background-color: #151f32; padding: 12px 15px; position: sticky; top: 0; cursor: pointer; border-bottom: 2px solid var(--box-border); font-weight: 600; color: var(--text-muted); z-index: 10; user-select: none; white-space: nowrap; }
+        .ranking-table th { background-color: #151f32; padding: 12px 15px; position: sticky; top: 0; cursor: pointer; border-bottom: 2px solid var(--box-border); font-weight: 600; color: var(--text-muted); z-index: 10; user-select: none; white-space: nowrap; touch-action: manipulation; min-height: 44px; }
         .ranking-table th:hover { color: var(--text-main); }
         .ranking-table td { padding: 12px 15px; border-bottom: 1px solid var(--box-border); color: var(--text-main); line-height: 1.4; }
         .ranking-table tr:hover { background-color: rgba(255,255,255,0.03); }
@@ -304,37 +346,115 @@
         .score-1 { background: rgba(153, 27, 27, 0.3); color: #fca5a5; border: 1px solid var(--lvl-1); }
         .score-na { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); border: 1px solid var(--box-border); }
 
-        /* MAGIC: TABELLEN WERDEN AUF DEM HANDY ZU KARTEN (Kein horizontales Scrollen mehr!) */
+        /* ==========================================
+           MOBILE TABELLEN = KOMPAKTE LISTE
+           Am Desktop bleibt alles eine normale Tabelle. Auf dem Handy wird jede
+           Zeile zu einem Listeneintrag: Rang + Name + Hauptwert in der ersten
+           Zeile, die Detailwerte klein darunter.
+           Steuerung über Klassen an den <td>: m-rank / m-name / m-score /
+           m-sub (kleine Detailzahl) / m-block (langer Text über volle Breite).
+           ========================================== */
         @media (max-width: 800px) {
-            .table-wrapper { border: none; background: transparent; overflow-x: hidden; padding: 0; margin-top: 10px;}
-            .ranking-table { min-width: 100%; }
+            .table-wrapper {
+                border: none; background: transparent; overflow-x: hidden;
+                max-height: none; overflow-y: visible; /* kein verschachteltes Scroll-Fenster auf dem Handy */
+                padding: 0; margin-top: 10px;
+            }
+            .ranking-table { min-width: 100%; font-size: 14px; }
             .ranking-table thead { display: none; }
-            .ranking-table, .ranking-table tbody, .ranking-table tr, .ranking-table td { display: block; width: 100%; }
-            .ranking-table tr { 
-                margin-bottom: 15px; 
-                background: #0b1120; 
-                border-radius: 12px; 
-                padding: 10px; 
-                border: 1px solid var(--box-border); 
-                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            .ranking-table, .ranking-table tbody { display: block; width: 100%; }
+
+            .ranking-table tr {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                column-gap: 13px;
+                width: 100%;
+                background: #0b1120;
+                border: 1px solid var(--box-border);
+                border-radius: 10px;
+                padding: 11px 12px;
+                margin-bottom: 8px;
             }
-            .ranking-table td { 
-                display: flex; 
-                justify-content: space-between; 
-                align-items: center; 
-                border-bottom: 1px solid rgba(255,255,255,0.05); 
-                padding: 10px 5px; 
-                text-align: right; 
+            /* Unsichtbarer Umbruch: alles ab order 50 rutscht in die zweite Zeile */
+            .ranking-table tr::after { content: ''; flex: 0 0 100%; height: 0; order: 50; }
+
+            .ranking-table td {
+                display: block;
+                width: auto;
+                border: none;
+                padding: 0;
+                line-height: 1.35;
             }
-            .ranking-table td:last-child { border-bottom: none; }
-            .ranking-table td::before { 
-                content: attr(data-label); 
-                font-weight: 600; 
-                color: var(--text-muted); 
-                text-align: left; 
-                flex-basis: 40%; 
+
+            /* Rang links */
+            .ranking-table td.m-rank {
+                order: 10;
+                flex: 0 0 auto;
+                min-width: 24px;
                 font-size: 13px;
-                padding-right: 10px;
+                text-align: center;
+            }
+            /* Name / Studienort: nimmt den freien Platz ein */
+            .ranking-table td.m-name {
+                order: 20;
+                flex: 1 1 auto;
+                min-width: 0;
+                font-size: 14.5px;
+                font-weight: 600;
+                color: var(--text-main);
+            }
+            /* Hauptwert rechts */
+            .ranking-table td.m-score {
+                order: 30;
+                flex: 0 0 auto;
+                text-align: right;
+                white-space: nowrap;
+            }
+            /* Detailzahlen als kleine Zeile darunter, durch · getrennt */
+            .ranking-table td.m-sub {
+                order: 60;
+                flex: 0 0 auto;
+                font-size: 11.5px;
+                color: var(--text-muted);
+                margin-top: 5px;
+                white-space: nowrap;
+            }
+            .ranking-table td.m-sub::before { content: attr(data-label) ": "; }
+            /* Zeilenumbrueche innerhalb einer Detailzahl aufheben, sonst reisst die Zeile */
+            .ranking-table td.m-sub br { display: none; }
+            /* Zellen, die gerade keinen Wert haben, auf dem Handy ganz ausblenden */
+            .ranking-table td.m-hide-mobile { display: none; }
+
+            /* Langer Fließtext bekommt eine eigene volle Zeile */
+            .ranking-table td.m-block {
+                order: 70;
+                flex: 0 0 100%;
+                font-size: 12.5px;
+                color: var(--text-muted);
+                margin-top: 7px;
+                line-height: 1.45;
+            }
+            .ranking-table td.m-block::before { content: attr(data-label) ": "; font-weight: 600; }
+            .ranking-table td.m-block:empty { display: none; }
+
+            /* Fallback: Zellen ohne m-Klasse bleiben als Label/Wert-Zeile lesbar */
+            .ranking-table td:not([class*="m-"]) {
+                order: 80;
+                flex: 0 0 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                margin-top: 6px;
+                text-align: right;
+            }
+            .ranking-table td:not([class*="m-"])::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--text-muted);
+                text-align: left;
+                font-size: 12.5px;
             }
         }
 
@@ -615,7 +735,7 @@
                 <div class="slider-label">
                     <span>Dein HZB-Prozentrang (PR)</span>
                     <div class="pr-input-wrapper">
-                        <input type="number" id="pr-number" min="0.1" max="100.0" step="0.1" value="45.9">
+                        <input type="number" id="pr-number" min="0.1" max="100.0" step="0.1" value="45.9" inputmode="decimal">
                         <span>%</span>
                     </div>
                 </div>
@@ -789,7 +909,7 @@
                     <label style="font-weight: bold; color: var(--text-main); font-size:16px; margin-bottom: 12px;">3. Kriterien & Finanzen</label>
                     
                     <label style="font-weight: bold; color: var(--text-main);">Monatliches Budget (€)</label>
-                    <input type="number" id="budget" value="1000" oninput="renderRankingTable()" style="margin-bottom: 8px;">
+                    <input type="number" id="budget" value="1000" oninput="renderRankingTable()" style="margin-bottom: 8px;" inputmode="numeric">
                     <p style="font-size: 11px; color: var(--text-muted); margin-top:0; margin-bottom: 20px;">
                         Dynamisch: Bei einem Minus dominiert das Kosten-Kriterium bis zu 95%.
                     </p>
@@ -889,47 +1009,47 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td data-label="Universität">Aachen RWTH</td><td data-label="ABQ"><strong style="color:var(--success-text)">+5</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+15</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+4</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+24</strong></td></tr>
-                        <tr><td data-label="Universität">Augsburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+10</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+25</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+6</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+41</strong></td></tr>
-                        <tr><td data-label="Universität">Berlin Charité</td><td data-label="ABQ"><strong style="color:var(--success-text)">+20</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+10</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+31</strong></td></tr>
-                        <tr><td data-label="Universität">Bielefeld U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+4</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+9</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+14</strong></td></tr>
-                        <tr><td data-label="Universität">Bochum U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+21</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+36</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+4</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+61</strong></td></tr>
-                        <tr><td data-label="Universität">Bonn U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+10</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+7</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+17</strong></td></tr>
-                        <tr><td data-label="Universität">Dresden TU</td><td data-label="ABQ"><strong style="color:var(--success-text)">+8</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+13</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+23</strong></td></tr>
-                        <tr><td data-label="Universität">Dresden/Chemnitz TU</td><td data-label="ABQ"><strong style="color:var(--success-text)">+4</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+9</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+13</strong></td></tr>
-                        <tr><td data-label="Universität">Duisburg-Essen U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+9</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+11</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+20</strong></td></tr>
-                        <tr><td data-label="Universität">Düsseldorf U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+6</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+26</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+3</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+35</strong></td></tr>
-                        <tr><td data-label="Universität">Erlangen-Nürnberg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+12</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+21</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+3</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+36</strong></td></tr>
-                        <tr><td data-label="Universität">Erlangen/Bayreuth U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+6</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+10</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+3</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+19</strong></td></tr>
-                        <tr><td data-label="Universität">Frankfurt am Main U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+20</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+23</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+45</strong></td></tr>
-                        <tr><td data-label="Universität">Freiburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+27</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+7</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+34</strong></td></tr>
-                        <tr><td data-label="Universität">Gießen U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+14</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+20</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+5</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+39</strong></td></tr>
-                        <tr><td data-label="Universität">Göttingen U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+9</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+9</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+19</strong></td></tr>
-                        <tr><td data-label="Universität">Greifswald U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+15</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+23</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+6</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+44</strong></td></tr>
-                        <tr><td data-label="Universität">Halle-Wittenberg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+23</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+28</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+53</strong></td></tr>
-                        <tr><td data-label="Universität">Hamburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+22</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+2</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+26</strong></td></tr>
-                        <tr><td data-label="Universität">Hannover MedH</td><td data-label="ABQ"><strong style="color:var(--success-text)">+16</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+6</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+22</strong></td></tr>
-                        <tr><td data-label="Universität">Heidelberg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+13</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+23</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+37</strong></td></tr>
-                        <tr><td data-label="Universität">Heid./Mannheim U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+15</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+26</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+7</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+48</strong></td></tr>
-                        <tr><td data-label="Universität">Jena U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+36</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+22</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+60</strong></td></tr>
-                        <tr><td data-label="Universität">Kiel U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+12</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+11</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+23</strong></td></tr>
-                        <tr><td data-label="Universität">Köln U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+14</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+13</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+3</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+30</strong></td></tr>
-                        <tr><td data-label="Universität">Leipzig U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+11</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+37</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+6</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+54</strong></td></tr>
-                        <tr><td data-label="Universität">Lübeck U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+15</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+9</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+25</strong></td></tr>
-                        <tr><td data-label="Universität">Magdeburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+17</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+24</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+41</strong></td></tr>
-                        <tr><td data-label="Universität">Mainz U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+9</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+7</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+18</strong></td></tr>
-                        <tr><td data-label="Universität">Mainz/MC Trier U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+1</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+3</strong></td></tr>
-                        <tr><td data-label="Universität">Marburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+37</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+27</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+13</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+77</strong></td></tr>
-                        <tr><td data-label="Universität">München U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+104</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+46</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+4</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+154</strong></td></tr>
-                        <tr><td data-label="Universität">Münster U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+8</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+8</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+16</strong></td></tr>
-                        <tr><td data-label="Universität">Oldenburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+3</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+2</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+6</strong></td></tr>
-                        <tr><td data-label="Universität">Regensburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+21</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+12</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+34</strong></td></tr>
-                        <tr><td data-label="Universität">Regensburg/MCN U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+8</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+6</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+16</strong></td></tr>
-                        <tr><td data-label="Universität">Rostock U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+29</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+50</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+6</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+85</strong></td></tr>
-                        <tr><td data-label="Universität">Saarbrücken U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+40</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+24</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+4</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+68</strong></td></tr>
-                        <tr><td data-label="Universität">Tübingen U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+11</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+6</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+17</strong></td></tr>
-                        <tr><td data-label="Universität">Ulm U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+22</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+19</strong></td><td data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+41</strong></td></tr>
-                        <tr><td data-label="Universität">Würzburg U</td><td data-label="ABQ"><strong style="color:var(--success-text)">+9</strong></td><td data-label="AdH"><strong style="color:var(--success-text)">+5</strong></td><td data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td data-label="Gesamt"><strong style="color:var(--text-main)">+16</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Aachen RWTH</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+5</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+15</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+4</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+24</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Augsburg U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+10</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+25</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+6</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+41</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Berlin Charité</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+20</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+10</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+31</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Bielefeld U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+4</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+9</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+14</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Bochum U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+21</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+36</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+4</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+61</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Bonn U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+10</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+7</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+17</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Dresden TU</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+8</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+13</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+23</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Dresden/Chemnitz TU</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+4</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+9</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+13</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Duisburg-Essen U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+9</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+11</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+20</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Düsseldorf U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+6</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+26</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+3</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+35</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Erlangen-Nürnberg U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+12</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+21</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+3</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+36</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Erlangen/Bayreuth U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+6</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+10</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+3</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+19</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Frankfurt am Main U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+20</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+23</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+45</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Freiburg U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+27</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+7</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+34</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Gießen U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+14</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+20</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+5</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+39</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Göttingen U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+9</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+9</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+19</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Greifswald U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+15</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+23</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+6</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+44</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Halle-Wittenberg U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+23</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+28</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+53</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Hamburg U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+22</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+2</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+26</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Hannover MedH</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+16</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+6</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+22</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Heidelberg U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+13</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+23</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+37</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Heid./Mannheim U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+15</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+26</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+7</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+48</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Jena U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+36</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+22</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+60</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Kiel U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+12</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+11</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+23</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Köln U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+14</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+13</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+3</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+30</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Leipzig U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+11</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+37</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+6</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+54</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Lübeck U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+15</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+9</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+25</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Magdeburg U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+17</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+24</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+41</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Mainz U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+9</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+7</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+18</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Mainz/MC Trier U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+2</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+1</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+3</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Marburg U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+37</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+27</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+13</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+77</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">München U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+104</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+46</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+4</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+154</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Münster U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+8</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+8</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+16</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Oldenburg U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+3</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+2</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+6</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Regensburg U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+21</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+12</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+1</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+34</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Regensburg/MCN U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+8</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+6</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+16</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Rostock U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+29</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+50</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+6</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+85</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Saarbrücken U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+40</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+24</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+4</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+68</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Tübingen U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+11</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+6</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+17</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Ulm U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+22</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+19</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--text-muted)">0</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+41</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Würzburg U</td><td class="m-sub" data-label="ABQ"><strong style="color:var(--success-text)">+9</strong></td><td class="m-sub" data-label="AdH"><strong style="color:var(--success-text)">+5</strong></td><td class="m-sub" data-label="ZEQ"><strong style="color:var(--success-text)">+2</strong></td><td class="m-score" data-label="Gesamt"><strong style="color:var(--text-main)">+16</strong></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1123,47 +1243,47 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td data-label="Universität">Aachen RWTH</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Augsburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td data-label="Hinweise">Zulassungskriterien (z.B. TMS, Abi) müssen sehr ähnlich sein. Sehr strenge Einzelfallprüfung.</td></tr>
-                        <tr><td data-label="Universität">Berlin Charité</td><td data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td data-label="Hinweise">Quote muss exakt übereinstimmen. Kein Tausch innerhalb der Vorabquoten.</td></tr>
-                        <tr><td data-label="Universität">Bielefeld U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Bochum U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Ab WiSe 2025/2026 nicht mehr möglich.</td></tr>
-                        <tr><td data-label="Universität">Bonn U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Dresden TU</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Dresden/Chemnitz TU</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Duisburg-Essen U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Ab SoSe 2024 nicht mehr möglich.</td></tr>
-                        <tr><td data-label="Universität">Düsseldorf U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Nur in begründeten, nachgewiesenen Härtefällen möglich.</td></tr>
-                        <tr><td data-label="Universität">Erlangen-Nürnberg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td data-label="Universität">Erlangen/Bayreuth U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td data-label="Universität">Frankfurt am Main U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
-                        <tr><td data-label="Universität">Freiburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Gießen U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Göttingen U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Tausch zwischen Ausländerquote und Bildungsinländern ist nicht möglich, sonst Quote egal.</td></tr>
-                        <tr><td data-label="Universität">Greifswald U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td data-label="Universität">Halle-Wittenberg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant. <strong>Kein Ringtausch möglich!</strong></td></tr>
-                        <tr><td data-label="Universität">Hamburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td data-label="Universität">Hannover MedH</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder Ortsbindung als Pflege in Region Hannover.</td></tr>
-                        <tr><td data-label="Universität">Heidelberg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Heidelberg/Mannheim U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Jena U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Kiel U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant. Ringtausch möglich.</td></tr>
-                        <tr><td data-label="Universität">Köln U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Leipzig U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Lübeck U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Magdeburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Mainz U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td data-label="Universität">Mainz/MC Trier U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td data-label="Universität">Marburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">München U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant. Auch Landarztquote möglich.</td></tr>
-                        <tr><td data-label="Universität">Münster U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Ausschließlich im höheren Fachsemester möglich.</td></tr>
-                        <tr><td data-label="Universität">Oldenburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder alleiniger Niedersachsen-Wohnsitz.</td></tr>
-                        <tr><td data-label="Universität">Regensburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td data-label="Universität">Regensburg/MCN U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td data-label="Universität">Rostock U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Saarbrücken U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">-</td></tr>
-                        <tr><td data-label="Universität">Tübingen U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
-                        <tr><td data-label="Universität">Ulm U</td><td data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
-                        <tr><td data-label="Universität">Würzburg U</td><td data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Aachen RWTH</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Augsburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td class="m-block" data-label="Hinweise">Zulassungskriterien (z.B. TMS, Abi) müssen sehr ähnlich sein. Sehr strenge Einzelfallprüfung.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Berlin Charité</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td class="m-block" data-label="Hinweise">Quote muss exakt übereinstimmen. Kein Tausch innerhalb der Vorabquoten.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Bielefeld U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Bochum U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ab WiSe 2025/2026 nicht mehr möglich.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Bonn U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Dresden TU</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Dresden/Chemnitz TU</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Duisburg-Essen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ab SoSe 2024 nicht mehr möglich.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Düsseldorf U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in begründeten, nachgewiesenen Härtefällen möglich.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Erlangen-Nürnberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Erlangen/Bayreuth U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Frankfurt am Main U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Freiburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Gießen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Göttingen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Tausch zwischen Ausländerquote und Bildungsinländern ist nicht möglich, sonst Quote egal.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Greifswald U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Halle-Wittenberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. <strong>Kein Ringtausch möglich!</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Hamburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Hannover MedH</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder Ortsbindung als Pflege in Region Hannover.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Heidelberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Heidelberg/Mannheim U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Jena U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Kiel U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. Ringtausch möglich.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Köln U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Leipzig U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Lübeck U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Magdeburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Mainz U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Mainz/MC Trier U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Marburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">München U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. Auch Landarztquote möglich.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Münster U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ausschließlich im höheren Fachsemester möglich.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Oldenburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder alleiniger Niedersachsen-Wohnsitz.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Regensburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Regensburg/MCN U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Rostock U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Saarbrücken U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Tübingen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Ulm U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Würzburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1192,48 +1312,48 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td data-label="Universität">TH Aachen</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Augsburg</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">Charité Berlin</td><td data-label="Stufe"><span class="badge score-5">Stufe 5 (1. FS)</span> <br><span class="badge score-2" style="margin-top:5px;">Stufe 2 (Später)</span></td><td data-label="Besonderheiten">1. FS extrem viel Nachfrage. Später sehr schwer wegen speziellem Modellstudiengang</td></tr>
-                        <tr><td data-label="Universität">U Bielefeld</td><td data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td data-label="Besonderheiten">Modellstudiengang, sonst mäßig viel Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Bochum</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Viele suchen NRW-Unis, wird aber von manchen eher als Plan B gesehen</td></tr>
-                        <tr><td data-label="Universität">U Bonn</td><td data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">MedU Lausitz</td><td data-label="Stufe"><span class="badge score-na">K.A.</span></td><td data-label="Besonderheiten">Keine Wertung möglich. Modellstudiengang, daher Tausch vermutlich schwerer</td></tr>
-                        <tr><td data-label="Universität">TU Dresden</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">TU Dresden / Chemnitz</td><td data-label="Stufe"><span class="badge score-na">K.A.</span></td><td data-label="Besonderheiten">Keine Wertung möglich. Modellstudiengang, daher Tausch vermutlich schwerer</td></tr>
-                        <tr><td data-label="Universität">U Duisburg-Essen</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Viele suchen NRW-Unis, wird aber von manchen eher als Plan B gesehen</td></tr>
-                        <tr><td data-label="Universität">U Düsseldorf</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Erlangen-Nürnberg</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Erlangen / Bayreuth</td><td data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td data-label="Besonderheiten">Eher schlechter, aber Tauschoptionen sind vorhanden</td></tr>
-                        <tr><td data-label="Universität">U Frankfurt/Main</td><td data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Freiburg</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Gießen</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Göttingen</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Greifswald</td><td data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td data-label="Besonderheiten">Eher sehr wenig Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Halle-Wittenberg</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">MedH Hannover</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Hamburg</td><td data-label="Stufe"><span class="badge score-5">Stufe 5 (1. FS)</span> <br><span class="badge score-3" style="margin-top:5px;">Stufe 3 (Später)</span></td><td data-label="Besonderheiten">Zum 1. FS sehr gute Nachfrage, ab höherem Semester Modellstudiengang (aber trotzdem gute Nachfrage)</td></tr>
-                        <tr><td data-label="Universität">U Heidelberg</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Heidelberg-Mannheim</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Jena</td><td data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td data-label="Besonderheiten">Eher schlechte Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Kiel</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Köln</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Leipzig</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Lübeck</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Magdeburg</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Mainz</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Mainz MC Trier</td><td data-label="Stufe"><span class="badge score-na">K.A.</span></td><td data-label="Besonderheiten">Keine Wertung möglich</td></tr>
-                        <tr><td data-label="Universität">U Marburg</td><td data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td data-label="Besonderheiten">Eher wenig Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U München</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Eher gute Nachfrage, aber auch sehr viel Angebot vorhanden</td></tr>
-                        <tr><td data-label="Universität">U Münster</td><td data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Oldenburg</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Regensburg</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Regensburg MC Niederbayern</td><td data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td data-label="Besonderheiten">Eher schlechte Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Rostock</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Saarbrücken</td><td data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td data-label="Besonderheiten">Eher sehr schlechte Nachfrage</td></tr>
-                        <tr><td data-label="Universität">U Tübingen</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage / Optionen</td></tr>
-                        <tr><td data-label="Universität">U Ulm</td><td data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td data-label="Besonderheiten">Mittlere Nachfrage / Optionen</td></tr>
-                        <tr><td data-label="Universität">U Würzburg</td><td data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td data-label="Besonderheiten">Gute Nachfrage / Optionen</td></tr>
+                        <tr><td class="m-name" data-label="Universität">TH Aachen</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Augsburg</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Charité Berlin</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5 (1. FS)</span> <br><span class="badge score-2" style="margin-top:5px;">Stufe 2 (Später)</span></td><td class="m-block" data-label="Besonderheiten">1. FS extrem viel Nachfrage. Später sehr schwer wegen speziellem Modellstudiengang</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Bielefeld</td><td class="m-score" data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, sonst mäßig viel Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Bochum</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Viele suchen NRW-Unis, wird aber von manchen eher als Plan B gesehen</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Bonn</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td class="m-block" data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">MedU Lausitz</td><td class="m-score" data-label="Stufe"><span class="badge score-na">K.A.</span></td><td class="m-block" data-label="Besonderheiten">Keine Wertung möglich. Modellstudiengang, daher Tausch vermutlich schwerer</td></tr>
+                        <tr><td class="m-name" data-label="Universität">TU Dresden</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">TU Dresden / Chemnitz</td><td class="m-score" data-label="Stufe"><span class="badge score-na">K.A.</span></td><td class="m-block" data-label="Besonderheiten">Keine Wertung möglich. Modellstudiengang, daher Tausch vermutlich schwerer</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Duisburg-Essen</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Viele suchen NRW-Unis, wird aber von manchen eher als Plan B gesehen</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Düsseldorf</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Erlangen-Nürnberg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Erlangen / Bayreuth</td><td class="m-score" data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td class="m-block" data-label="Besonderheiten">Eher schlechter, aber Tauschoptionen sind vorhanden</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Frankfurt/Main</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td class="m-block" data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Freiburg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Gießen</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Göttingen</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Greifswald</td><td class="m-score" data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td class="m-block" data-label="Besonderheiten">Eher sehr wenig Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Halle-Wittenberg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">MedH Hannover</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Hamburg</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5 (1. FS)</span> <br><span class="badge score-3" style="margin-top:5px;">Stufe 3 (Später)</span></td><td class="m-block" data-label="Besonderheiten">Zum 1. FS sehr gute Nachfrage, ab höherem Semester Modellstudiengang (aber trotzdem gute Nachfrage)</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Heidelberg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Heidelberg-Mannheim</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Jena</td><td class="m-score" data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td class="m-block" data-label="Besonderheiten">Eher schlechte Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Kiel</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Köln</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Leipzig</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Lübeck</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Magdeburg</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Mainz</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Mainz MC Trier</td><td class="m-score" data-label="Stufe"><span class="badge score-na">K.A.</span></td><td class="m-block" data-label="Besonderheiten">Keine Wertung möglich</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Marburg</td><td class="m-score" data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td class="m-block" data-label="Besonderheiten">Eher wenig Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U München</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Eher gute Nachfrage, aber auch sehr viel Angebot vorhanden</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Münster</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td class="m-block" data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Oldenburg</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Regensburg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Regensburg MC Niederbayern</td><td class="m-score" data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td class="m-block" data-label="Besonderheiten">Eher schlechte Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Rostock</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Saarbrücken</td><td class="m-score" data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td class="m-block" data-label="Besonderheiten">Eher sehr schlechte Nachfrage</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Tübingen</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage / Optionen</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Ulm</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage / Optionen</td></tr>
+                        <tr><td class="m-name" data-label="Universität">U Würzburg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage / Optionen</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1718,7 +1838,7 @@
         function renderTmsTrendTable() {
             const tbody = document.getElementById('tmsTrendTableBody');
             if (!tbody) return;
-            const dash = '<span style="color:var(--text-muted);">–</span>';
+            const dash = '<span style="color:var(--text-muted); font-weight:normal;">k. A.</span>';
             const roundTo100 = v => Math.round(v / 100) * 100;
 
             tbody.innerHTML = TMS_TREND_DATA.map(d => {
@@ -1739,11 +1859,11 @@
                     : (d.wiederholer / bezug * 100).toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' %';
 
                 return `<tr>
-                    <td data-label="Termin" style="font-weight:bold;">${d.label}</td>
-                    <td data-label="Teilnehmer" style="color:var(--warning-text); font-weight:bold;">${teil}</td>
-                    <td data-label="Anmeldungen" style="color:#3b82f6; font-weight:bold;">${anm}</td>
-                    <td data-label="Wiederholer">${wied}</td>
-                    <td data-label="Anteil Wiederholer" style="color:var(--text-main); font-weight:bold;">${anteil}</td>
+                    <td class="m-name" data-label="Termin" style="font-weight:bold;">${d.label}</td>
+                    <td class="m-score" data-label="Teilnehmer" style="color:var(--warning-text); font-weight:bold;">${teil}</td>
+                    <td class="m-sub" data-label="Anmeldungen" style="color:#3b82f6; font-weight:bold;">${anm}</td>
+                    <td class="m-sub" data-label="Wiederholer">${wied}</td>
+                    <td class="m-sub" data-label="Anteil Wiederholer" style="color:var(--text-main); font-weight:bold;">${anteil}</td>
                 </tr>`;
             }).join('');
         }
@@ -2246,15 +2366,15 @@
                 let jobBadge = getJobBadgeHtml(uni.jobScore, chkJobActive);
 
                 tbody.innerHTML += `<tr>
-                    <td data-label="Rank" style="color:var(--text-muted); font-weight:bold;">${index + 1}</td>
-                    <td data-label="Universität" style="font-weight:bold; color:var(--text-main);">${uni.name}</td>
-                    <td data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">${uni.score}</td>
-                    <td data-label="Aufbau" style="${typColor}">${uni.typ}</td>
-                    <td data-label="Kapazität" style="${capStyle}">${uni.cap}</td>
-                    <td data-label="Stadtkosten" style="line-height:1.2;">${uni.totalCosts} €<br><span style="font-size:11px;">${deltaText}</span></td>
-                    <td data-label="Auto-Distanz">${distanzDisplay}</td>
-                    <td data-label="Vibe" style="color:var(--accent); font-weight:bold;">${uni.vibeDisplay} / 10</td>
-                    <td data-label="Nebenjobs">${jobBadge}</td>
+                    <td class="m-rank" data-label="Rank" style="color:var(--text-muted); font-weight:bold;">${index + 1}</td>
+                    <td class="m-name" data-label="Universität" style="font-weight:bold; color:var(--text-main);">${uni.name}</td>
+                    <td class="m-score" data-label="Gesamt Score" style="font-size:18px; font-weight:900; color:var(--success-text);">${uni.score}</td>
+                    <td class="m-sub" data-label="Aufbau" style="${typColor}">${uni.typ}</td>
+                    <td class="m-sub" data-label="Kapazität" style="${capStyle}">${uni.cap}</td>
+                    <td class="m-sub" data-label="Stadtkosten" style="line-height:1.2;">${uni.totalCosts} € <br><span style="font-size:11px;">${deltaText}</span></td>
+                    <td class="m-sub" data-label="Auto-Distanz">${distanzDisplay}</td>
+                    <td class="m-sub" data-label="Vibe" style="color:var(--accent); font-weight:bold;">${uni.vibeDisplay} / 10</td>
+                    <td class="m-sub${chkJobActive ? '' : ' m-hide-mobile'}" data-label="Nebenjobs">${jobBadge}</td>
                 </tr>`;
             });
         }
@@ -2501,13 +2621,13 @@
                 </tr>`;
                 belSortRows(rows, ['score', 'p1', 'p2', 'p3', 'plaetze'].includes(belSort.col) ? belSort.col : 'score');
                 tbody.innerHTML = rows.map((r, i) => `<tr>
-                    <td data-label="Rang" style="${belRankBadgeStyle(i + 1)}">${i + 1}</td>
-                    <td data-label="Studienort" style="font-weight:bold; color:var(--text-main);">${r.ort}${!cfg.older[r.ort] ? ' *' : ''}</td>
-                    <td data-label="Score" style="font-size:16px; font-weight:900; color:var(--success-text);">${belFormatScore(r.score, norm)}</td>
-                    <td data-label="Prio 1">${belFormatInt(r.p1)}</td>
-                    <td data-label="Prio 2">${belFormatInt(r.p2)}</td>
-                    <td data-label="Prio 3">${belFormatInt(r.p3)}</td>
-                    <td data-label="Studienplätze">${belFormatInt(r.plaetze)}</td>
+                    <td class="m-rank" data-label="Rang" style="${belRankBadgeStyle(i + 1)}">${i + 1}</td>
+                    <td class="m-name" data-label="Studienort" style="font-weight:bold; color:var(--text-main);">${r.ort}${!cfg.older[r.ort] ? ' *' : ''}</td>
+                    <td class="m-score" data-label="Score" style="font-size:16px; font-weight:900; color:var(--success-text);">${belFormatScore(r.score, norm)}</td>
+                    <td class="m-sub" data-label="Prio 1">${belFormatInt(r.p1)}</td>
+                    <td class="m-sub" data-label="Prio 2">${belFormatInt(r.p2)}</td>
+                    <td class="m-sub" data-label="Prio 3">${belFormatInt(r.p3)}</td>
+                    <td class="m-sub" data-label="Studienplätze">${belFormatInt(r.plaetze)}</td>
                 </tr>`).join('');
 
             } else if (zeitraum === 'kombiniert') {
@@ -2526,12 +2646,12 @@
                 </tr>`;
                 belSortRows(rows, ['score', 'p1', 'p2', 'p3'].includes(belSort.col) ? belSort.col : 'score');
                 tbody.innerHTML = rows.map((r, i) => `<tr>
-                    <td data-label="Rang" style="${belRankBadgeStyle(i + 1)}">${i + 1}</td>
-                    <td data-label="Studienort" style="font-weight:bold; color:var(--text-main);">${r.ort}${r.onlyOneSemester ? ' *' : ''}</td>
-                    <td data-label="Score" style="font-size:16px; font-weight:900; color:var(--success-text);">${belFormatScore(r.score, norm)}</td>
-                    <td data-label="Prio 1 Σ">${belFormatInt(r.p1)}</td>
-                    <td data-label="Prio 2 Σ">${belFormatInt(r.p2)}</td>
-                    <td data-label="Prio 3 Σ">${belFormatInt(r.p3)}</td>
+                    <td class="m-rank" data-label="Rang" style="${belRankBadgeStyle(i + 1)}">${i + 1}</td>
+                    <td class="m-name" data-label="Studienort" style="font-weight:bold; color:var(--text-main);">${r.ort}${r.onlyOneSemester ? ' *' : ''}</td>
+                    <td class="m-score" data-label="Score" style="font-size:16px; font-weight:900; color:var(--success-text);">${belFormatScore(r.score, norm)}</td>
+                    <td class="m-sub" data-label="Prio 1 Σ">${belFormatInt(r.p1)}</td>
+                    <td class="m-sub" data-label="Prio 2 Σ">${belFormatInt(r.p2)}</td>
+                    <td class="m-sub" data-label="Prio 3 Σ">${belFormatInt(r.p3)}</td>
                 </tr>`).join('');
 
             } else { // getrennt
@@ -2561,11 +2681,11 @@
                 </tr>`;
                 belSortRows(rows, ['scoreRecent', 'scoreOlder'].includes(belSort.col) ? belSort.col : 'scoreRecent');
                 tbody.innerHTML = rows.map((r, i) => `<tr>
-                    <td data-label="Rang" style="${belRankBadgeStyle(i + 1)}">${i + 1}</td>
-                    <td data-label="Studienort" style="font-weight:bold; color:var(--text-main);">${r.ort}${!cfg.older[r.ort] ? ' *' : ''}</td>
-                    <td data-label="Score ${cfg.recentLabel}" style="font-size:15px; font-weight:900; color:var(--success-text);">${belFormatScore(r.scoreRecent, norm)}</td>
-                    <td data-label="Score ${cfg.olderLabel}" style="color:var(--text-muted);">${belFormatScore(r.scoreOlder, norm)}</td>
-                    <td data-label="Trend">${r.trend}</td>
+                    <td class="m-rank" data-label="Rang" style="${belRankBadgeStyle(i + 1)}">${i + 1}</td>
+                    <td class="m-name" data-label="Studienort" style="font-weight:bold; color:var(--text-main);">${r.ort}${!cfg.older[r.ort] ? ' *' : ''}</td>
+                    <td class="m-score" data-label="Score ${cfg.recentLabel}" style="font-size:15px; font-weight:900; color:var(--success-text);">${belFormatScore(r.scoreRecent, norm)}</td>
+                    <td class="m-sub" data-label="Score ${cfg.olderLabel}" style="color:var(--text-muted);">${belFormatScore(r.scoreOlder, norm)}</td>
+                    <td class="m-sub" data-label="Trend">${r.trend}</td>
                 </tr>`).join('');
             }
         }
