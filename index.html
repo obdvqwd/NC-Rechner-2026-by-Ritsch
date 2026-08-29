@@ -7,12 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
     <meta name="color-scheme" content="dark">
-    <!-- iOS: Als App zum Homescreen hinzufügbar, Statusleiste ans dunkle Design angepasst -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="MedStud Zentrale">
-    <!-- Android: gleiche Funktion für Chrome/Homescreen -->
-    <meta name="mobile-web-app-capable" content="yes">
+    <!-- Bewusst KEIN apple-mobile-web-app-capable / mobile-web-app-capable:
+         das startet die Seite im Standalone-Modus, in dem Navigation und Scrollen
+         anders funktionieren und die Seite auf manchen Geräten unbedienbar wirkt. -->
     <!-- Verhindert, dass iOS/Android Zahlen, Adressen etc. automatisch in klickbare Links verwandeln -->
     <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
     <title>Medizinstudium Zentrale | by Flavio "Ritsch"</title>
@@ -23,9 +20,19 @@
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
 
-    <!-- Leaflet CSS & JS für die interaktive Karte -->
-    <link id="leaflet-css" rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" onerror="this.onerror=null; this.href='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css';" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onerror="var s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'; document.head.appendChild(s);"></script>
+    <!-- Leaflet CSS & JS für die interaktive Karte.
+         WICHTIG: beides MUSS nicht-blockierend geladen werden. Hängt unpkg (Adblocker,
+         Schul-/Firmen-WLAN, DNS-Filter, schlechtes Netz), dann blockierte vorher das
+         CSS die Ausführung aller weiteren Skripte und das JS sogar das Parsen des
+         Body. Ergebnis: Die Seite war komplett unbedienbar - nichts liess sich mehr
+         anklicken, nur der Wichtige-Seiten-Button (reines Inline-onclick) ging noch.
+         media="print" + onload -> das CSS blockiert das Rendern nicht.
+         defer -> das JS blockiert den Parser nicht. Die Karte braucht Leaflet ohnehin
+         erst beim Wechsel auf den Ranking-Tab, und initMap() faengt fehlendes L ab. -->
+    <link id="leaflet-css" rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          media="print" onload="this.media='all';"
+          onerror="this.onerror=null; this.href='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css';" />
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onerror="var s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'; document.head.appendChild(s);"></script>
 
     <style>
         /* ==========================================
@@ -55,14 +62,12 @@
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* Sicherheitsnetz: alle klickbaren Elemente reagieren sofort (kein 300ms-Tap-Delay,
-           kein versehentliches Doppeltipp-Zoom auf iOS/Android) */
-        button, a, [onclick], input, select, label, li { touch-action: manipulation; }
+        /* WICHTIG: hier bewusst KEIN globales touch-action und KEIN overflow-x: hidden
+           auf html/body. Beides hat auf iOS Safari das Scrollen und die Klicks blockiert. */
 
         html {
             -webkit-text-size-adjust: 100%;
             text-size-adjust: 100%;
-            overflow-x: hidden;
         }
 
         body {
@@ -74,10 +79,10 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            width: 100%;
-            overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            overscroll-behavior-y: contain;
+            /* Fallback zuerst: kennt ein Gerät env() nicht, wird die calc()-Zeile darunter
+               ignoriert und dieses Padding greift. Sonst fiele das Padding komplett weg. */
+            padding: 70px 15px 20px 15px;
             /* Top-Padding wegen der fixed Links-Box, plus Safe-Area für Notch/Dynamic Island */
             padding: calc(70px + env(safe-area-inset-top)) calc(15px + env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) calc(15px + env(safe-area-inset-left));
         }
@@ -87,6 +92,8 @@
            ========================================== */
         .links-dropdown-container {
             position: absolute;
+            top: 15px;   /* Fallback, falls env() nicht unterstützt wird */
+            right: 15px;
             top: calc(15px + env(safe-area-inset-top));
             right: calc(15px + env(safe-area-inset-right));
             z-index: 2000;
@@ -105,7 +112,6 @@
             align-items: center;
             gap: 8px;
             transition: all 0.2s;
-            touch-action: manipulation;
             min-height: 44px;
         }
         .links-toggle-btn:hover { background: var(--accent); color: white; }
@@ -133,6 +139,8 @@
 
         @media (max-width: 600px) {
             .links-dropdown-container {
+                top: 10px;   /* Fallback, falls env() nicht unterstützt wird */
+                right: 10px;
                 top: calc(10px + env(safe-area-inset-top));
                 right: calc(10px + env(safe-area-inset-right));
                 position: fixed;
@@ -204,7 +212,6 @@
             padding: 12px 10px; border-radius: 8px; font-size: 14.5px; font-weight: bold;
             cursor: pointer; transition: all 0.2s; flex-grow: 1; text-align: center;
             display: flex; align-items: center; justify-content: center; min-height: 44px;
-            touch-action: manipulation;
         }
         .tab-btn:hover { border-color: var(--text-muted); color: var(--text-main); }
         .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
@@ -217,7 +224,7 @@
         .sub-tab-btn {
             background: transparent; color: var(--text-muted); border: 1px solid var(--box-border);
             padding: 8px 14px; border-radius: 20px; font-size: 13.5px; font-weight: 600;
-            cursor: pointer; transition: all 0.2s; touch-action: manipulation; min-height: 44px;
+            cursor: pointer; transition: all 0.2s; min-height: 44px;
         }
         .sub-tab-btn:hover { border-color: var(--accent); color: var(--text-main); }
         .sub-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
@@ -257,14 +264,13 @@
             width: 100%; background: transparent; border: none; color: var(--text-main);
             font-size: 16px; font-weight: bold; outline: none; border-bottom: 2px solid var(--accent);
             padding-bottom: 5px; font-family: inherit; -webkit-appearance: none; appearance: none; min-height: 35px;
-            touch-action: manipulation;
         }
         /* font-size bleibt bewusst bei 16px+ (siehe oben) – darunter zoomt iOS Safari beim Fokussieren automatisch rein */
         select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f8fafc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 5px center; background-size: 1em; padding-right: 25px; }
         option { background: var(--panel-bg); color: var(--text-main); }
         
         .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .checkbox-item { display: flex; align-items: center; gap: 8px; background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid var(--box-border); cursor: pointer; transition: all 0.2s; min-height: 44px; touch-action: manipulation; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid var(--box-border); cursor: pointer; transition: all 0.2s; min-height: 44px; }
         .checkbox-item:hover { border-color: var(--accent); }
         .checkbox-item input { width: 20px; height: 20px; cursor: pointer; accent-color: var(--accent); }
         .checkbox-item span { font-size: 13px; font-weight: bold; }
@@ -281,7 +287,7 @@
         .slider-label .val-display { color: var(--accent); font-size: 20px; font-weight: bold; }
         
         /* SLIDER CSS (Chrome + Firefox + Safari kompatibel) */
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; height: 24px; margin-top: 5px; touch-action: pan-x; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; height: 24px; margin-top: 5px; }
         input[type=range]:focus { outline: none; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: var(--box-border); border-radius: 4px; }
         input[type=range]::-webkit-slider-thumb { height: 24px; width: 24px; border-radius: 50%; background: var(--accent); cursor: pointer; -webkit-appearance: none; margin-top: -8px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -315,7 +321,7 @@
         /* ==========================================
            6. RANKING MAP & TABELLEN (MOBILE OPTIMIERT)
            ========================================== */
-        #map { width: 100%; height: 200px; border-radius: 6px; border: 1px solid var(--box-border); margin-bottom: 10px; z-index: 1; touch-action: pan-x pan-y; }
+        #map { width: 100%; height: 200px; border-radius: 6px; border: 1px solid var(--box-border); margin-bottom: 10px; z-index: 1; }
         .leaflet-layer, .leaflet-control-zoom-in, .leaflet-control-zoom-out, .leaflet-control-attribution { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
         /* Größere Zoom-Buttons auf der Karte, leichter mit dem Finger zu treffen */
         .leaflet-control-zoom-in, .leaflet-control-zoom-out { width: 36px !important; height: 36px !important; line-height: 34px !important; font-size: 18px !important; }
@@ -327,7 +333,7 @@
         
         .table-wrapper { overflow-x: auto; max-height: 700px; overflow-y: auto; background: #0b1120; border-radius: 8px; border: 1px solid var(--box-border); margin-top: 20px; -webkit-overflow-scrolling: touch; }
         .ranking-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; min-width: 600px; }
-        .ranking-table th { background-color: #151f32; padding: 12px 15px; position: sticky; top: 0; cursor: pointer; border-bottom: 2px solid var(--box-border); font-weight: 600; color: var(--text-muted); z-index: 10; user-select: none; white-space: nowrap; touch-action: manipulation; min-height: 44px; }
+        .ranking-table th { background-color: #151f32; padding: 12px 15px; position: sticky; top: 0; cursor: pointer; border-bottom: 2px solid var(--box-border); font-weight: 600; color: var(--text-muted); z-index: 10; user-select: none; white-space: nowrap; min-height: 44px; }
         .ranking-table th:hover { color: var(--text-main); }
         .ranking-table td { padding: 12px 15px; border-bottom: 1px solid var(--box-border); color: var(--text-main); line-height: 1.4; }
         .ranking-table tr:hover { background-color: rgba(255,255,255,0.03); }
