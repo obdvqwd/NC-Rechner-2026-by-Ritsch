@@ -957,9 +957,9 @@
                 <div class="input-box">
                     <label>Zeitraum</label>
                     <select id="bel-zeitraum" onchange="renderBelTable()">
-                        <option value="aktuell">Nur aktuellstes Semester</option>
-                        <option value="getrennt">Beide Semester nebeneinander (Trend sichtbar)</option>
-                        <option value="kombiniert" selected>Beide Semester kombiniert (stabileres Ranking)</option>
+                        <option value="aktuell" id="bel-zeitraum-opt-aktuell">Nur aktuellstes Semester</option>
+                        <option value="getrennt" id="bel-zeitraum-opt-getrennt">Beide Semester nebeneinander (Trend sichtbar)</option>
+                        <option value="kombiniert" selected id="bel-zeitraum-opt-kombiniert">Beide Semester kombiniert (stabileres Ranking)</option>
                     </select>
                 </div>
                 <div class="input-box">
@@ -967,13 +967,12 @@
                     <select id="bel-norm" onchange="renderBelTable()">
                         <option value="absolut" selected>Absolute Punktzahl</option>
                         <option value="proplatz">Punkte pro Studienplatz</option>
-                        <option value="anteil">Anteil an Gesamtbewerbungen am Ort</option>
                     </select>
                 </div>
             </div>
 
             <div class="info-box info-blue" style="font-size: 13px; margin-bottom: 20px;">
-                <p style="margin:0;">🔒 <strong>Fest eingestellt (nicht veränderbar):</strong> Die Gewichtung läuft immer über einen Score aus <strong>Prio 1 × 3 + Prio 2 × 2 + Prio 3 × 1</strong> Punkten (Borda-Prinzip). Das ändert sich bei keiner Einstellung. Verbund-Studienorte (z. B. Erlangen-Nürnberg/Bayreuth, Heidelberg/Mannheim) werden immer einzeln geführt und nie zusammengezählt. Winter- und Sommersemester werden nie miteinander vermischt, weil beide Verfahren völlig unterschiedlich groß sind. Die Option „Anteil an Gesamtbewerbungen" setzt den Score ins Verhältnis zur theoretisch maximal möglichen Punktzahl an diesem Ort, also dem Fall, dass wirklich jede Bewerbung dort Prio 1 gewesen wäre. Sie zeigt also, wie stark eine Uni im Schnitt bevorzugt wird, unabhängig von ihrer Größe.</p>
+                <p style="margin:0;">🔒 <strong>Fest eingestellt (nicht veränderbar):</strong> Die Gewichtung läuft immer über einen Score aus <strong>Prio 1 × 3 + Prio 2 × 2 + Prio 3 × 1</strong> Punkten (Borda-Prinzip). Das ändert sich bei keiner Einstellung.</p>
             </div>
 
             <div class="table-wrapper">
@@ -2418,11 +2417,9 @@
         // entry = [p1, p2, p3, plaetze, bew]
         function belScoreFromEntry(entry, norm) {
             if (!entry) return null;
-            const [p1, p2, p3, plaetze, bew] = entry;
+            const [p1, p2, p3, plaetze] = entry;
             const score = p1 * 3 + p2 * 2 + p3;
-            if (norm === 'absolut') return score;
             if (norm === 'proplatz') return plaetze ? score / plaetze : null;
-            if (norm === 'anteil') return bew ? (score / (bew * 3)) * 100 : null;
             return score;
         }
 
@@ -2440,10 +2437,8 @@
 
         function belFormatScore(n, norm) {
             if (n === null || n === undefined) return 'k. A.';
-            if (norm === 'absolut') return belFormatInt(Math.round(n));
             if (norm === 'proplatz') return n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            if (norm === 'anteil') return n.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' %';
-            return String(n);
+            return belFormatInt(Math.round(n));
         }
 
         function belRankBadgeStyle(rang) {
@@ -2471,11 +2466,19 @@
             renderBelTable();
         }
 
+        // Zeigt in den Zeitraum-Optionen die tatsächlichen Semester/Jahre statt generischer Begriffe an.
+        function belUpdateZeitraumLabels(cfg) {
+            document.getElementById('bel-zeitraum-opt-aktuell').textContent = `Nur ${cfg.recentLabel}`;
+            document.getElementById('bel-zeitraum-opt-getrennt').textContent = `${cfg.recentLabel} und ${cfg.olderLabel} nebeneinander (Trend sichtbar)`;
+            document.getElementById('bel-zeitraum-opt-kombiniert').textContent = `${cfg.recentLabel} und ${cfg.olderLabel} kombiniert (stabileres Ranking)`;
+        }
+
         function renderBelTable() {
             const semester = document.getElementById('bel-semester').value;
             const zeitraum = document.getElementById('bel-zeitraum').value;
             const norm = document.getElementById('bel-norm').value;
             const cfg = belGetSemesterConfig(semester);
+            belUpdateZeitraumLabels(cfg);
             const thead = document.getElementById('bel-thead');
             const tbody = document.getElementById('bel-tbody');
             const arrow = (col) => belSort.col === col ? `<span class="sort-arrow">${belSort.dir === 'desc' ? '▼' : '▲'}</span>` : '<span class="sort-arrow"></span>';
@@ -2520,9 +2523,8 @@
                     <th onclick="setBelSort('p1')">Prio 1 Σ ${arrow('p1')}</th>
                     <th onclick="setBelSort('p2')">Prio 2 Σ ${arrow('p2')}</th>
                     <th onclick="setBelSort('p3')">Prio 3 Σ ${arrow('p3')}</th>
-                    <th onclick="setBelSort('plaetze')">Studienplätze Σ ${arrow('plaetze')}</th>
                 </tr>`;
-                belSortRows(rows, ['score', 'p1', 'p2', 'p3', 'plaetze'].includes(belSort.col) ? belSort.col : 'score');
+                belSortRows(rows, ['score', 'p1', 'p2', 'p3'].includes(belSort.col) ? belSort.col : 'score');
                 tbody.innerHTML = rows.map((r, i) => `<tr>
                     <td data-label="Rang" style="${belRankBadgeStyle(i + 1)}">${i + 1}</td>
                     <td data-label="Studienort" style="font-weight:bold; color:var(--text-main);">${r.ort}${r.onlyOneSemester ? ' *' : ''}</td>
@@ -2530,7 +2532,6 @@
                     <td data-label="Prio 1 Σ">${belFormatInt(r.p1)}</td>
                     <td data-label="Prio 2 Σ">${belFormatInt(r.p2)}</td>
                     <td data-label="Prio 3 Σ">${belFormatInt(r.p3)}</td>
-                    <td data-label="Studienplätze Σ">${belFormatInt(r.plaetze)}</td>
                 </tr>`).join('');
 
             } else { // getrennt
