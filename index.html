@@ -14,21 +14,23 @@
     <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
     <title>Medizinstudium Zentrale | by Flavio "Ritsch"</title>
 
+    <!-- Favicon (M-Monogramm) direkt eingebettet: keine externe Datei, die fehlen oder
+         blockiert werden koennte. Die .ico-Datei fuer aeltere Browser liegt zusaetzlich
+         im Projektordner und wird darunter verlinkt. -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20512%20512%22%3E%3Crect%20width=%22512%22%20height=%22512%22%20rx=%22112%22%20fill=%22%230f172a%22/%3E%3Crect%20x=%226%22%20y=%226%22%20width=%22500%22%20height=%22500%22%20rx=%22106%22%20fill=%22none%22%20stroke=%22%233b82f6%22%20stroke-opacity=%220.35%22%20stroke-width=%226%22/%3E%3Ctext%20x=%22256%22%20y=%22330%22%20font-family=%22Arial,Helvetica,sans-serif%22%20font-weight=%22900%22%20font-size=%22300%22%20text-anchor=%22middle%22%20fill=%22%23f8fafc%22%3EM%3C/text%3E%3Cpolyline%20points=%2296,388%20176,388%20206,340%20236,428%20266,364%20296,388%20416,388%22%20fill=%22none%22%20stroke=%22%233b82f6%22%20stroke-width=%2214%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E">
+    <link rel="alternate icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
     <!-- Vercel Web Analytics -->
     <script>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
 
-    <!-- Leaflet CSS & JS für die interaktive Karte.
-         WICHTIG: beides MUSS nicht-blockierend geladen werden. Hängt unpkg (Adblocker,
-         Schul-/Firmen-WLAN, DNS-Filter, schlechtes Netz), dann blockierte vorher das
-         CSS die Ausführung aller weiteren Skripte und das JS sogar das Parsen des
-         Body. Ergebnis: Die Seite war komplett unbedienbar - nichts liess sich mehr
-         anklicken, nur der Wichtige-Seiten-Button (reines Inline-onclick) ging noch.
-         media="print" + onload -> das CSS blockiert das Rendern nicht.
-         defer -> das JS blockiert den Parser nicht. Die Karte braucht Leaflet ohnehin
-         erst beim Wechsel auf den Ranking-Tab, und initMap() faengt fehlendes L ab. -->
+    <!-- Karte fuer das Studienort-Ranking. Beides wird bewusst nicht-blockierend
+         geladen (media-Trick beim CSS, defer beim Skript): kommt unpkg nicht durch,
+         laeuft die Seite trotzdem ganz normal weiter und die Karte wird still
+         ausgeblendet. Die Ortsauswahl darunter funktioniert immer. -->
     <link id="leaflet-css" rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           media="print" onload="this.media='all';"
           onerror="this.onerror=null; this.href='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css';" />
@@ -323,7 +325,7 @@
            ========================================== */
         #map { width: 100%; height: 200px; border-radius: 6px; border: 1px solid var(--box-border); margin-bottom: 10px; z-index: 1; }
         .leaflet-layer, .leaflet-control-zoom-in, .leaflet-control-zoom-out, .leaflet-control-attribution { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
-        /* Größere Zoom-Buttons auf der Karte, leichter mit dem Finger zu treffen */
+        /* Groessere Zoom-Buttons, damit sie mit dem Finger gut zu treffen sind */
         .leaflet-control-zoom-in, .leaflet-control-zoom-out { width: 36px !important; height: 36px !important; line-height: 34px !important; font-size: 18px !important; }
         #routingStatus { font-size: 13px; color: var(--accent); font-weight: bold; margin-bottom: 10px; display: none; }
         .vibe-row { display: flex; align-items: center; gap: 15px; margin-bottom: 12px; }
@@ -452,6 +454,7 @@
             .ranking-table td.m-block::before { content: attr(data-label) ": "; font-weight: 600; }
             .ranking-table td.m-block:empty { display: none; }
 
+
             /* Fallback: Zellen ohne m-Klasse bleiben als Label/Wert-Zeile lesbar */
             .ranking-table td:not([class*="m-"]) {
                 order: 80;
@@ -470,6 +473,105 @@
                 text-align: left;
                 font-size: 12.5px;
             }
+        }
+
+        /* ==========================================
+           BEWERBERZAHLEN: Kennzahlen-Karten & Einordnung
+           Auf dem Handy zwei Spalten, am Desktop vier.
+           ========================================== */
+        /* Fächer-Schalter über der Grafik */
+        .bw-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+        .bw-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: transparent; border: 1px solid var(--box-border);
+            color: var(--text-muted); border-radius: 20px;
+            padding: 6px 12px; font-size: 12.5px; font-weight: 600;
+            font-family: inherit; cursor: pointer; transition: all 0.15s;
+        }
+        .bw-chip .bw-punkt { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+        .bw-chip.aus { opacity: 0.4; }
+        .bw-chip.aus .bw-punkt { background: var(--text-muted) !important; }
+
+        .bw-karten { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+        /* Vergleichskarten tragen drei Kennzahlen und brauchen deshalb mehr Platz:
+           am Handy eine Spalte, auf Tablet und Desktop zwei. */
+        .bw-vgl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        @media (max-width: 800px) { .bw-vgl { grid-template-columns: 1fr; } }
+        @media (max-width: 800px) { .bw-karten { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 360px) { .bw-karten { grid-template-columns: 1fr; } }
+
+        .bw-karte {
+            background: #0b1120; border: 1px solid var(--box-border);
+            border-top: 3px solid var(--box-border);
+            border-radius: 8px; padding: 12px 12px 11px 12px;
+        }
+        .bw-vgl .bw-karte .bw-fach, .bw-karte .bw-fach { font-size: 12.5px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; line-height: 1.2; }
+        .bw-karte .bw-wert { font-size: 21px; font-weight: 900; line-height: 1.1; }
+        .bw-karte .bw-einheit { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .bw-karte .bw-delta { font-size: 12px; font-weight: 700; margin-top: 8px; }
+        .bw-karte .bw-zusatz { font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.35; }
+
+        /* Einordnungstext: eine Zeile pro Fach, farbig markiert */
+        .bw-zeile {
+            border-left: 3px solid var(--box-border);
+            background: #0b1120;
+            border-radius: 0 8px 8px 0;
+            padding: 11px 14px; margin-bottom: 9px;
+            font-size: 13.5px; line-height: 1.5; color: #cbd5e1;
+        }
+        .bw-zeile strong { color: var(--text-main); }
+
+        /* ==========================================
+           KOMPAKT-TABELLEN (Tausch-Regeln, Tausch-Potenzial)
+           Diese Nachschlage-Listen sind lang. Statt einer endlosen Spalte
+           stehen die Eintraege als schmale Kacheln nebeneinander: am Desktop
+           drei Spalten, auf Tablets zwei, am Handy eine. Der Erklaertext
+           klappt erst beim Anklicken auf.
+           ========================================== */
+        .ranking-table.kompakt { display: block; width: 100%; min-width: 0; }
+        .ranking-table.kompakt thead { display: none; }
+        .ranking-table.kompakt tbody {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        @media (max-width: 1150px) { .ranking-table.kompakt tbody { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 700px)  { .ranking-table.kompakt tbody { grid-template-columns: 1fr; } }
+
+        .ranking-table.kompakt tr {
+            display: flex; flex-wrap: wrap; align-items: center;
+            column-gap: 9px; margin: 0;
+            background: #0b1120;
+            border: 1px solid var(--box-border);
+            border-radius: 8px;
+            padding: 9px 11px;
+            align-content: flex-start;
+        }
+        .ranking-table.kompakt tr:hover { background: #0d1526; }
+        .ranking-table.kompakt tr::after { content: ''; flex: 0 0 100%; height: 0; order: 50; }
+        .ranking-table.kompakt td {
+            display: block; width: auto; border: none; padding: 0; line-height: 1.35;
+        }
+        .ranking-table.kompakt td.m-name {
+            order: 20; flex: 1 1 auto; min-width: 0;
+            font-size: 13px; font-weight: 600; color: var(--text-main);
+        }
+        .ranking-table.kompakt td.m-score {
+            order: 30; flex: 0 0 auto; text-align: right; white-space: nowrap;
+        }
+        .ranking-table.kompakt td.m-score .badge { padding: 3px 8px; font-size: 11px; }
+        .ranking-table.kompakt td.m-block {
+            order: 60; flex: 0 0 100%; display: none;
+            font-size: 12px; color: var(--text-muted); margin-top: 7px; line-height: 1.45;
+        }
+        .ranking-table.kompakt tr.offen td.m-block { display: block; }
+        .ranking-table.kompakt tr.hat-info { cursor: pointer; }
+        .ranking-table.kompakt tr.hat-info td.m-name::after { content: ' ⌄'; color: var(--text-muted); font-weight: 400; }
+        .ranking-table.kompakt tr.offen.hat-info td.m-name::after { content: ' ⌃'; }
+        /* Kein inneres Scroll-Fenster: der Block ist durch die Spalten kurz genug */
+        .wrapper-kompakt,
+        .table-wrapper:has(.ranking-table.kompakt) {
+            max-height: none; overflow: visible; background: transparent; border: none; padding: 0;
         }
 
         /* TEXT FORMATTING FOR BLOG/INFO CONTENT */
@@ -661,10 +763,10 @@
 
     <!-- TABS NAVIGATION -->
     <div class="tab-nav">
-        <button id="btn-tab-adh" class="tab-btn active" onclick="switchTab('adh')">AdH Simulator</button>
-        <button id="btn-tab-verfahren" class="tab-btn" onclick="switchTab('verfahren')">Daten & Trends</button>
+        <button id="btn-tab-verfahren" class="tab-btn active" onclick="switchTab('verfahren')">Daten & Trends</button>
+        <button id="btn-tab-adh" class="tab-btn" onclick="switchTab('adh')">AdH Simulator</button>
+        <button id="btn-tab-tausch" class="tab-btn" onclick="switchTab('tausch')">Studienplatztausch (Regeln)</button>
         <button id="btn-tab-ranking" class="tab-btn" onclick="switchTab('ranking')">Studienort-Ranking</button>
-        <button id="btn-tab-tausch" class="tab-btn" onclick="switchTab('tausch')">Studienplatztausch + Regelung</button>
         <button id="btn-tab-ersti" class="tab-btn" onclick="switchTab('ersti')">Ersti-Guide</button>
     </div>
 
@@ -673,19 +775,9 @@
         <!-- =========================================================================
              TAB 1: ADH SIMULATOR
              ========================================================================= -->
-        <div id="tab-adh" class="tab-content active">
+        <div id="tab-adh" class="tab-content">
             <h2>AdH-Punkte Simulator 2026/27</h2>
             
-            <div style="background-color: rgba(88, 101, 242, 0.1); border: 1px solid #5865F2; border-left: 4px solid #5865F2; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                <div style="background: #5865F2; color: white; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; flex-shrink: 0; box-shadow: 0 0 10px rgba(88, 101, 242, 0.5);">
-                    <!-- Offizielles Discord Logo SVG -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 127.14 96.36" fill="currentColor"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.31,60,73.31,53s5-12.74,11.43-12.74S96.2,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>
-                </div>
-                <div style="line-height: 1.4;">
-                    <div style="color: #f8fafc; font-weight: bold; font-size: 15px; margin-bottom: 4px;">Fragen zum Rechner oder Feedback?</div>
-                    <div style="color: var(--text-muted); font-size: 14px;">Schreib mir jederzeit direkt auf Discord: <strong style="color: white; background: #5865F2; padding: 3px 8px; border-radius: 6px; margin-left: 4px; font-family: monospace; font-size: 14px;">Flavio.ritsch</strong></div>
-                </div>
-            </div>
             
             <div class="info-box">
                 <h3>🔍 Wo finde ich meinen Prozentrang (PR)?</h3>
@@ -697,9 +789,7 @@
                     <li>Lies den Prozent-Wert in der Zeile <strong>"Notenausgleich: prozentualer / absoluter Rang der HZB"</strong> ab.</li>
                     <li style="color: var(--success-text);"><strong>Wichtig für Auslandsabiturienten:</strong> Auch mit einem im Ausland erworbenen Abitur kannst du den Prozentrang exakt so nutzen. Es ist dabei völlig egal, welchem Bundesland du per Losverfahren zugeteilt wurdest.</li>
                 </ul>
-                <div style="margin-top: 15px; text-align: center;">
-                    <button onclick="switchSubTab('info')" style="background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 13px;">📖 Mehr zum Vergabeverfahren & was der PR aussagt</button>
-                </div>
+                
             </div>
 
             <div class="input-box" style="margin-bottom: 25px;">
@@ -844,7 +934,7 @@
             <div class="dev-note">
                 <h3>🧠 Wozu ist dieses Tool da? (Entwickler-Notiz von Flavio "Ritsch")</h3>
                 <p><strong>Kein klassischer NC-Rechner-Ersatz, sondern die ultimative Ergänzung!</strong></p>
-                <p>Normale NC-Rechner arbeiten immer nur mit dem Wert deiner Note aus dem letzten Jahr. Dieses Tool hier setzt dort an, wo die harte Realität beginnt: <strong>Ab Mitte Juli</strong> veröffentlicht Hochschulstart deinen tatsächlichen Prozentrang (PR) im Portal.</p>
+                <p>Der NC-Rechner arbeitet immer nur mit dem Wert deiner Note aus dem letzten Jahr. Dieses Tool hier setzt dort an, wo die harte Realität beginnt: <strong>Ab Mitte Juli</strong> veröffentlicht Hochschulstart deinen tatsächlichen Prozentrang (PR) im Portal.</p>
                 <p><strong>Das Problem im System:</strong> Bonuspunkte für TMS, eine Ausbildung oder ein FSJ sind immer fest normiert und sicher. Deine Abiturnote aber nicht! Weil der Landesschnitt von Jahr zu Jahr schwankt, ist dieselbe 1,8 in jedem Bewerbungsverfahren unterschiedlich viel wert.</p>
                 <p><strong>Die Lösung - Was dieses Tool macht:</strong> Es wandelt deinen frischen Juli-PR über die offizielle mathematische Formel (Inverse Normalverteilung) in nackte AdH-Punkte um und berechnet den exakten Anteil der Wunsch-Uni. Damit siehst du glasklar deine <strong>aktuelle Situation im Bewerbungsverfahren</strong>. Du kannst deinen exakten Score berechnen und ihn 1:1 mit dem Grenzrang (Cut-off) vom letzten Jahr vergleichen, um zu sehen, wie sich dein Abitur durch den aktuellen Jahrgang verschoben hat.</p>
                 <p style="color: #ef4444; font-size: 12px; margin-top: 15px;"><em>Hinweis: Dies ist keine Prognose oder Garantie, ob es für einen Studienplatz reicht! Es ist ein Analyse-Tool, um die mathematische Realität der aktuellen Bewerbung zu entschlüsseln.</em></p>
@@ -869,10 +959,12 @@
             <div class="grid-3col">
                 <div class="input-box">
                     <label style="font-weight: bold; color: var(--text-main); font-size:16px; margin-bottom: 12px;">1. Heimatort setzen</label>
-                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; margin-top: -5px;">Klicke auf die Karte, um deinen Wohnort zu markieren.</p>
+                    <p id="map-hinweis" style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; margin-top: -5px;">Klicke auf die Karte oder wähle unten eine Stadt.</p>
                     <div id="map"></div>
-                    <div id="routingStatus" class="hidden">Berechne Routen...</div>
-                    
+                    <label id="ort-label" style="margin-top: 12px; font-weight: normal;">Oder Stadt auswählen</label>
+                    <select id="heimatort" onchange="heimatortGewaehlt()" style="margin-bottom: 6px;"></select>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 0; margin-top: 6px;">Entfernungen sind grobe Straßen-Näherungen und werden direkt im Browser berechnet.</p>
+
                     <label style="margin-top: 15px; font-weight: bold; color: var(--text-main);">Wie ortsgebunden bist du?</label>
                     <select id="ortgebunden" onchange="renderRankingTable()" style="margin-bottom:0;">
                         <option value="voll">Voll ortsgebunden (Distanz ist enorm wichtig)</option>
@@ -989,15 +1081,26 @@
              (enthält als Unter-Reiter: Nachrücker-Zahlen, Studienplatztausch,
               Infos zum Vergabesystem, TMS-Trends)
              ========================================================================= -->
-        <div id="tab-verfahren" class="tab-content text-content">
-            <div class="sub-tab-nav">
-                <button id="btn-subtab-nachruecken" class="sub-tab-btn active" onclick="switchSubTab('nachruecken')">Nachrücker-Zahlen</button>
-                <button id="btn-subtab-beliebtheit" class="sub-tab-btn" onclick="switchSubTab('beliebtheit')">Uni-Beliebtheit</button>
-                <button id="btn-subtab-trends" class="sub-tab-btn" onclick="switchSubTab('trends')">TMS-Trends</button>
-                <button id="btn-subtab-info" class="sub-tab-btn" onclick="switchSubTab('info')">Infos zum Vergabesystem</button>
+        <div id="tab-verfahren" class="tab-content text-content active">
+            <div style="background-color: rgba(88, 101, 242, 0.1); border: 1px solid #5865F2; border-left: 4px solid #5865F2; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; margin-top: 0; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <div style="background: #5865F2; color: white; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; flex-shrink: 0; box-shadow: 0 0 10px rgba(88, 101, 242, 0.5);">
+                    <!-- Offizielles Discord Logo SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 127.14 96.36" fill="currentColor"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.31,60,73.31,53s5-12.74,11.43-12.74S96.2,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>
+                </div>
+                <div style="line-height: 1.4;">
+                    <div style="color: #f8fafc; font-weight: bold; font-size: 15px; margin-bottom: 4px;">Bei Fragen</div>
+                    <div style="color: var(--text-muted); font-size: 14px;">Schreib mir jederzeit direkt auf Discord: <strong style="color: white; background: #5865F2; padding: 3px 8px; border-radius: 6px; margin-left: 4px; font-family: monospace; font-size: 14px;">Flavio.ritsch</strong></div>
+                </div>
             </div>
 
-        <div id="subtab-nachruecken" class="subtab-content active">
+            <div class="sub-tab-nav">
+                <button id="btn-subtab-bewerber" class="sub-tab-btn active" onclick="switchSubTab('bewerber')">Bewerberzahlen</button>
+                <button id="btn-subtab-trends" class="sub-tab-btn" onclick="switchSubTab('trends')">TMS-Zahlen</button>
+                <button id="btn-subtab-beliebtheit" class="sub-tab-btn" onclick="switchSubTab('beliebtheit')">Studienplatzbeliebtheit</button>
+                <button id="btn-subtab-nachruecken" class="sub-tab-btn" onclick="switchSubTab('nachruecken')">Nachrücker-Zahlen</button>
+            </div>
+
+        <div id="subtab-nachruecken" class="subtab-content">
             <h2>Nachrücker-Zahlen Medizin (WS 25/26)</h2>
             <div class="info-box">
                 <p style="margin:0;">Die offizielle Datenlage zum Nachrückverfahren wird von Hochschulstart nicht detailliert je Uni veröffentlicht. Die folgenden Daten und Tabellen basieren auf einer gemeinsamen Datenanalyse von <strong>Kevin Kumar und mir (Flavio "Ritsch")</strong>. <br><br>👉 <a href="https://www.future-doctor.de/nachruecker-zahlen-medizin/" target="_blank">Lies dir hier unbedingt unseren vollständigen Beitrag auf future-doctor.de durch!</a></p>
@@ -1070,13 +1173,71 @@
                     </tbody>
                 </table>
             </div>
+
+            <h2 style="margin-top: 45px;">Warum am Ende weniger Plätze übrig bleiben</h2>
+            <p>Die Platzzahl auf der Uni-Website ist nicht die Zahl, die in der Auswahl tatsächlich ankommt. Die Plätze schrumpfen vorher schrittweise durch feste Vorab-Abzüge:</p>
+            <ul>
+                <li><strong>Der internationale Abzug:</strong> Zuerst fallen etwa 5 % der Plätze für internationale Bewerber:innen weg. In Aachen gingen im WS 25/26 zum Beispiel 13 von 288 Plätzen direkt an internationale Studierende.</li>
+                <li><strong>Die Vorabquoten:</strong> Zusammen mit dieser internationalen Quote gehen bis zu 20 % der Plätze in diverse Vorabquoten auf, etwa für Härtefälle, die Landarztquote oder ein Zweitstudium.</li>
+                <li><strong>Der 30-10-60-Schlüssel:</strong> Erst was nach diesen Abzügen übrig bleibt, verteilt sich strikt nach dem gesetzlichen Schlüssel: 30 % Abiturbestenquote, 60 % Auswahlverfahren der Hochschulen und 10 % Zusätzliche Eignungsquote.</li>
+            </ul>
+
+            <p>Wie stark diese Vorabquoten die Verteilung in der Praxis verzerren, zeigt die RWTH Aachen. Hier haben wir als Beispiel Aachen durchgerechnet:</p>
+
+            <!-- Aachen-Grafik: bewusst komplett selbst gezeichnet und im Navy der Seite.
+                 Vorher lag hier ein Bild von einem fremden Server in einem weissen Kasten.
+                 Kam das Bild nicht durch, blieb nur ein leerer weisser Block stehen. -->
+            <div style="background: #0b1120; border: 1px solid var(--box-border); border-radius: 12px; padding: 20px 18px; margin: 25px 0;">
+                <p style="margin: 0 0 4px 0; font-weight: bold; color: var(--text-main); font-size: 15px;">Wahre Platzverteilung an der RWTH Aachen</p>
+                <p style="margin: 0 0 18px 0; font-size: 12px; color: var(--text-muted);">Humanmedizin, Wintersemester 25/26, nach allen Vorab-Abzügen</p>
+
+                <!-- Balken: Anteile der Quoten an den real vergebenen Plaetzen -->
+                <div style="display: flex; height: 34px; border-radius: 8px; overflow: hidden;">
+                    <div style="width: 48%; background: #3b82f6;"></div>
+                    <div style="width: 24%; background: #10b981;"></div>
+                    <div style="width: 8%;  background: #8b5cf6;"></div>
+                    <div style="width: 20%; background: #f59e0b;"></div>
+                </div>
+
+                <!-- Legende: untereinander, damit es auch auf dem Handy lesbar bleibt -->
+                <div style="display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 16px; font-size: 13px;">
+                    <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 12px; height: 12px; border-radius: 3px; background: #3b82f6; flex-shrink: 0;"></span><strong style="color: var(--text-main);">48 %</strong> <span style="color: var(--text-muted);">AdH</span></span>
+                    <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 12px; height: 12px; border-radius: 3px; background: #10b981; flex-shrink: 0;"></span><strong style="color: var(--text-main);">24 %</strong> <span style="color: var(--text-muted);">ABQ</span></span>
+                    <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 12px; height: 12px; border-radius: 3px; background: #8b5cf6; flex-shrink: 0;"></span><strong style="color: var(--text-main);">8 %</strong> <span style="color: var(--text-muted);">ZEQ</span></span>
+                    <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 12px; height: 12px; border-radius: 3px; background: #f59e0b; flex-shrink: 0;"></span><strong style="color: var(--text-main);">20 %</strong> <span style="color: var(--text-muted);">Vorabquoten &amp; International</span></span>
+                </div>
+
+                <!-- Soll-Ist-Vergleich: der eigentliche Aha-Effekt -->
+                <div style="margin-top: 20px; border-top: 1px solid var(--box-border); padding-top: 16px;">
+                    <p style="margin: 0 0 12px 0; font-size: 12px; color: var(--text-muted);">Gesetzlicher Schlüssel gegen echte Verteilung:</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <div style="flex: 1 1 90px; background: #0f172a; border: 1px solid var(--box-border); border-radius: 8px; padding: 10px 12px;">
+                            <div style="font-size: 11px; color: var(--text-muted);">AdH</div>
+                            <div style="font-size: 15px; font-weight: bold;"><span style="color: var(--text-muted);">60 %</span> <span style="color: var(--text-muted);">&rarr;</span> <span style="color: #3b82f6;">48 %</span></div>
+                        </div>
+                        <div style="flex: 1 1 90px; background: #0f172a; border: 1px solid var(--box-border); border-radius: 8px; padding: 10px 12px;">
+                            <div style="font-size: 11px; color: var(--text-muted);">ABQ</div>
+                            <div style="font-size: 15px; font-weight: bold;"><span style="color: var(--text-muted);">30 %</span> <span style="color: var(--text-muted);">&rarr;</span> <span style="color: #10b981;">24 %</span></div>
+                        </div>
+                        <div style="flex: 1 1 90px; background: #0f172a; border: 1px solid var(--box-border); border-radius: 8px; padding: 10px 12px;">
+                            <div style="font-size: 11px; color: var(--text-muted);">ZEQ</div>
+                            <div style="font-size: 15px; font-weight: bold;"><span style="color: var(--text-muted);">10 %</span> <span style="color: var(--text-muted);">&rarr;</span> <span style="color: #8b5cf6;">8 %</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box info-blue">
+                <p style="margin: 0;"><strong>Das Ergebnis:</strong> Die ABQ schrumpft von theoretisch 30 % auf real 24 % zusammen. Statt 60 % AdH bleiben nur noch 48 % der Plätze übrig. Aus theoretisch 10 % ZEQ werden am Ende magere 8 %. <em>(Quelle: Gemeinsame Analyse von Kevin Kumar und Flavio "Ritsch", future-doctor.de)</em></p>
+            </div>
+
         </div>
 
         <!-- =========================================================================
              TAB: UNI-BELIEBTHEIT (Binnenpriorität-Ranking)
              ========================================================================= -->
         <div id="subtab-beliebtheit" class="subtab-content">
-            <h2>Beliebtheits-Ranking Humanmedizin: Wo wollen die meisten wirklich hin?</h2>
+            <h2>Beliebtheits-Ranking Humanmedizin</h2>
 
             <div class="info-box">
                 <p style="margin:0;">Datenquelle: die offiziellen <strong>„Statistiken des Zentralen Verfahrens"</strong> von hochschulstart.de, Tabelle „Bewerbungen nach Binnenpriorität" für den Studiengang <strong>Humanmedizin</strong>. Diese Auswertung nutzt ausschließlich die offiziell einzeln ausgewiesenen Prio 1 bis 3, weil Hochschulstart alles ab Prio 4 nur noch als Sammelwert veröffentlicht.</p>
@@ -1108,10 +1269,6 @@
                 </div>
             </div>
 
-            <div class="info-box info-blue" style="font-size: 13px; margin-bottom: 20px;">
-                <p style="margin:0;">🔒 <strong>Fest eingestellt (nicht veränderbar):</strong> Die Gewichtung läuft immer über einen Score aus <strong>Prio 1 × 3 + Prio 2 × 2 + Prio 3 × 1</strong> Punkten (Borda-Prinzip). Das ändert sich bei keiner Einstellung.</p>
-            </div>
-
             <div class="table-wrapper">
                 <table class="ranking-table" id="bel-table">
                     <thead id="bel-thead"></thead>
@@ -1120,193 +1277,9 @@
             </div>
 
             <p style="font-size: 12px; color: var(--text-muted); margin-top: 15px;">* Für diesen Studienort liegen aus dem Vergleichssemester keine Daten vor (z. B. weil er neu hinzugekommen ist). Er ist trotzdem mit aufgeführt und entsprechend gekennzeichnet.</p>
-        </div>
 
-        <!-- =========================================================================
-             TAB: TMS-TRENDS (Anmeldezahlen im Zeitverlauf)
-             ========================================================================= -->
-        <div id="subtab-trends" class="subtab-content">
-            <h2>TMS-Anmelde- & Teilnehmerzahlen im Zeitverlauf</h2>
-
-            <div class="info-box info-blue">
-                <p style="margin:0;"><strong>Wichtig:</strong> <em>Anmeldungen</em> sind nicht gleichbedeutend mit <em>Teilnehmer:innen</em>, nicht jede:r Angemeldete tritt am Testtag auch tatsächlich an. Die Daten stammen von der offiziellen Quelle <a href="https://www.tms-info.org/" target="_blank">tms-info.org</a>.</p>
-            </div>
-
-            <p>Die folgende Grafik fasst die bisher bekannten TMS-Anmelde- und Teilnehmerzahlen der letzten Testtermine zusammen und macht die Entwicklung über die Halbjahre hinweg sichtbar:</p>
-
-            <div style="background: #0b1120; border: 1px solid var(--box-border); border-radius: 8px; padding: 20px 15px; margin-bottom: 20px;">
-                <canvas id="tmsTrendCanvas" width="700" height="300" style="display:block;"></canvas>
-            </div>
-
-            <div class="table-wrapper">
-                <table class="ranking-table">
-                    <thead>
-                        <tr>
-                            <th>Termin</th>
-                            <th style="color: var(--warning-text);">Teilnehmer</th>
-                            <th style="color: #3b82f6;">Anmeldungen</th>
-                            <th>davon Wiederholer*innen</th>
-                            <th>Anteil Wiederholer</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tmsTrendTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-        <!-- Ende Unter-Reiter TMS-Trends -->
-
-        <!-- =========================================================================
-             TAB: INFOS ZUM VERGABESYSTEM
-             ========================================================================= -->
-        <div id="subtab-info" class="subtab-content">
-            <h2>Hinter den Kulissen: Wie das Vergabesystem funktioniert</h2>
-
-            <h3>Schritt 1: Von der Gesamtplatzzahl zur Quote</h3>
-            <p>Die Platzzahl auf der Uni-Website ist nicht die Zahl, die in der Auswahl tatsächlich ankommt. Die Plätze schrumpfen vorher schrittweise durch feste Vorab-Abzüge:</p>
-            <ul>
-                <li><strong>Der internationale Abzug:</strong> Zuerst fallen etwa 5 % der Plätze für internationale Bewerber:innen weg. In Aachen gingen im WS 25/26 zum Beispiel 13 von 288 Plätzen direkt an internationale Studierende.</li>
-                <li><strong>Die Vorabquoten:</strong> Zusammen mit dieser internationalen Quote gehen bis zu 20 % der Plätze in diverse Vorabquoten auf, etwa für Härtefälle, die Landarztquote oder ein Zweitstudium.</li>
-                <li><strong>Der 30-10-60-Schlüssel:</strong> Erst was nach diesen Abzügen übrig bleibt, verteilt sich strikt nach dem gesetzlichen Schlüssel: 30 % Abiturbestenquote, 60 % Auswahlverfahren der Hochschulen und 10 % Zusätzliche Eignungsquote.</li>
-            </ul>
-
-            <p>Wie stark diese Vorabquoten die Verteilung in der Praxis verzerren, zeigt die RWTH Aachen. Hier haben wir als Beispiel Aachen durchgerechnet:</p>
-
-            <!-- Original Grafik -->
-            <div style="text-align: center; margin: 25px 0; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                <img src="https://www.future-doctor.de/wp-content/uploads/2026/07/nachruecker-aachen-quoten-ws2526.png" alt="Halbkreis-Diagramm der echten Platzverteilung an der RWTH Aachen im WS 25/26: 48 % AdH, 24 % ABQ, 8 % ZEQ, der Rest geht in Vorabquoten" style="max-width: 100%; height: auto;" onerror="this.style.display='none'; document.getElementById('fallback-chart').style.display='block';">
-            </div>
-
-            <!-- CSS Ersatzgrafik (Wird standardmäßig angezeigt oder als Ergänzung) -->
-            <div id="fallback-chart" style="margin-bottom: 25px;">
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;"><em>Ersatzgrafik: Wahre Platzverteilung in Aachen nach Abzügen</em></p>
-                <div style="display: flex; height: 35px; border-radius: 6px; overflow: hidden; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-                    <div style="width: 48%; background: #007bff; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="AdH (48%)">AdH 48%</div>
-                    <div style="width: 24%; background: #10b981; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="ABQ (24%)">ABQ 24%</div>
-                    <div style="width: 8%; background: #8b5cf6; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="ZEQ (8%)">ZEQ 8%</div>
-                    <div style="width: 20%; background: #f59e0b; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold;" title="Vorabquoten & International (20%)">Vorab 20%</div>
-                </div>
-            </div>
-
-            <div class="info-box info-blue">
-                <p style="margin: 0;"><strong>Das Ergebnis:</strong> Die ABQ schrumpft von theoretisch 30 % auf real 24 % zusammen. Statt 60 % AdH bleiben nur noch 48 % der Plätze übrig. Aus theoretisch 10 % ZEQ werden am Ende magere 8 %. <em>(Quelle: Gemeinsame Analyse von Kevin Kumar und Flavio "Ritsch", future-doctor.de)</em></p>
-            </div>
-
-            <h3>Abitur ist nicht gleich Abitur (Die Mathematik im AdH)</h3>
-            <p><strong>Von Flavio "Ritsch"</strong></p>
-            <p>Für die Bepunktung des Abiturs im AdH ist nur das Bundesland wichtig, in dem man das Abitur gemacht hat. Wie viele Punkte man letztlich dafür bekommt, hängt einzig und allein von der Konkurrenz des jeweiligen Bundeslandes ab.</p>
-            <p>Ab Mitte/Ende Juli veröffentlicht Hochschulstart in deinem Profil einen unscheinbaren, aber alles entscheidenden Wert. Gerankt wird über den Prozentrang (PR) der Hochschulzugangsberechtigung aller Bewerber, die sich auf Hochschulstart für Humanmedizin, Zahnmedizin, Tiermedizin und Pharmazie bewerben. Daraus wird dann ein gemeinsamer Topf gemacht.</p>
-
-            <p><strong>Wo finde ich meinen Prozentrang?</strong></p>
-            <ul>
-                <li>Logge dich ins Bewerbungsportal bei Hochschulstart ein und gehe oben im Menü auf „Meine Daten“.</li>
-                <li>Klicke auf den Reiter „Feste Bewerbungsbestandteile“.</li>
-                <li>Klappe den Bereich „Hochschulzugangsberechtigung“ auf und suche den Abschnitt „Erweiterte Angaben zur Hochschulzugangsberechtigung“.</li>
-                <li>Lies den Prozent-Wert in der Zeile „Notenausgleich: prozentualer / absoluter Rang der HZB“ ab.</li>
-            </ul>
-
-            <p>Dieser Wert gibt an, wo man im direkten Vergleich in seinem Bundesland steht. Die Vergabe der Punkte im AdH basiert mathematisch exakt auf diesem Prozentrang. Dabei erhält man die Punkte anhand der <strong>Gaußschen Normalverteilung</strong>, ähnlich wie beim TMS wird der PR so in nackte AdH-Punkte umgerechnet.</p>
-
-            <p><strong>Beispiel an der Uni Würzburg (Maximal 60 Punkte für das Abitur):</strong></p>
-            <ul>
-                <li>Für PR 15 erhält man 19,65 von 60 Punkten.</li>
-                <li>Für PR 50 bekommt man 30 von 60 Punkten.</li>
-                <li>Für PR 75 bekommt man 36,70 von 60 Punkten.</li>
-                <li>Für PR 100 bekommt man 60 von 60 Punkten.</li>
-            </ul>
-
-            <p><strong>Warum bekommt man bei einem PR von 75 nicht einfach 75 % der Punkte (also 45 von 60)?</strong><br>
-            Das liegt an der Mathematik der Gaußschen Normalverteilung. Das Punktesystem verläuft nicht linear, sondern in Form einer Glockenkurve. Die allermeisten Bewerber tummeln sich in der Mitte um den Durchschnitt (PR 50). Um von PR 50 auf PR 75 zu klettern, muss man im Verhältnis nur eine etwas bessere Note haben, weil man hier lediglich die große "Masse" an durchschnittlichen Bewerbern überholt.</p>
-            
-            <p>Diese außergewöhnliche Leistung an den beiden extremen Rändern wird durch das mathematische Modell überproportional stark mit Punkten bestraft oder belohnt. Daher ist der Punkteabstand zwischen PR 75 und PR 100 deutlich gewaltiger als zwischen PR 50 und PR 75.</p>
-
-            <p>Das führt dazu, dass man in jedem Bewerbungssemester mit dem gleichen Notenschnitt eine andere Punktzahl für das Abitur erhält. Die Bonuspunkte für den TMS, eine Ausbildung oder ein FSJ sind ohnehin fest normiert. Die gewertete Abiturleistung hingegen schwankt dynamisch mit dem aktuellen Bewerberjahrgang.</p>
-
-            <div class="info-box">
-                <h3 style="color: var(--success-text);">Häufige Frage: Was passiert bei schwachen Jahrgängen?</h3>
-                <p style="margin: 0;"><strong>Frage:</strong> Wenn sich weniger Abiturienten aus anderen Bundesländern bewerben, hat man dann auch einen Vorteil, wenn man aus einem Bundesland kommt, das zum Beispiel keinen G8 auf G9 Wechsel hatte?</p>
-                <p style="margin-top: 10px;"><strong>Antwort:</strong> Dein PR wird ausschließlich im Vergleich zu den Bewerbern aus deinem eigenen Bundesland berechnet. Sobald alle Bewerber aus allen Bundesländern ihre AdH-Punkte haben, werden sie in den bundesweiten Topf geworfen. Du hast also mit exakt derselben errechneten Punktzahl plötzlich eventuell bessere Chancen, zugelassen zu werden, weil schlichtweg Mitbewerber fehlen, die sich sonst vor dich geschoben hätten.</p>
-            </div>
-            
-            <p>Aus diesem Grund habe ich den Simulator entwickelt, mit dem man über den PR-Wert die eigenen Chancen an jeder Uni simulieren und den Effekt sofort sehen kann. So lässt sich schon vor dem Start bzw. während des laufenden Verfahrens der Grenzrang im Vergleich zum letzten Jahr exakt ablesen.</p>
-        </div>
-        <!-- Ende Unter-Reiter Infos zum Vergabesystem -->
-
-        </div>
-        <!-- Ende zusammengefasster Tab: Verfahren & Zahlen -->
-
-        <!-- =========================================================================
-             TAB 4: STUDIENPLATZTAUSCH
-             ========================================================================= -->
-        <div id="tab-tausch" class="tab-content text-content">
-            <h2>Studienplatztausch (1. FS)</h2>
-            <div class="info-box info-blue">
-                <p style="margin:0;">Die folgenden Daten basieren auf dem ausführlichen Studienplatztausch-Guide (Stand: WiSe 25/26) von <strong>Mona Jung</strong>. Für die kompletten und detaillierten Bedingungen, Fristen und Ausnahmeregelungen lest bitte unbedingt das Originaldokument!<br><br>👉 <a href="https://drive.google.com/file/d/1Tkk0hmLPE4p5BY8cvRw7EhwDNowFIYHn/view" target="_blank">Zum Studienplatztausch-Guide von Mona Jung</a></p>
-            </div>
-            
-            <p>Die Tabelle zeigt, ob ein Studienplatztausch zum ersten Fachsemester (1. FS) in Humanmedizin an der jeweiligen Universität grundsätzlich möglich ist.</p>
-            <ul>
-                <li><span class="badge badge-green">Ja</span> = Tausch zum 1. FS möglich (Quote in der Regel nicht relevant).</li>
-                <li><span class="badge badge-orange">Eingeschränkt</span> = Tausch nur unter sehr strengen Voraussetzungen (z.B. absolut identische Quote, sehr ähnliche Punkte/Noten) oder nur bei anerkanntem Härtefall möglich.</li>
-                <li><span class="badge badge-red">Nein</span> = Tausch zum 1. FS ist nicht möglich.</li>
-            </ul>
-
-            <div class="table-wrapper">
-                <table class="ranking-table">
-                    <thead>
-                        <tr>
-                            <th>Universität</th>
-                            <th>Tausch 1. FS?</th>
-                            <th>Hinweise / Ausnahmen</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="m-name" data-label="Universität">Aachen RWTH</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Augsburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td class="m-block" data-label="Hinweise">Zulassungskriterien (z.B. TMS, Abi) müssen sehr ähnlich sein. Sehr strenge Einzelfallprüfung.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Berlin Charité</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td class="m-block" data-label="Hinweise">Quote muss exakt übereinstimmen. Kein Tausch innerhalb der Vorabquoten.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Bielefeld U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Bochum U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ab WiSe 2025/2026 nicht mehr möglich.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Bonn U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Dresden TU</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Dresden/Chemnitz TU</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Duisburg-Essen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ab SoSe 2024 nicht mehr möglich.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Düsseldorf U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in begründeten, nachgewiesenen Härtefällen möglich.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Erlangen-Nürnberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Erlangen/Bayreuth U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Frankfurt am Main U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Freiburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Gießen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Göttingen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Tausch zwischen Ausländerquote und Bildungsinländern ist nicht möglich, sonst Quote egal.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Greifswald U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Halle-Wittenberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. <strong>Kein Ringtausch möglich!</strong></td></tr>
-                        <tr><td class="m-name" data-label="Universität">Hamburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Hannover MedH</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder Ortsbindung als Pflege in Region Hannover.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Heidelberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Heidelberg/Mannheim U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Jena U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Kiel U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. Ringtausch möglich.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Köln U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Leipzig U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Lübeck U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Magdeburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Mainz U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Mainz/MC Trier U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Marburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">München U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. Auch Landarztquote möglich.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Münster U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ausschließlich im höheren Fachsemester möglich.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Oldenburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder alleiniger Niedersachsen-Wohnsitz.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Regensburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Regensburg/MCN U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Rostock U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Saarbrücken U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Tübingen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Ulm U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Würzburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- NEUER ABSCHNITT: TAUSCH HÖHERE SEMESTER -->
-            <h2 style="margin-top: 50px;">Studienplatztausch (Potenzial für höhere Semester)</h2>
+            <!-- Aus dem Tausch-Tab hierher verschoben: gehoert thematisch zur Beliebtheit -->
+            <h2 style="margin-top: 45px;">Tausch-Potenzial: Wie gefragt ist dieser Platz?</h2>
             <div class="info-box">
                 <h3 style="color: var(--accent); margin-top: 0; font-size: 16px; margin-bottom: 8px;">Wie leicht lässt sich dieser Studienplatz wegtauschen?</h3>
                 <p style="margin-top: 5px; margin-bottom: 15px;">Diese Übersicht zeigt aus der Perspektive <strong>"Ich habe den Platz an dieser Uni"</strong>, wie hoch die allgemeine Nachfrage anderer Studierender nach diesem Ort ist. Beachtet, dass bei Modellstudiengängen der Tausch oft prinzipiell erschwert ist, selbst bei hoher Nachfrage.</p>
@@ -1319,8 +1292,8 @@
                 </div>
             </div>
 
-            <div class="table-wrapper">
-                <table class="ranking-table">
+            <div class="table-wrapper wrapper-kompakt">
+                <table class="ranking-table kompakt">
                     <thead>
                         <tr>
                             <th>Universität</th>
@@ -1374,6 +1347,183 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <!-- =========================================================================
+             UNTER-REITER: BEWERBERZAHLEN (Human-, Zahn-, Tier-, Pharmazie)
+             ========================================================================= -->
+        <div id="subtab-bewerber" class="subtab-content active">
+            <h2>Bewerberzahlen: Entwicklung des Bewerberdrucks</h2>
+
+            <div class="info-box">
+                <p style="margin:0;">Alle Zahlen stammen aus den offiziellen <strong>„Statistiken des Zentralen Verfahrens"</strong> von hochschulstart.de, jeweils aus der Gesamtübersicht am Anfang jedes Berichts. Gezeigt werden die vier über hochschulstart vergebenen Studiengänge der letzten fünf Jahre.</p>
+            </div>
+
+            <!-- Schritt 1: Semester. Bewusst zuerst, weil Winter und Sommer voellig
+                 unterschiedlich gross sind und im Sommer keine Tiermedizin angeboten wird. -->
+            <div class="input-box" style="margin-bottom: 15px;">
+                <label style="font-weight: bold; color: var(--text-main);">Semester (bitte zuerst wählen)</label>
+                <select id="bw-semester" onchange="renderBewerber()">
+                    <option value="winter" selected>Wintersemester (alle vier Studiengänge)</option>
+                    <option value="sommer">Sommersemester (ohne Tiermedizin)</option>
+                </select>
+            </div>
+
+            <!-- Schritt 2: eine Ansicht nach der anderen statt alles gleichzeitig,
+                 damit die Grafik auf dem Handy lesbar bleibt. -->
+            <div class="input-box" style="margin-bottom: 20px;">
+                <label style="font-weight: bold; color: var(--text-main);">Was soll die Grafik zeigen?</label>
+                <select id="bw-ansicht" onchange="renderBewerber()">
+                    <option value="bewerber" selected>Bewerbende</option>
+                    <option value="proplatz">Bewerbende pro Studienplatz</option>
+                    <option value="plaetze">Studienplätze</option>
+                    <option value="index">Veränderung in % (alle Fächer vergleichbar)</option>
+                </select>
+            </div>
+
+            <div style="background: #0b1120; border: 1px solid var(--box-border); border-radius: 8px; padding: 18px 14px; margin-bottom: 20px;">
+                <!-- Faecher zu- und abschalten: die Achse passt sich sofort an, damit
+                     die kleineren Fächer nicht von Humanmedizin plattgedrückt werden. -->
+                <div id="bw-chips" class="bw-chips"></div>
+                <canvas id="bwCanvas" style="display:block;"></canvas>
+                <p id="bw-achsenhinweis" style="font-size: 11.5px; color: var(--text-muted); margin: 10px 0 0 0; line-height: 1.45;"></p>
+            </div>
+
+            <!-- Kennzahlen-Karten: pro Fach der aktuelle Stand und die Veraenderung -->
+            <h3 style="margin-top: 0;">Die Lage in Zahlen</h3>
+            <div id="bw-karten" class="bw-karten"></div>
+
+            <!-- Freier Jahresvergleich -->
+            <h3>Zwei Jahre direkt vergleichen</h3>
+            <div class="grid-2col" style="margin-bottom: 14px;">
+                <div class="input-box">
+                    <label>Von</label>
+                    <select id="bw-von" onchange="bwZeichneVergleich()"></select>
+                </div>
+                <div class="input-box">
+                    <label>Bis</label>
+                    <select id="bw-bis" onchange="bwZeichneVergleich()"></select>
+                </div>
+            </div>
+            <div id="bw-vergleich" class="bw-vgl"></div>
+
+            <!-- Einordnung: was die Kurven bedeuten -->
+            <h3>Was das heißt</h3>
+            <div id="bw-text"></div>
+        </div>
+
+        <!-- =========================================================================
+             TAB: TMS-TRENDS (Anmeldezahlen im Zeitverlauf)
+             ========================================================================= -->
+        <div id="subtab-trends" class="subtab-content">
+            <h2>TMS-Anmelde- & Teilnehmerzahlen im Zeitverlauf</h2>
+
+            <div class="info-box info-blue">
+                <p style="margin:0;"><strong>Wichtig:</strong> <em>Anmeldungen</em> sind nicht gleichbedeutend mit <em>Teilnehmer:innen</em>, nicht jede:r Angemeldete tritt am Testtag auch tatsächlich an. Die Daten stammen von der offiziellen Quelle <a href="https://www.tms-info.org/" target="_blank">tms-info.org</a>.</p>
+            </div>
+
+            <p>Die folgende Grafik fasst die bisher bekannten TMS-Anmelde- und Teilnehmerzahlen der letzten Testtermine zusammen und macht die Entwicklung über die Halbjahre hinweg sichtbar:</p>
+
+            <div style="background: #0b1120; border: 1px solid var(--box-border); border-radius: 8px; padding: 20px 15px; margin-bottom: 20px;">
+                <canvas id="tmsTrendCanvas" width="700" height="300" style="display:block;"></canvas>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Termin</th>
+                            <th style="color: var(--warning-text);">Teilnehmer</th>
+                            <th style="color: #3b82f6;">Anmeldungen</th>
+                            <th>davon Wiederholer*innen</th>
+                            <th>Anteil Wiederholer</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tmsTrendTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Ende Unter-Reiter TMS-Trends -->
+
+        <!-- =========================================================================
+             TAB: INFOS ZUM VERGABESYSTEM
+             ========================================================================= -->
+        <!-- Ende Unter-Reiter Infos zum Vergabesystem -->
+
+        </div>
+        <!-- Ende zusammengefasster Tab: Verfahren & Zahlen -->
+
+        <!-- =========================================================================
+             TAB 4: STUDIENPLATZTAUSCH
+             ========================================================================= -->
+        <div id="tab-tausch" class="tab-content text-content">
+            <h2>Studienplatztausch (1. FS)</h2>
+            <div class="info-box info-blue">
+                <p style="margin:0;">Die folgenden Daten basieren auf dem ausführlichen Studienplatztausch-Guide (Stand: WiSe 25/26) von <strong>Mona Jung</strong>. Für die kompletten und detaillierten Bedingungen, Fristen und Ausnahmeregelungen lest bitte unbedingt das Originaldokument!<br><br>👉 <a href="https://drive.google.com/file/d/1Tkk0hmLPE4p5BY8cvRw7EhwDNowFIYHn/view" target="_blank">Zum Studienplatztausch-Guide von Mona Jung</a></p>
+            </div>
+            
+            <p>Die Tabelle zeigt, ob ein Studienplatztausch zum ersten Fachsemester (1. FS) in Humanmedizin an der jeweiligen Universität grundsätzlich möglich ist.</p>
+            <ul>
+                <li><span class="badge badge-green">Ja</span> = Tausch zum 1. FS möglich (Quote in der Regel nicht relevant).</li>
+                <li><span class="badge badge-orange">Eingeschränkt</span> = Tausch nur unter sehr strengen Voraussetzungen (z.B. absolut identische Quote, sehr ähnliche Punkte/Noten) oder nur bei anerkanntem Härtefall möglich.</li>
+                <li><span class="badge badge-red">Nein</span> = Tausch zum 1. FS ist nicht möglich.</li>
+            </ul>
+
+            <div class="table-wrapper wrapper-kompakt">
+                <table class="ranking-table kompakt">
+                    <thead>
+                        <tr>
+                            <th>Universität</th>
+                            <th>Tausch 1. FS?</th>
+                            <th>Hinweise / Ausnahmen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="m-name" data-label="Universität">Aachen RWTH</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Augsburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td class="m-block" data-label="Hinweise">Zulassungskriterien (z.B. TMS, Abi) müssen sehr ähnlich sein. Sehr strenge Einzelfallprüfung.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Berlin Charité</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td class="m-block" data-label="Hinweise">Quote muss exakt übereinstimmen. Kein Tausch innerhalb der Vorabquoten.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Bielefeld U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Bochum U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ab WiSe 2025/2026 nicht mehr möglich.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Bonn U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Dresden TU</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Dresden/Chemnitz TU</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Duisburg-Essen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ab SoSe 2024 nicht mehr möglich.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Düsseldorf U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in begründeten, nachgewiesenen Härtefällen möglich.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Erlangen-Nürnberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Erlangen/Bayreuth U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Frankfurt am Main U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Freiburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Gießen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Göttingen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Tausch zwischen Ausländerquote und Bildungsinländern ist nicht möglich, sonst Quote egal.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Greifswald U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Halle-Wittenberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. <strong>Kein Ringtausch möglich!</strong></td></tr>
+                        <tr><td class="m-name" data-label="Universität">Hamburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Hannover MedH</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder Ortsbindung als Pflege in Region Hannover.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Heidelberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Heidelberg/Mannheim U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Jena U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Kiel U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. Ringtausch möglich.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Köln U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Leipzig U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Lübeck U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Magdeburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Mainz U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Mainz/MC Trier U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Marburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">München U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. Auch Landarztquote möglich.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Münster U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ausschließlich im höheren Fachsemester möglich.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Oldenburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder alleiniger Niedersachsen-Wohnsitz.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Regensburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Regensburg/MCN U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Rostock U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Saarbrücken U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Tübingen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Ulm U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
+                        <tr><td class="m-name" data-label="Universität">Würzburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
 
         <!-- =========================================================================
@@ -1661,7 +1811,6 @@
     <!-- TABS LOGIC -->
     <script>
         let mapInitialized = false;
-        let leafletMap = null, homeMarker = null;
         let trendsInitialized = false;
 
         function switchTab(tabId) {
@@ -1675,9 +1824,11 @@
             if (tabId === 'ranking') {
                 container.style.maxWidth = '1300px';
                 if (!mapInitialized) {
+                    initHeimatorte();
                     initMap();
+                    heimatortGewaehlt();
                     mapInitialized = true;
-                } else if (typeof leafletMap !== 'undefined' && leafletMap) {
+                } else if (leafletMap) {
                     setTimeout(() => leafletMap.invalidateSize(), 100);
                 }
             } else if (tabId === 'verfahren') {
@@ -1700,7 +1851,17 @@
                 drawTmsTrendChart();
                 trendsInitialized = true;
             }
+            // Die Bewerberzahlen-Grafik braucht die sichtbare Breite, deshalb wird sie
+            // erst gezeichnet, wenn der Reiter wirklich offen ist.
+            if (subId === 'bewerber' && typeof renderBewerber === 'function') {
+                renderBewerber();
+            }
         }
+
+        // Beim Laden ist "Daten & Trends" der aktive Reiter. switchTab lief aber noch
+        // nie, deshalb haette der Container die schmale Standardbreite behalten und die
+        // Grafik waere unnoetig klein gerendert worden.
+        document.getElementById('main-container').style.maxWidth = '1100px';
     </script>
 
     <!-- =========================================================================
@@ -1733,12 +1894,15 @@
             const canvas = document.getElementById('tmsTrendCanvas');
             if (!canvas) return;
 
-            // Groesse an den verfuegbaren Platz anpassen. Auf dem Handy wird die Grafik
-            // bewusst hoch statt breit, sonst schrumpft die Kurve zu einem flachen Strich.
+            // Groesse an den verfuegbaren Platz anpassen. Auf dem Handy nur etwas
+            // hoeher als vorher (nicht mehr hochkant), damit die Kurve nicht mehr
+            // so gestaucht ist wie bei fester 700x300-Aufloesung auf schmaler Breite.
             let cssW = canvas.clientWidth || (canvas.parentElement ? canvas.parentElement.clientWidth - 30 : 0) || 700;
             cssW = Math.max(260, cssW);
             const narrow = cssW < 560;
-            const cssH = narrow ? Math.min(470, Math.max(360, Math.round(cssW * 1.2))) : 300;
+            // Hoehe waechst mit der Breite mit, damit die Kurve auf breiten
+            // Bildschirmen nicht flachgedrueckt wirkt.
+            const cssH = narrow ? 260 : Math.round(Math.min(480, Math.max(330, cssW * 0.46)));
 
             // Auf Retina-Displays scharf zeichnen
             const dpr = Math.min(window.devicePixelRatio || 1, 3);
@@ -1751,10 +1915,11 @@
             const W = cssW, H = cssH;
             ctx.clearRect(0, 0, W, H);
 
-            // Auf schmalen Schirmen mehr Luft: oben fuer die gestapelte Legende,
-            // unten fuer die schraeg gestellten Datumsangaben.
+            // Auf schmalen Schirmen etwas mehr Luft: oben fuer die gestapelte Legende,
+            // unten fuer die schraeg gestellten Datumsangaben. Bei nur 260px Hoehe
+            // darf das aber nicht so viel Platz fressen wie vorher bei 360-470px.
             const padding = narrow
-                ? { top: 62, right: 14, bottom: 52, left: 48 }
+                ? { top: 46, right: 12, bottom: 42, left: 44 }
                 : { top: 34, right: 20, bottom: 34, left: 52 };
             const chartW = W - padding.left - padding.right;
             const chartH = H - padding.top - padding.bottom;
@@ -2274,72 +2439,119 @@
             { id: 41, name: 'Würzburg U', cap: 153, rent: 480, other: 350, dist: 0, typ: 'Regel', profile: [2,3,4,4,5], lat: 49.7939, lon: 9.9512, jobScore: 5 }
         ];
 
+        // Heimatorte zur Auswahl. Bewusst eine feste Liste statt einer Karte:
+        // dadurch braucht die Seite keinerlei externen Dienst, funktioniert also
+        // auch hinter Schul- und Firmennetzen, ohne Karten-Anbieter und ohne
+        // Meldungen ueber fehlende Schnittstellen.
+        const HEIMATORTE = [
+            { name: 'Aachen', lat: 50.7753, lon: 6.0839 },       { name: 'Augsburg', lat: 48.3705, lon: 10.8978 },
+            { name: 'Berlin', lat: 52.5200, lon: 13.4050 },      { name: 'Bielefeld', lat: 52.0302, lon: 8.5325 },
+            { name: 'Bochum', lat: 51.4818, lon: 7.2162 },       { name: 'Bonn', lat: 50.7374, lon: 7.0982 },
+            { name: 'Braunschweig', lat: 52.2689, lon: 10.5268 },{ name: 'Bremen', lat: 53.0793, lon: 8.8017 },
+            { name: 'Chemnitz', lat: 50.8278, lon: 12.9214 },    { name: 'Dortmund', lat: 51.5136, lon: 7.4653 },
+            { name: 'Dresden', lat: 51.0504, lon: 13.7373 },     { name: 'Duisburg', lat: 51.4344, lon: 6.7623 },
+            { name: 'Düsseldorf', lat: 51.2277, lon: 6.7735 },   { name: 'Erfurt', lat: 50.9848, lon: 11.0299 },
+            { name: 'Erlangen', lat: 49.5897, lon: 11.0040 },    { name: 'Essen', lat: 51.4556, lon: 7.0116 },
+            { name: 'Frankfurt am Main', lat: 50.1109, lon: 8.6821 }, { name: 'Freiburg', lat: 47.9990, lon: 7.8421 },
+            { name: 'Gießen', lat: 50.5841, lon: 8.6784 },       { name: 'Göttingen', lat: 51.5413, lon: 9.9158 },
+            { name: 'Greifswald', lat: 54.0865, lon: 13.3923 },  { name: 'Halle (Saale)', lat: 51.4825, lon: 11.9705 },
+            { name: 'Hamburg', lat: 53.5511, lon: 9.9937 },      { name: 'Hannover', lat: 52.3759, lon: 9.7320 },
+            { name: 'Heidelberg', lat: 49.3988, lon: 8.6724 },   { name: 'Jena', lat: 50.9271, lon: 11.5892 },
+            { name: 'Karlsruhe', lat: 49.0069, lon: 8.4037 },    { name: 'Kassel', lat: 51.3127, lon: 9.4797 },
+            { name: 'Kiel', lat: 54.3233, lon: 10.1228 },        { name: 'Köln', lat: 50.9375, lon: 6.9603 },
+            { name: 'Leipzig', lat: 51.3397, lon: 12.3731 },     { name: 'Lübeck', lat: 53.8655, lon: 10.6866 },
+            { name: 'Magdeburg', lat: 52.1205, lon: 11.6276 },   { name: 'Mainz', lat: 49.9929, lon: 8.2473 },
+            { name: 'Mannheim', lat: 49.4875, lon: 8.4660 },     { name: 'Marburg', lat: 50.8021, lon: 8.7667 },
+            { name: 'München', lat: 48.1351, lon: 11.5820 },     { name: 'Münster', lat: 51.9607, lon: 7.6261 },
+            { name: 'Nürnberg', lat: 49.4521, lon: 11.0767 },    { name: 'Oldenburg', lat: 53.1435, lon: 8.2146 },
+            { name: 'Osnabrück', lat: 52.2799, lon: 8.0472 },    { name: 'Regensburg', lat: 49.0134, lon: 12.1016 },
+            { name: 'Rostock', lat: 54.0924, lon: 12.0991 },     { name: 'Saarbrücken', lat: 49.2402, lon: 6.9969 },
+            { name: 'Stuttgart', lat: 48.7758, lon: 9.1829 },    { name: 'Trier', lat: 49.7490, lon: 6.6371 },
+            { name: 'Tübingen', lat: 48.5216, lon: 9.0576 },     { name: 'Ulm', lat: 48.4011, lon: 9.9876 },
+            { name: 'Würzburg', lat: 49.7913, lon: 9.9534 },     { name: 'Wuppertal', lat: 51.2562, lon: 7.1508 }
+        ];
+
+        function initHeimatorte() {
+            const sel = document.getElementById('heimatort');
+            if (!sel || sel.options.length) return;
+            HEIMATORTE.forEach((o, i) => {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.text = o.name;
+                if (o.name === 'München') opt.selected = true;
+                sel.appendChild(opt);
+            });
+        }
+
+        function heimatortGewaehlt() {
+            const sel = document.getElementById('heimatort');
+            const ort = HEIMATORTE[parseInt(sel.value, 10)] || HEIMATORTE.find(o => o.name === 'München');
+            updateDistances(ort.lat, ort.lon);
+            if (leafletMap && typeof L !== 'undefined') {
+                if (homeMarker) leafletMap.removeLayer(homeMarker);
+                homeMarker = L.marker([ort.lat, ort.lon]).addTo(leafletMap);
+                leafletMap.setView([ort.lat, ort.lon], 6);
+            }
+        }
+
+        // ---------- Karte ----------
+        // Die Karte ist eine Zugabe. Kommt Leaflet nicht durch (blockiertes Netz),
+        // wird der Kartenbereich still ausgeblendet; die Ortsauswahl bleibt nutzbar.
+        let leafletMap = null, homeMarker = null;
+
         function initMap() {
             const mapEl = document.getElementById('map');
-            const useMunichFallback = () => {
-                renderRankingTable();
-                updateDistances(48.1351, 11.5820);
-            };
-
+            if (!mapEl) return;
             if (typeof L === 'undefined') {
-                // Evtl. lädt die Fallback-CDN (jsDelivr) noch – kurz erneut versuchen, bevor wir aufgeben
+                // Fallback-CDN laedt eventuell noch, deshalb ein zweiter Versuch
                 setTimeout(() => {
-                    if (typeof L === 'undefined') {
-                        showMapFallback(mapEl, 'Die Kartenbibliothek (Leaflet) konnte nicht geladen werden – vermutlich blockiert dein Netzwerk externe Skripte oder es besteht keine Internetverbindung.');
-                        useMunichFallback();
-                    } else {
-                        buildLeafletMap(mapEl, useMunichFallback);
-                    }
-                }, 1200);
+                    if (typeof L === 'undefined') karteAusblenden(mapEl);
+                    else karteAufbauen(mapEl);
+                }, 1500);
                 return;
             }
-
-            buildLeafletMap(mapEl, useMunichFallback);
+            karteAufbauen(mapEl);
         }
 
-        function buildLeafletMap(mapEl, useMunichFallback) {
+        function karteAufbauen(mapEl) {
             try {
-                leafletMap = L.map('map').setView([48.1351, 11.5820], 6);
+                const start = HEIMATORTE.find(o => o.name === 'München');
+                leafletMap = L.map('map').setView([start.lat, start.lon], 6);
                 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                    subdomains: 'abcd',
-                    maxZoom: 19
+                    attribution: '&copy; OpenStreetMap-Mitwirkende &copy; CARTO',
+                    subdomains: 'abcd', maxZoom: 19
                 }).addTo(leafletMap);
-                homeMarker = L.marker([48.1351, 11.5820]).addTo(leafletMap);
-                leafletMap.on('click', function(e) { if(homeMarker) leafletMap.removeLayer(homeMarker); homeMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(leafletMap); updateDistances(e.latlng.lat, e.latlng.lng); });
-                renderRankingTable();
-                updateDistances(48.1351, 11.5820);
-            } catch (err) {
-                console.error('Kartenfehler:', err);
-                showMapFallback(mapEl, 'Die Karte konnte nicht initialisiert werden.');
-                useMunichFallback();
-            }
-        }
-
-        function showMapFallback(mapEl, message) {
-            if (!mapEl) return;
-            mapEl.innerHTML = `<div style="display:flex; flex-direction:column; gap:8px; align-items:center; justify-content:center; height:100%; min-height:200px; text-align:center; padding:15px; color:var(--text-muted); font-size:13px; background:#0b1120; border-radius:8px; border:1px dashed var(--box-border);">
-                <span style="font-size:22px;">🗺️</span>
-                <span>${message}</span>
-                <span>Dein Heimatort wird standardmäßig auf <strong style="color:var(--text-main);">München</strong> gesetzt – die Rangliste unten funktioniert trotzdem ganz normal mit Luftlinien-Distanzen.</span>
-            </div>`;
-        }
-
-        async function updateDistances(hLat, hLon) {
-            const status = document.getElementById('routingStatus'); status.style.display = 'block';
-            try {
-                let coordString = `${hLon},${hLat}`; rankingUnis.forEach(uni => { coordString += `;${uni.lon},${uni.lat}`; });
-                const res = await fetch(`https://router.project-osrm.org/table/v1/driving/${coordString}?sources=0`);
-                const data = await res.json();
-                if(data.code === 'Ok') rankingUnis.forEach((uni, i) => { uni.dist = Math.round(data.distances[0][i + 1] / 1000); });
-            } catch(e) {
-                rankingUnis.forEach(uni => {
-                    const R = 6371, dLat = (uni.lat - hLat) * Math.PI / 180, dLon = (uni.lon - hLon) * Math.PI / 180;
-                    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(hLat * Math.PI / 180) * Math.cos(uni.lat * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-                    uni.dist = Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)) * 1.3);
+                homeMarker = L.marker([start.lat, start.lon]).addTo(leafletMap);
+                leafletMap.on('click', function(e) {
+                    if (homeMarker) leafletMap.removeLayer(homeMarker);
+                    homeMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(leafletMap);
+                    updateDistances(e.latlng.lat, e.latlng.lng);
                 });
+            } catch (err) {
+                karteAusblenden(mapEl);
             }
-            status.style.display = 'none'; renderRankingTable();
+        }
+
+        function karteAusblenden(mapEl) {
+            if (mapEl) mapEl.style.display = 'none';
+            const hinweis = document.getElementById('map-hinweis');
+            if (hinweis) hinweis.textContent = 'Wähle die Stadt, von der aus gerechnet werden soll.';
+            const label = document.getElementById('ort-label');
+            if (label) label.style.display = 'none';
+        }
+
+        // Entfernungsberechnung laeuft komplett im Browser (Luftlinie mal 1,3 als
+        // grobe Strassen-Naeherung). Kein Routing-Dienst, keine Netzabfrage.
+        function updateDistances(hLat, hLon) {
+            rankingUnis.forEach(uni => {
+                const R = 6371;
+                const dLat = (uni.lat - hLat) * Math.PI / 180;
+                const dLon = (uni.lon - hLon) * Math.PI / 180;
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2)
+                        + Math.cos(hLat * Math.PI / 180) * Math.cos(uni.lat * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+                uni.dist = Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 1.3);
+            });
+            renderRankingTable();
         }
 
         function toggleSizeSlider() {
@@ -2791,6 +3003,520 @@
 
         // Initial rendern (Tab ist beim Laden noch nicht sichtbar, das ist für innerHTML kein Problem)
         renderBelTable();
+    </script>
+
+
+    <!-- =========================================================================
+         SCRIPT: BEWERBERZAHLEN (Human-, Zahn-, Tier-, Pharmazie)
+         Quelle: "Statistiken des Zentralen Verfahrens" von hochschulstart.de,
+         jeweils die Gesamtuebersicht (Tabelle 2 Studienplaetze, Tabelle 3 Bewerbende).
+         Jeder Wert wurde gegen die Vorjahresspalte des Folgeberichts geprueft.
+         ========================================================================= -->
+    <script>
+        const BW_FAECHER = [
+            { key: 'human', name: 'Humanmedizin', kurz: 'Human',     farbe: '#ef4444' },
+            { key: 'zahn',  name: 'Zahnmedizin',  kurz: 'Zahn',      farbe: '#3b82f6' },
+            { key: 'tier',  name: 'Tiermedizin',  kurz: 'Tier',      farbe: '#10b981' },
+            { key: 'pharm', name: 'Pharmazie',    kurz: 'Pharmazie', farbe: '#f59e0b' }
+        ];
+
+        // Datenreihen aus den offiziellen Berichten von hochschulstart.de.
+        // "bruchAb" markiert den ersten Wert nach der Studienplatzreform 2020:
+        // davor wurden Bewerberzahlen anders erhoben (fruehes Stichdatum, andere
+        // Zaehlweise), deshalb sind die Werte davor nur eingeschraenkt vergleichbar.
+        const BW_DATEN = {
+            winter: {
+                label: 'Wintersemester',
+                jahre: ['17/18', '18/19', '19/20', '20/21', '21/22', '22/23', '23/24', '24/25', '25/26'],
+                bruchAb: 3,
+                bewerber: {
+                    human: [43184, 43631, 41791, 43541, 38541, 35567, 34584, 32966, 31543],
+                    zahn:  [ 6043,  6190,  5870, 13332, 11714, 10718, 11377, 10954, 10881],
+                    tier:  [ 4409,  4244,  4029,  7134,  6177,  5394,  5481,  5186,  5216],
+                    pharm: [ 4090,  3980,  3693,  8188,  7336,  6836,  7031,  6506,  5640]
+                },
+                plaetze: {
+                    human: [ 9176,  9232,  9458,  9660,  9820,  9948, 10060, 10219, 10281],
+                    zahn:  [ 1516,  1518,  1534,  1547,  1499,  1495,  1534,  1518,  1506],
+                    tier:  [ 1067,  1076,  1082,  1096,  1100,  1103,  1115,  1117,  1110],
+                    pharm: [ 1848,  1841,  1835,  1917,  1907,  1936,  1952,  1991,  2010]
+                }
+            },
+            sommer: {
+                label: 'Sommersemester',
+                jahre: ['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026'],
+                bruchAb: 3,
+                // Im Sommersemester wird keine Tiermedizin ueber hochschulstart vergeben.
+                bewerber: {
+                    human: [18799, 19704, 18928, 19437, 15521, 15026, 15701, 13817, 12674, 11093],
+                    zahn:  [ 3433,  3361,  3431,  6017,  5320,  5149,  5842,  5467,  5202,  4766],
+                    pharm: [ 1620,  1558,  1487,  2811,  2310,  2524,  2610,  2592,  2300,  1789]
+                },
+                plaetze: {
+                    human: [ 1627,  1678,  1687,  1733,  1811,  1804,  1799,  1808,  1811,  1799],
+                    zahn:  [  607,   603,   613,   606,   613,   637,   636,   632,   642,   630],
+                    pharm: [  896,   908,   891,   879,   801,   815,   833,   865,   857,   862]
+                }
+            }
+        };
+
+        const BW_ANSICHTEN = {
+            bewerber: { titel: 'Bewerbende',                  einheit: 'Bewerbende',    nachkomma: 0, abNull: true  },
+            index:    { titel: 'Veränderung in %',            einheit: '% vom Start',   nachkomma: 0, abNull: false },
+            proplatz: { titel: 'Bewerbende pro Studienplatz', einheit: 'pro Platz',     nachkomma: 1, abNull: true  },
+            plaetze:  { titel: 'Studienplätze',               einheit: 'Studienplätze', nachkomma: 0, abNull: true  }
+        };
+
+        function bwAktiveFaecher(semester) {
+            return BW_FAECHER.filter(f => BW_DATEN[semester].bewerber[f.key]);
+        }
+
+        // Welche Faecher gerade in der Grafik angezeigt werden. Standard: alle.
+        let bwAus = {};
+
+        function bwSichtbareFaecher(semester) {
+            const alle = bwAktiveFaecher(semester);
+            const an = alle.filter(f => !bwAus[f.key]);
+            return an.length ? an : alle;   // nie alles ausblenden
+        }
+
+        function bwToggleFach(key) {
+            bwAus[key] = !bwAus[key];
+            const semester = document.getElementById('bw-semester').value;
+            // Letztes verbleibendes Fach nicht abschaltbar machen
+            if (bwAktiveFaecher(semester).every(f => bwAus[f.key])) bwAus[key] = false;
+            renderBewerber();
+        }
+
+        // Liefert die Zahlenreihe eines Fachs fuer die gewaehlte Ansicht
+        function bwReihe(semester, fachKey, ansicht) {
+            const d = BW_DATEN[semester];
+            if (ansicht === 'plaetze') return d.plaetze[fachKey];
+            if (ansicht === 'bewerber') return d.bewerber[fachKey];
+            if (ansicht === 'index') {
+                // Erstes Jahr = 100, dadurch sind grosse und kleine Faecher vergleichbar
+                const b = d.bewerber[fachKey];
+                return b.map(v => v / b[0] * 100);
+            }
+            return d.bewerber[fachKey].map((b, i) => b / d.plaetze[fachKey][i]);
+        }
+
+        function bwZeichneChips() {
+            const el = document.getElementById('bw-chips');
+            if (!el) return;
+            const semester = document.getElementById('bw-semester').value;
+            el.innerHTML = bwAktiveFaecher(semester).map(f => {
+                const aus = !!bwAus[f.key];
+                return `<button type="button" class="bw-chip${aus ? ' aus' : ''}"
+                    style="${aus ? '' : `border-color:${f.farbe}; color:var(--text-main);`}"
+                    onclick="bwToggleFach('${f.key}')"
+                    aria-pressed="${!aus}">
+                    <span class="bw-punkt" style="background:${f.farbe};"></span>${f.name}
+                </button>`;
+            }).join('');
+        }
+
+        function bwFormat(wert, nachkomma) {
+            return wert.toLocaleString('de-DE', { minimumFractionDigits: nachkomma, maximumFractionDigits: nachkomma });
+        }
+
+        function bwProzent(neu, alt) {
+            return (neu - alt) / alt * 100;
+        }
+
+        // ---------- Grafik ----------
+        function bwZeichneGrafik() {
+            const canvas = document.getElementById('bwCanvas');
+            if (!canvas) return;
+
+            const semester = document.getElementById('bw-semester').value;
+            const ansicht  = document.getElementById('bw-ansicht').value;
+            const cfg = BW_ANSICHTEN[ansicht];
+            const d = BW_DATEN[semester];
+            const faecher = bwSichtbareFaecher(semester);
+
+            let cssW = canvas.clientWidth || (canvas.parentElement ? canvas.parentElement.clientWidth - 28 : 0) || 700;
+            cssW = Math.max(260, cssW);
+            const schmal = cssW < 560;
+            // Hoehe waechst mit der Breite mit, sonst wird die Kurve auf breiten
+            // Bildschirmen zu einem flachen Strich zusammengedrueckt.
+            const cssH = schmal ? 260 : Math.round(Math.min(480, Math.max(330, cssW * 0.46)));
+
+            const dpr = Math.min(window.devicePixelRatio || 1, 3);
+            canvas.width = Math.round(cssW * dpr);
+            canvas.height = Math.round(cssH * dpr);
+            canvas.style.height = cssH + 'px';
+
+            const ctx = canvas.getContext('2d');
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            const W = cssW, H = cssH;
+            ctx.clearRect(0, 0, W, H);
+
+            // Oben ist kaum Rand noetig, weil die Legende jetzt ueber den klickbaren
+            // Schaltern ausserhalb des Canvas sitzt.
+            const padding = {
+                top: 14,
+                right: schmal ? 12 : 20,
+                bottom: schmal ? 40 : 34,
+                left: schmal ? 48 : 58
+            };
+            const chartW = W - padding.left - padding.right;
+            const chartH = H - padding.top - padding.bottom;
+
+            // Y-Achse: nur ueber die SICHTBAREN Faecher skalieren. Blendet man
+            // Humanmedizin aus, zoomt die Achse automatisch auf den Rest.
+            let maxWert = -Infinity, minWert = Infinity;
+            faecher.forEach(f => bwReihe(semester, f.key, ansicht).forEach(v => {
+                if (v > maxWert) maxWert = v;
+                if (v < minWert) minWert = v;
+            }));
+
+            let minY, maxY, schritt;
+            if (cfg.abNull) {
+                schritt = bwAchsenSchritt(maxWert);
+                minY = 0;
+                maxY = Math.ceil(maxWert / schritt) * schritt;
+            } else {
+                // Prozentansicht: eng um die Daten legen, sonst waere alles eine flache Linie
+                const spanne = Math.max(maxWert - minWert, 1);
+                schritt = bwAchsenSchritt(spanne * 1.4);
+                minY = Math.floor((minWert - spanne * 0.15) / schritt) * schritt;
+                maxY = Math.ceil((maxWert + spanne * 0.15) / schritt) * schritt;
+            }
+
+            const n = d.jahre.length;
+            const xStep = chartW / (n - 1);
+            const xPos = i => padding.left + i * xStep;
+            const yPos = v => padding.top + chartH - ((v - minY) / (maxY - minY)) * chartH;
+
+            // Gitter + Y-Beschriftung
+            ctx.font = '11px sans-serif';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            for (let v = minY; v <= maxY + 0.0001; v += schritt) {
+                const y = yPos(v);
+                const istBasis = (ansicht === 'index' && Math.abs(v - 100) < 0.0001);
+                ctx.strokeStyle = istBasis ? 'rgba(148,163,184,0.45)' : 'rgba(148,163,184,0.15)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(padding.left + chartW, y);
+                ctx.stroke();
+                ctx.fillStyle = istBasis ? '#cbd5e1' : '#94a3b8';
+                ctx.fillText(bwFormat(v, cfg.nachkomma), padding.left - 8, y);
+            }
+
+            // X-Beschriftung
+            ctx.fillStyle = '#94a3b8';
+            d.jahre.forEach((j, i) => {
+                if (schmal) {
+                    ctx.save();
+                    ctx.translate(xPos(i), padding.top + chartH + 10);
+                    ctx.rotate(-Math.PI / 4);
+                    ctx.textAlign = 'right';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(j, 0, 0);
+                    ctx.restore();
+                } else {
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(j, xPos(i), padding.top + chartH + 8);
+                }
+            });
+
+            // Senkrechte Markierung am Methodenwechsel 2020: davor wurden die
+            // Bewerberzahlen anders erhoben, der Sprung ist kein echter Trend.
+            const bruch = d.bruchAb;
+            if (bruch && bruch > 0 && bruch < n) {
+                const xb = xPos(bruch) - xStep / 2;
+                ctx.save();
+                ctx.strokeStyle = 'rgba(148,163,184,0.5)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(xb, padding.top);
+                ctx.lineTo(xb, padding.top + chartH);
+                ctx.stroke();
+                ctx.restore();
+                ctx.save();
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                ctx.fillText('Reform 2020', xb + 4, padding.top + 3);
+                ctx.restore();
+            }
+
+            // Linien je Fach. Der Abschnitt vor der Reform wird gestrichelt und
+            // blasser gezeichnet, damit der Bruch in der Zaehlweise sichtbar ist.
+            faecher.forEach(f => {
+                const reihe = bwReihe(semester, f.key, ansicht);
+
+                for (let i = 0; i < reihe.length - 1; i++) {
+                    const vorReform = (bruch && i + 1 <= bruch);
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.strokeStyle = f.farbe;
+                    ctx.lineWidth = 3;
+                    ctx.lineJoin = 'round';
+                    if (vorReform) { ctx.setLineDash([5, 4]); ctx.globalAlpha = 0.55; }
+                    ctx.moveTo(xPos(i), yPos(reihe[i]));
+                    ctx.lineTo(xPos(i + 1), yPos(reihe[i + 1]));
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                reihe.forEach((v, i) => {
+                    ctx.save();
+                    if (bruch && i < bruch) ctx.globalAlpha = 0.55;
+                    ctx.beginPath();
+                    ctx.fillStyle = f.farbe;
+                    ctx.arc(xPos(i), yPos(v), 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                });
+            });
+
+            // Eine Legende im Canvas braucht es nicht mehr: die farbigen Schalter
+            // ueber der Grafik uebernehmen diese Rolle und sind zusaetzlich klickbar.
+
+            // Hinweis unter der Grafik, passend zur gewaehlten Ansicht
+            const hinweis = document.getElementById('bw-achsenhinweis');
+            if (hinweis) {
+                const alle = bwAktiveFaecher(semester).length;
+                const aus = alle - faecher.length;
+                let text = (ansicht === 'index')
+                    ? `Jedes Fach startet im ersten Jahr bei 100 %. So lassen sich große und kleine Studiengänge direkt vergleichen.`
+                    : `Tippe auf ein Fach, um es aus- oder einzublenden. Die Achse passt sich dann automatisch an.`;
+                if (aus > 0) text += ` Aktuell ${aus === 1 ? 'ist ein Fach' : `sind ${aus} Fächer`} ausgeblendet.`;
+                hinweis.textContent = text;
+            }
+        }
+
+        // Waehlt einen runden Achsenschritt, sodass etwa 4 bis 6 Linien entstehen
+        function bwAchsenSchritt(max) {
+            const roh = max / 5;
+            const groesse = Math.pow(10, Math.floor(Math.log10(roh)));
+            const rest = roh / groesse;
+            let faktor;
+            if (rest <= 1) faktor = 1;
+            else if (rest <= 2) faktor = 2;
+            else if (rest <= 2.5) faktor = 2.5;
+            else if (rest <= 5) faktor = 5;
+            else faktor = 10;
+            return faktor * groesse;
+        }
+
+        // ---------- Kennzahlen-Karten ----------
+        function bwZeichneKarten() {
+            const el = document.getElementById('bw-karten');
+            if (!el) return;
+            const semester = document.getElementById('bw-semester').value;
+            const ansicht  = document.getElementById('bw-ansicht').value;
+            const cfg = BW_ANSICHTEN[ansicht];
+            const d = BW_DATEN[semester];
+            const ersteJahr = d.jahre[0], letztesJahr = d.jahre[d.jahre.length - 1];
+
+            el.innerHTML = bwAktiveFaecher(semester).map(f => {
+                const reihe = bwReihe(semester, f.key, ansicht);
+                const jetzt = reihe[reihe.length - 1], frueher = reihe[0];
+                const delta = bwProzent(jetzt, frueher);
+                // Trend nach unten wird rot dargestellt, nach oben gruen.
+                const farbe = Math.abs(delta) < 1 ? 'var(--text-muted)' : (delta > 0 ? 'var(--success-text)' : 'var(--warning-text)');
+                const pfeil = Math.abs(delta) < 1 ? '' : (delta > 0 ? '▲ ' : '▼ ');
+
+                const proPlatz = d.bewerber[f.key][d.bewerber[f.key].length - 1] / d.plaetze[f.key][d.plaetze[f.key].length - 1];
+
+                return `<div class="bw-karte" style="border-top-color:${f.farbe};">
+                    <div class="bw-fach">${f.name}</div>
+                    <div class="bw-wert" style="color:${f.farbe};">${bwFormat(jetzt, cfg.nachkomma)}</div>
+                    <div class="bw-einheit">${ansicht === 'index' ? `${letztesJahr} &middot; ${ersteJahr} = 100 %` : `${cfg.einheit} ${letztesJahr}`}</div>
+                    <div class="bw-delta" style="color:${farbe};">${pfeil}${bwFormat(Math.abs(delta), 1)} % seit ${ersteJahr}</div>
+                    <div class="bw-zusatz">${bwFormat(proPlatz, 1)} Bewerbende je Platz</div>
+                </div>`;
+            }).join('');
+        }
+
+        // ---------- Einordnung ----------
+        function bwZeichneText() {
+            const el = document.getElementById('bw-text');
+            if (!el) return;
+            const semester = document.getElementById('bw-semester').value;
+            const d = BW_DATEN[semester];
+            const ersteJahr = d.jahre[0], letztesJahr = d.jahre[d.jahre.length - 1];
+            const faecher = bwAktiveFaecher(semester);
+
+            // Gesamtbild zuerst
+            let sumAlt = 0, sumNeu = 0, platzAlt = 0, platzNeu = 0;
+            faecher.forEach(f => {
+                const b = d.bewerber[f.key], p = d.plaetze[f.key];
+                sumAlt += b[0]; sumNeu += b[b.length - 1];
+                platzAlt += p[0]; platzNeu += p[p.length - 1];
+            });
+            const gesamtDelta = bwProzent(sumNeu, sumAlt);
+            const platzDelta = bwProzent(platzNeu, platzAlt);
+
+            // Fach mit dem staerksten Rueckgang und das am staerksten umkaempfte Fach
+            let staerkster = null, umkaempft = null;
+            faecher.forEach(f => {
+                const b = d.bewerber[f.key], p = d.plaetze[f.key];
+                const delta = bwProzent(b[b.length - 1], b[0]);
+                const quote = b[b.length - 1] / p[p.length - 1];
+                if (!staerkster || delta < staerkster.delta) staerkster = { f, delta };
+                if (!umkaempft || quote > umkaempft.quote) umkaempft = { f, quote };
+            });
+
+            const zeilen = faecher.map(f => {
+                const b = d.bewerber[f.key], p = d.plaetze[f.key];
+                const bDelta = bwProzent(b[b.length - 1], b[0]);
+                const pDelta = bwProzent(p[p.length - 1], p[0]);
+                const quoteAlt = b[0] / p[0], quoteNeu = b[b.length - 1] / p[p.length - 1];
+
+                const richtung = bDelta < -1 ? 'weniger' : (bDelta > 1 ? 'mehr' : 'etwa gleich viele');
+                const bewerberSatz = Math.abs(bDelta) < 1
+                    ? `Die Bewerberzahl ist seit ${ersteJahr} praktisch unverändert`
+                    : `${bwFormat(Math.abs(bDelta), 1)} % ${richtung} Bewerbende als ${ersteJahr}`;
+                const platzSatz = Math.abs(pDelta) < 1
+                    ? 'bei nahezu konstanter Platzzahl'
+                    : `bei ${bwFormat(Math.abs(pDelta), 1)} % ${pDelta > 0 ? 'mehr' : 'weniger'} Plätzen`;
+                const quotenSatz = quoteNeu < quoteAlt
+                    ? `Rechnerisch kommen heute <strong>${bwFormat(quoteNeu, 1)}</strong> statt ${bwFormat(quoteAlt, 1)} Bewerbende auf einen Platz.`
+                    : `Rechnerisch kommen heute <strong>${bwFormat(quoteNeu, 1)}</strong> Bewerbende auf einen Platz, nach ${bwFormat(quoteAlt, 1)} zu Beginn.`;
+
+                return `<div class="bw-zeile" style="border-left-color:${f.farbe};">
+                    <strong>${f.name}:</strong> ${bewerberSatz}, ${platzSatz}. ${quotenSatz}
+                </div>`;
+            }).join('');
+
+            el.innerHTML = `
+                <div class="info-box info-blue" style="margin-bottom: 16px;">
+                    <p style="margin:0;">Über alle ${faecher.length} Studiengänge zusammen ist die Zahl der Bewerbenden im ${d.label} seit ${ersteJahr} um <strong>${bwFormat(Math.abs(gesamtDelta), 1)} %</strong> ${gesamtDelta < 0 ? 'gesunken' : 'gestiegen'}, während die Zahl der Studienplätze um ${bwFormat(Math.abs(platzDelta), 1)} % ${platzDelta < 0 ? 'gesunken' : 'gestiegen'} ist. Den stärksten Rückgang verzeichnet <strong>${staerkster.f.name}</strong>. Am umkämpftesten bleibt <strong>${umkaempft.f.name}</strong> mit ${bwFormat(umkaempft.quote, 1)} Bewerbenden je Platz.</p>
+                </div>
+                ${zeilen}
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 14px; line-height: 1.5;">
+                    Wichtig zur Einordnung: Weniger Bewerbende bedeuten nicht automatisch, dass ein Platz leichter zu bekommen ist. Entscheidend bleibt, wie gut die Bewerbenden sind, die sich bewerben. Die Zahlen zeigen den Bewerberdruck, nicht die nötige Abiturnote.
+                </p>`;
+        }
+
+        // ---------- Freier Jahresvergleich ----------
+        // Fuellt die beiden Jahres-Auswahlfelder passend zum gewaehlten Semester.
+        function bwFuelleJahre() {
+            const semester = document.getElementById('bw-semester').value;
+            const jahre = BW_DATEN[semester].jahre;
+            const von = document.getElementById('bw-von');
+            const bis = document.getElementById('bw-bis');
+            if (!von || !bis) return;
+
+            // Bisherige Auswahl merken, damit ein Semesterwechsel sie nicht zerstoert
+            const altVon = von.value, altBis = bis.value;
+            const bauen = (sel, standardIndex) => {
+                sel.innerHTML = jahre.map((j, i) => `<option value="${i}">${j}</option>`).join('');
+                sel.value = standardIndex;
+            };
+            bauen(von, 0);
+            bauen(bis, jahre.length - 1);
+            if (altVon !== '' && altVon < jahre.length) von.value = altVon;
+            if (altBis !== '' && altBis < jahre.length) bis.value = altBis;
+        }
+
+        function bwZeichneVergleich() {
+            const el = document.getElementById('bw-vergleich');
+            if (!el) return;
+
+            const semester = document.getElementById('bw-semester').value;
+            const d = BW_DATEN[semester];
+            let iVon = parseInt(document.getElementById('bw-von').value, 10);
+            let iBis = parseInt(document.getElementById('bw-bis').value, 10);
+            if (isNaN(iVon)) iVon = 0;
+            if (isNaN(iBis)) iBis = d.jahre.length - 1;
+
+            if (iVon === iBis) {
+                el.innerHTML = `<p style="grid-column: 1 / -1; color: var(--text-muted); font-size: 13px; margin: 0;">Bitte zwei verschiedene Jahre auswählen.</p>`;
+                return;
+            }
+
+            const vonJahr = d.jahre[iVon], bisJahr = d.jahre[iBis];
+
+            const pfeilFarbe = v => Math.abs(v) < 0.05 ? 'var(--text-muted)' : (v > 0 ? 'var(--success-text)' : 'var(--warning-text)');
+            const pfeilZeichen = v => Math.abs(v) < 0.05 ? '' : (v > 0 ? '▲ ' : '▼ ');
+
+            el.innerHTML = bwAktiveFaecher(semester).map(f => {
+                const b = d.bewerber[f.key], p = d.plaetze[f.key];
+                const bVon = b[iVon], bBis = b[iBis];
+                const pVon = p[iVon], pBis = p[iBis];
+                const qVon = bVon / pVon, qBis = bBis / pBis;
+
+                const bDiff = bBis - bVon, bProz = bwProzent(bBis, bVon);
+                const pDiff = pBis - pVon, pProz = bwProzent(pBis, pVon);
+                const qDiff = qBis - qVon;
+
+                const zeile = (titel, vonTxt, bisTxt, diffTxt, diffWert) => `
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-top:8px;">
+                        <span style="font-size:11px; color:var(--text-muted);">${titel}</span>
+                        <span style="font-size:11.5px; font-weight:700; color:${pfeilFarbe(diffWert)}; white-space:nowrap;">${pfeilZeichen(diffWert)}${diffTxt}</span>
+                    </div>
+                    <div style="font-size:12px; color:var(--text-main);">${vonTxt} <span style="color:var(--text-muted);">&rarr;</span> ${bisTxt}</div>`;
+
+                return `<div class="bw-karte" style="border-top-color:${f.farbe};">
+                    <div class="bw-fach">${f.name}</div>
+                    ${zeile('Bewerbende',
+                            bwFormat(bVon, 0), bwFormat(bBis, 0),
+                            `${bDiff > 0 ? '+' : bDiff < 0 ? '&minus;' : ''}${bwFormat(Math.abs(bDiff), 0)} &middot; ${bwFormat(Math.abs(bProz), 1)} %`,
+                            bProz)}
+                    ${zeile('Studienplätze',
+                            bwFormat(pVon, 0), bwFormat(pBis, 0),
+                            `${pDiff > 0 ? '+' : pDiff < 0 ? '&minus;' : ''}${bwFormat(Math.abs(pDiff), 0)} &middot; ${bwFormat(Math.abs(pProz), 1)} %`,
+                            pProz)}
+                    ${zeile('Bewerbende je Platz',
+                            bwFormat(qVon, 1), bwFormat(qBis, 1),
+                            `${qDiff > 0 ? '+' : qDiff < 0 ? '&minus;' : ''}${bwFormat(Math.abs(qDiff), 1)}`,
+                            qDiff)}
+                </div>`;
+            }).join('');
+        }
+
+        function renderBewerber() {
+            bwFuelleJahre();
+            bwZeichneChips();
+            bwZeichneGrafik();
+            bwZeichneVergleich();
+            bwZeichneKarten();
+            bwZeichneText();
+        }
+
+        // ---------- Kompakt-Tabellen ----------
+        // Zeilen der langen Nachschlage-Tabellen zeigen nur Uni + Einstufung.
+        // Wo es einen Erklaertext gibt, klappt ihn ein Tipp auf die Zeile auf.
+        function initKompaktTabellen() {
+            document.querySelectorAll('table.ranking-table.kompakt tbody tr').forEach(tr => {
+                const block = tr.querySelector('td.m-block');
+                const txt = block ? block.textContent.trim() : '';
+                if (txt && txt !== '-') tr.classList.add('hat-info');
+            });
+        }
+        document.addEventListener('click', function(e) {
+            if (!e.target || !e.target.closest) return;
+            const tr = e.target.closest('table.ranking-table.kompakt tbody tr.hat-info');
+            if (tr) tr.classList.toggle('offen');
+        });
+        initKompaktTabellen();
+
+        // Der Bewerberzahlen-Reiter ist beim Laden bereits offen, deshalb hier
+        // einmal direkt rendern. Ohne das blieben Grafik und Vergleich leer.
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', renderBewerber);
+        } else {
+            renderBewerber();
+        }
+
+        // Beim Drehen des Handys die Grafik neu zeichnen
+        let bwResizeTimer = null;
+        window.addEventListener('resize', function() {
+            const el = document.getElementById('subtab-bewerber');
+            if (!el || !el.classList.contains('active')) return;
+            clearTimeout(bwResizeTimer);
+            bwResizeTimer = setTimeout(bwZeichneGrafik, 200);
+        });
     </script>
 
 </body>
