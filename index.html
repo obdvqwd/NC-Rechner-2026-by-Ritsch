@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -479,6 +478,28 @@
            BEWERBERZAHLEN: Kennzahlen-Karten & Einordnung
            Auf dem Handy zwei Spalten, am Desktop vier.
            ========================================== */
+        /* Grafik-Container: Bezugspunkt fuer die Werteanzeige beim Antippen */
+        .chart-box { position: relative; }
+        .chart-tip {
+            position: absolute;
+            pointer-events: none;
+            background: #0f172a;
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 7px 10px;
+            font-size: 12.5px;
+            line-height: 1.35;
+            color: var(--text-main);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+            white-space: nowrap;
+            z-index: 5;
+            transform: translate(-50%, -100%);
+        }
+        .chart-tip .tip-fach { font-weight: 700; font-size: 11.5px; }
+        .chart-tip .tip-wert { font-weight: 900; font-size: 15px; }
+        .chart-tip .tip-jahr { color: var(--text-muted); font-size: 11px; }
+        .chart-hinweis { font-size: 12px; color: var(--text-muted); margin: 0 0 8px 0; }
+
         /* Fächer-Schalter über der Grafik */
         .bw-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
         .bw-chip {
@@ -536,32 +557,44 @@
             gap: 6px;
         }
         @media (max-width: 1150px) { .ranking-table.kompakt tbody { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 700px)  { .ranking-table.kompakt tbody { grid-template-columns: 1fr; } }
+        /* Auf dem Handy eine Spalte: Name links, Einstufung rechts daneben.
+           Zwei Spalten waren hier zu eng, dort zerbrachen die Uni-Namen. */
+        @media (max-width: 700px) {
+            .ranking-table.kompakt tbody { grid-template-columns: 1fr; gap: 5px; }
+            .ranking-table.kompakt tr { padding: 8px 10px; gap: 0 8px; }
+            .ranking-table.kompakt td.m-name { font-size: 13px; }
+            .ranking-table.kompakt td.m-score .badge { padding: 2px 7px; font-size: 10.5px; }
+        }
 
+        /* Raster statt Flexbox: Name links, Einstufung immer rechts daneben,
+           der Erklaertext spannt darunter ueber die volle Breite. So rutscht
+           das Badge nie in eine eigene Zeile und die Kacheln bleiben flach. */
         .ranking-table.kompakt tr {
-            display: flex; flex-wrap: wrap; align-items: center;
-            column-gap: 9px; margin: 0;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 0 8px;
+            margin: 0;
             background: #0b1120;
             border: 1px solid var(--box-border);
             border-radius: 8px;
             padding: 9px 11px;
-            align-content: flex-start;
         }
         .ranking-table.kompakt tr:hover { background: #0d1526; }
-        .ranking-table.kompakt tr::after { content: ''; flex: 0 0 100%; height: 0; order: 50; }
         .ranking-table.kompakt td {
             display: block; width: auto; border: none; padding: 0; line-height: 1.35;
         }
         .ranking-table.kompakt td.m-name {
-            order: 20; flex: 1 1 auto; min-width: 0;
+            grid-column: 1; min-width: 0;
             font-size: 13px; font-weight: 600; color: var(--text-main);
+            overflow-wrap: break-word;
         }
         .ranking-table.kompakt td.m-score {
-            order: 30; flex: 0 0 auto; text-align: right; white-space: nowrap;
+            grid-column: 2; text-align: right; white-space: nowrap;
         }
         .ranking-table.kompakt td.m-score .badge { padding: 3px 8px; font-size: 11px; }
         .ranking-table.kompakt td.m-block {
-            order: 60; flex: 0 0 100%; display: none;
+            grid-column: 1 / -1; display: none;
             font-size: 12px; color: var(--text-muted); margin-top: 7px; line-height: 1.45;
         }
         .ranking-table.kompakt tr.offen td.m-block { display: block; }
@@ -751,11 +784,11 @@
     <div class="about-me-card">
         <div class="about-me-text">
             <h4>Flavio "Ritsch" <span style="font-size: 12px; font-weight: normal; color: var(--accent); background: rgba(59, 130, 246, 0.1); padding: 2px 8px; border-radius: 4px;">Entwickler & Analyst</span></h4>
-            <p>Ich beschäftige mich tiefgehend mit Nachrückverfahren, historischen Daten und der Dynamik von Grenzrängen. Mein Ziel mit dieser Plattform ist es, das hochkomplexe Vergabesystem ausführlicher und vor allem verständlich zu machen. <em>Dieses Tool ist und bleibt zu 100% kostenlos und werbefrei.</em></p>
+            <p>Mein Ziel mit dieser Plattform ist es, das hochkomplexe Vergabesystem ausführlicher und vor allem verständlich zu machen.</p>
             <p style="margin-top: 8px; color: var(--success-text); font-weight: bold; font-size: 12.5px;">🤝 Danke an Kevin Kumar für die Qualitätssicherung.</p>
             
             <div class="coop-box">
-                In Zusammenarbeit mit <strong>Traubenzuckermeister</strong> stellen wir dieses Tool zur Verfügung. Ein riesiges Dankeschön an die vielen User, die wir bereits erreicht haben – wir führen dieses Wissen gerne für die Community zusammen!<br>
+                In Zusammenarbeit mit <strong>Traubenzuckermeister</strong> stellen wir dieses Tool zur Verfügung.<br>
                 👉 <a href="https://medizin-unis-sammlung.vercel.app/" target="_blank">Hier gehts zum Medizin Second Brain</a>
             </div>
         </div>
@@ -1356,7 +1389,7 @@
             <h2>Bewerberzahlen: Entwicklung des Bewerberdrucks</h2>
 
             <div class="info-box">
-                <p style="margin:0;">Alle Zahlen stammen aus den offiziellen <strong>„Statistiken des Zentralen Verfahrens"</strong> von hochschulstart.de, jeweils aus der Gesamtübersicht am Anfang jedes Berichts. Gezeigt werden die vier über hochschulstart vergebenen Studiengänge der letzten fünf Jahre.</p>
+                <p style="margin:0;">Alle Zahlen stammen aus den offiziellen <strong>„Statistiken des Zentralen Verfahrens"</strong> von hochschulstart.de.</p>
             </div>
 
             <!-- Schritt 1: Semester. Bewusst zuerst, weil Winter und Sommer voellig
@@ -1384,8 +1417,12 @@
             <div style="background: #0b1120; border: 1px solid var(--box-border); border-radius: 8px; padding: 18px 14px; margin-bottom: 20px;">
                 <!-- Faecher zu- und abschalten: die Achse passt sich sofort an, damit
                      die kleineren Fächer nicht von Humanmedizin plattgedrückt werden. -->
+                <p class="chart-hinweis">Fächer ein- und ausblenden &ndash; tippe ein Fach an:</p>
                 <div id="bw-chips" class="bw-chips"></div>
-                <canvas id="bwCanvas" style="display:block;"></canvas>
+                <div class="chart-box">
+                    <canvas id="bwCanvas" style="display:block;"></canvas>
+                    <div id="bw-tip" class="chart-tip" hidden></div>
+                </div>
                 <p id="bw-achsenhinweis" style="font-size: 11.5px; color: var(--text-muted); margin: 10px 0 0 0; line-height: 1.45;"></p>
             </div>
 
@@ -1398,18 +1435,15 @@
             <div class="grid-2col" style="margin-bottom: 14px;">
                 <div class="input-box">
                     <label>Von</label>
-                    <select id="bw-von" onchange="bwZeichneVergleich()"></select>
+                    <select id="bw-von" onchange="bwZeitraumGeaendert()"></select>
                 </div>
                 <div class="input-box">
                     <label>Bis</label>
-                    <select id="bw-bis" onchange="bwZeichneVergleich()"></select>
+                    <select id="bw-bis" onchange="bwZeitraumGeaendert()"></select>
                 </div>
             </div>
             <div id="bw-vergleich" class="bw-vgl"></div>
 
-            <!-- Einordnung: was die Kurven bedeuten -->
-            <h3>Was das heißt</h3>
-            <div id="bw-text"></div>
         </div>
 
         <!-- =========================================================================
@@ -1425,7 +1459,10 @@
             <p>Die folgende Grafik fasst die bisher bekannten TMS-Anmelde- und Teilnehmerzahlen der letzten Testtermine zusammen und macht die Entwicklung über die Halbjahre hinweg sichtbar:</p>
 
             <div style="background: #0b1120; border: 1px solid var(--box-border); border-radius: 8px; padding: 20px 15px; margin-bottom: 20px;">
-                <canvas id="tmsTrendCanvas" width="700" height="300" style="display:block;"></canvas>
+                <div class="chart-box">
+                    <canvas id="tmsTrendCanvas" width="700" height="300" style="display:block;"></canvas>
+                    <div id="tms-tip" class="chart-tip" hidden></div>
+                </div>
             </div>
 
             <div class="table-wrapper">
@@ -1890,6 +1927,8 @@
             { label: "Nov '26", teilnehmer: null,  teilnehmerApprox: null, anmeldung: 25000, anmeldungApprox: true,  wiederholer: null, wiederholerApprox: null }
         ];
 
+        const TMS_PUNKTE = [];
+
         function drawTmsTrendChart() {
             const canvas = document.getElementById('tmsTrendCanvas');
             if (!canvas) return;
@@ -1914,6 +1953,9 @@
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             const W = cssW, H = cssH;
             ctx.clearRect(0, 0, W, H);
+            TMS_PUNKTE.length = 0;
+            const tmsTip = document.getElementById('tms-tip');
+            if (tmsTip) tmsTip.hidden = true;
 
             // Auf schmalen Schirmen etwas mehr Luft: oben fuer die gestapelte Legende,
             // unten fuer die schraeg gestellten Datumsangaben. Bei nur 260px Hoehe
@@ -1989,6 +2031,10 @@
                     ctx.fillStyle = color;
                     ctx.arc(x, y, 4, 0, Math.PI * 2);
                     ctx.fill();
+                    TMS_PUNKTE.push({
+                        x, y, fach: 'Wiederholer*innen', farbe: color, jahr: d.label,
+                        text: (d.wiederholerApprox ? 'ca. ' : '') + val.toLocaleString('de-DE'), zusatz: ''
+                    });
                 });
             }
 
@@ -2019,6 +2065,14 @@
                     ctx.fillStyle = primaryColor(d);
                     ctx.arc(xPos(i), yPos(v), 4, 0, Math.PI * 2);
                     ctx.fill();
+                    TMS_PUNKTE.push({
+                        x: xPos(i), y: yPos(v),
+                        fach: d.teilnehmer != null ? 'Teilnehmende' : 'Anmeldungen',
+                        farbe: primaryColor(d),
+                        jahr: d.label,
+                        text: (d.teilnehmer != null ? (d.teilnehmerApprox ? 'ca. ' : '') : (d.anmeldungApprox ? 'ca. ' : '')) + v.toLocaleString('de-DE'),
+                        zusatz: ''
+                    });
                 });
             }
 
@@ -2052,6 +2106,9 @@
 
             renderTmsTrendTable();
         }
+
+        // Erst nach dem Parsen aller Bloecke verbinden: die Hilfsfunktion steht weiter unten.
+        document.addEventListener('DOMContentLoaded', function() { chartTipVerbinden('tmsTrendCanvas', 'tms-tip', () => TMS_PUNKTE); });
 
         // Beim Drehen des Handys bzw. Groessenaenderung neu zeichnen, damit die
         // Grafik nicht verzerrt oder in der alten Groesse stehen bleibt.
@@ -3151,6 +3208,8 @@
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             const W = cssW, H = cssH;
             ctx.clearRect(0, 0, W, H);
+            BW_PUNKTE.length = 0;
+            bwVersteckeTip();
 
             // Oben ist kaum Rand noetig, weil die Legende jetzt ueber den klickbaren
             // Schaltern ausserhalb des Canvas sitzt.
@@ -3274,6 +3333,16 @@
                     ctx.arc(xPos(i), yPos(v), 4, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.restore();
+                    // Position merken, damit ein Tipp auf den Punkt den Wert zeigt
+                    BW_PUNKTE.push({
+                        x: xPos(i), y: yPos(v),
+                        fach: f.name, farbe: f.farbe,
+                        jahr: d.jahre[i],
+                        text: bwFormat(v, cfg.nachkomma) + (ansicht === 'index' ? ' %' : ''),
+                        zusatz: ansicht === 'index'
+                            ? bwFormat(d.bewerber[f.key][i], 0) + ' Bewerbende'
+                            : (ansicht === 'proplatz' ? 'Bewerbende je Studienplatz' : cfg.einheit)
+                    });
                 });
             });
 
@@ -3307,95 +3376,103 @@
             return faktor * groesse;
         }
 
+        // ---------- Werteanzeige beim Antippen eines Punktes ----------
+        // Beim Zeichnen merken wir uns jede Punkt-Position. Ein Klick oder Tipp
+        // sucht den naechstgelegenen Punkt und blendet den exakten Wert ein.
+        const BW_PUNKTE = [];
+
+        function bwVersteckeTip() {
+            const tip = document.getElementById('bw-tip');
+            if (tip) tip.hidden = true;
+        }
+
+        function chartPunktAnzeigen(canvas, tipEl, punkte, ev) {
+            const rect = canvas.getBoundingClientRect();
+            const px = (ev.clientX !== undefined ? ev.clientX : (ev.touches && ev.touches[0].clientX)) - rect.left;
+            const py = (ev.clientY !== undefined ? ev.clientY : (ev.touches && ev.touches[0].clientY)) - rect.top;
+
+            let beste = null, besteDist = Infinity;
+            punkte.forEach(pt => {
+                const dx = pt.x - px, dy = pt.y - py;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < besteDist) { besteDist = dist; beste = pt; }
+            });
+
+            // Grosszuegiger Radius, damit es sich auch mit dem Finger gut trifft
+            if (!beste || besteDist > 32) { tipEl.hidden = true; return; }
+
+            tipEl.innerHTML = `<div class="tip-fach" style="color:${beste.farbe};">${beste.fach}</div>
+                <div class="tip-wert">${beste.text}</div>
+                <div class="tip-jahr">${beste.jahr}${beste.zusatz ? ' &middot; ' + beste.zusatz : ''}</div>`;
+            tipEl.hidden = false;
+
+            // Innerhalb des Containers halten, damit nichts abgeschnitten wird
+            const boxBreite = canvas.clientWidth;
+            const tipBreite = tipEl.offsetWidth;
+            let x = beste.x;
+            x = Math.max(tipBreite / 2 + 2, Math.min(boxBreite - tipBreite / 2 - 2, x));
+            const y = Math.max(tipEl.offsetHeight + 6, beste.y - 10);
+            tipEl.style.left = x + 'px';
+            tipEl.style.top = y + 'px';
+        }
+
+        function chartTipVerbinden(canvasId, tipId, punkteRef) {
+            const canvas = document.getElementById(canvasId);
+            const tipEl = document.getElementById(tipId);
+            if (!canvas || !tipEl) return;
+            const zeigen = ev => { chartPunktAnzeigen(canvas, tipEl, punkteRef(), ev); };
+            canvas.addEventListener('click', zeigen);
+            canvas.addEventListener('touchstart', function(ev) { zeigen(ev.touches[0]); }, { passive: true });
+            canvas.addEventListener('mousemove', zeigen);
+            canvas.addEventListener('mouseleave', () => { tipEl.hidden = true; });
+        }
+
         // ---------- Kennzahlen-Karten ----------
+        // Richten sich nach dem unten gewaehlten Zeitraum: der grosse Wert ist der
+        // Stand im "Bis"-Jahr, die Veraenderung bezieht sich auf das "Von"-Jahr.
+        function bwGewaehlteJahre() {
+            const semester = document.getElementById('bw-semester').value;
+            const d = BW_DATEN[semester];
+            const vonEl = document.getElementById('bw-von');
+            const bisEl = document.getElementById('bw-bis');
+            let iVon = vonEl ? parseInt(vonEl.value, 10) : 0;
+            let iBis = bisEl ? parseInt(bisEl.value, 10) : d.jahre.length - 1;
+            if (isNaN(iVon) || iVon < 0 || iVon >= d.jahre.length) iVon = 0;
+            if (isNaN(iBis) || iBis < 0 || iBis >= d.jahre.length) iBis = d.jahre.length - 1;
+            return { iVon, iBis, d, semester };
+        }
+
         function bwZeichneKarten() {
             const el = document.getElementById('bw-karten');
             if (!el) return;
-            const semester = document.getElementById('bw-semester').value;
-            const ansicht  = document.getElementById('bw-ansicht').value;
+            const ansicht = document.getElementById('bw-ansicht').value;
             const cfg = BW_ANSICHTEN[ansicht];
-            const d = BW_DATEN[semester];
-            const ersteJahr = d.jahre[0], letztesJahr = d.jahre[d.jahre.length - 1];
+            const { iVon, iBis, d, semester } = bwGewaehlteJahre();
+            const vonJahr = d.jahre[iVon], bisJahr = d.jahre[iBis];
+            const gleich = (iVon === iBis);
 
             el.innerHTML = bwAktiveFaecher(semester).map(f => {
                 const reihe = bwReihe(semester, f.key, ansicht);
-                const jetzt = reihe[reihe.length - 1], frueher = reihe[0];
-                const delta = bwProzent(jetzt, frueher);
+                const jetzt = reihe[iBis], frueher = reihe[iVon];
+                const delta = gleich ? 0 : bwProzent(jetzt, frueher);
                 // Trend nach unten wird rot dargestellt, nach oben gruen.
                 const farbe = Math.abs(delta) < 1 ? 'var(--text-muted)' : (delta > 0 ? 'var(--success-text)' : 'var(--warning-text)');
                 const pfeil = Math.abs(delta) < 1 ? '' : (delta > 0 ? '▲ ' : '▼ ');
 
-                const proPlatz = d.bewerber[f.key][d.bewerber[f.key].length - 1] / d.plaetze[f.key][d.plaetze[f.key].length - 1];
+                const proPlatz = d.bewerber[f.key][iBis] / d.plaetze[f.key][iBis];
+
+                const deltaZeile = gleich
+                    ? `<div class="bw-delta" style="color:var(--text-muted);">nur ${bisJahr} gewählt</div>`
+                    : `<div class="bw-delta" style="color:${farbe};">${pfeil}${bwFormat(Math.abs(delta), 1)} % seit ${vonJahr}</div>`;
 
                 return `<div class="bw-karte" style="border-top-color:${f.farbe};">
                     <div class="bw-fach">${f.name}</div>
                     <div class="bw-wert" style="color:${f.farbe};">${bwFormat(jetzt, cfg.nachkomma)}</div>
-                    <div class="bw-einheit">${ansicht === 'index' ? `${letztesJahr} &middot; ${ersteJahr} = 100 %` : `${cfg.einheit} ${letztesJahr}`}</div>
-                    <div class="bw-delta" style="color:${farbe};">${pfeil}${bwFormat(Math.abs(delta), 1)} % seit ${ersteJahr}</div>
+                    <div class="bw-einheit">${ansicht === 'index' ? `${bisJahr} &middot; ${d.jahre[0]} = 100 %` : `${cfg.einheit} ${bisJahr}`}</div>
+                    ${deltaZeile}
                     <div class="bw-zusatz">${bwFormat(proPlatz, 1)} Bewerbende je Platz</div>
                 </div>`;
             }).join('');
-        }
-
-        // ---------- Einordnung ----------
-        function bwZeichneText() {
-            const el = document.getElementById('bw-text');
-            if (!el) return;
-            const semester = document.getElementById('bw-semester').value;
-            const d = BW_DATEN[semester];
-            const ersteJahr = d.jahre[0], letztesJahr = d.jahre[d.jahre.length - 1];
-            const faecher = bwAktiveFaecher(semester);
-
-            // Gesamtbild zuerst
-            let sumAlt = 0, sumNeu = 0, platzAlt = 0, platzNeu = 0;
-            faecher.forEach(f => {
-                const b = d.bewerber[f.key], p = d.plaetze[f.key];
-                sumAlt += b[0]; sumNeu += b[b.length - 1];
-                platzAlt += p[0]; platzNeu += p[p.length - 1];
-            });
-            const gesamtDelta = bwProzent(sumNeu, sumAlt);
-            const platzDelta = bwProzent(platzNeu, platzAlt);
-
-            // Fach mit dem staerksten Rueckgang und das am staerksten umkaempfte Fach
-            let staerkster = null, umkaempft = null;
-            faecher.forEach(f => {
-                const b = d.bewerber[f.key], p = d.plaetze[f.key];
-                const delta = bwProzent(b[b.length - 1], b[0]);
-                const quote = b[b.length - 1] / p[p.length - 1];
-                if (!staerkster || delta < staerkster.delta) staerkster = { f, delta };
-                if (!umkaempft || quote > umkaempft.quote) umkaempft = { f, quote };
-            });
-
-            const zeilen = faecher.map(f => {
-                const b = d.bewerber[f.key], p = d.plaetze[f.key];
-                const bDelta = bwProzent(b[b.length - 1], b[0]);
-                const pDelta = bwProzent(p[p.length - 1], p[0]);
-                const quoteAlt = b[0] / p[0], quoteNeu = b[b.length - 1] / p[p.length - 1];
-
-                const richtung = bDelta < -1 ? 'weniger' : (bDelta > 1 ? 'mehr' : 'etwa gleich viele');
-                const bewerberSatz = Math.abs(bDelta) < 1
-                    ? `Die Bewerberzahl ist seit ${ersteJahr} praktisch unverändert`
-                    : `${bwFormat(Math.abs(bDelta), 1)} % ${richtung} Bewerbende als ${ersteJahr}`;
-                const platzSatz = Math.abs(pDelta) < 1
-                    ? 'bei nahezu konstanter Platzzahl'
-                    : `bei ${bwFormat(Math.abs(pDelta), 1)} % ${pDelta > 0 ? 'mehr' : 'weniger'} Plätzen`;
-                const quotenSatz = quoteNeu < quoteAlt
-                    ? `Rechnerisch kommen heute <strong>${bwFormat(quoteNeu, 1)}</strong> statt ${bwFormat(quoteAlt, 1)} Bewerbende auf einen Platz.`
-                    : `Rechnerisch kommen heute <strong>${bwFormat(quoteNeu, 1)}</strong> Bewerbende auf einen Platz, nach ${bwFormat(quoteAlt, 1)} zu Beginn.`;
-
-                return `<div class="bw-zeile" style="border-left-color:${f.farbe};">
-                    <strong>${f.name}:</strong> ${bewerberSatz}, ${platzSatz}. ${quotenSatz}
-                </div>`;
-            }).join('');
-
-            el.innerHTML = `
-                <div class="info-box info-blue" style="margin-bottom: 16px;">
-                    <p style="margin:0;">Über alle ${faecher.length} Studiengänge zusammen ist die Zahl der Bewerbenden im ${d.label} seit ${ersteJahr} um <strong>${bwFormat(Math.abs(gesamtDelta), 1)} %</strong> ${gesamtDelta < 0 ? 'gesunken' : 'gestiegen'}, während die Zahl der Studienplätze um ${bwFormat(Math.abs(platzDelta), 1)} % ${platzDelta < 0 ? 'gesunken' : 'gestiegen'} ist. Den stärksten Rückgang verzeichnet <strong>${staerkster.f.name}</strong>. Am umkämpftesten bleibt <strong>${umkaempft.f.name}</strong> mit ${bwFormat(umkaempft.quote, 1)} Bewerbenden je Platz.</p>
-                </div>
-                ${zeilen}
-                <p style="font-size: 12px; color: var(--text-muted); margin-top: 14px; line-height: 1.5;">
-                    Wichtig zur Einordnung: Weniger Bewerbende bedeuten nicht automatisch, dass ein Platz leichter zu bekommen ist. Entscheidend bleibt, wie gut die Bewerbenden sind, die sich bewerben. Die Zahlen zeigen den Bewerberdruck, nicht die nötige Abiturnote.
-                </p>`;
         }
 
         // ---------- Freier Jahresvergleich ----------
@@ -3409,33 +3486,23 @@
 
             // Bisherige Auswahl merken, damit ein Semesterwechsel sie nicht zerstoert
             const altVon = von.value, altBis = bis.value;
-            const bauen = (sel, standardIndex) => {
-                sel.innerHTML = jahre.map((j, i) => `<option value="${i}">${j}</option>`).join('');
-                sel.value = standardIndex;
-            };
-            bauen(von, 0);
-            bauen(bis, jahre.length - 1);
-            if (altVon !== '' && altVon < jahre.length) von.value = altVon;
-            if (altBis !== '' && altBis < jahre.length) bis.value = altBis;
+            von.innerHTML = jahre.map((j, i) => `<option value="${i}">${j}</option>`).join('');
+            bis.innerHTML = von.innerHTML;
+            von.value = 0;
+            bis.value = jahre.length - 1;
+            if (altVon !== '' && Number(altVon) < jahre.length) von.value = altVon;
+            if (altBis !== '' && Number(altBis) < jahre.length) bis.value = altBis;
         }
 
         function bwZeichneVergleich() {
             const el = document.getElementById('bw-vergleich');
             if (!el) return;
-
-            const semester = document.getElementById('bw-semester').value;
-            const d = BW_DATEN[semester];
-            let iVon = parseInt(document.getElementById('bw-von').value, 10);
-            let iBis = parseInt(document.getElementById('bw-bis').value, 10);
-            if (isNaN(iVon)) iVon = 0;
-            if (isNaN(iBis)) iBis = d.jahre.length - 1;
+            const { iVon, iBis, d, semester } = bwGewaehlteJahre();
 
             if (iVon === iBis) {
                 el.innerHTML = `<p style="grid-column: 1 / -1; color: var(--text-muted); font-size: 13px; margin: 0;">Bitte zwei verschiedene Jahre auswählen.</p>`;
                 return;
             }
-
-            const vonJahr = d.jahre[iVon], bisJahr = d.jahre[iBis];
 
             const pfeilFarbe = v => Math.abs(v) < 0.05 ? 'var(--text-muted)' : (v > 0 ? 'var(--success-text)' : 'var(--warning-text)');
             const pfeilZeichen = v => Math.abs(v) < 0.05 ? '' : (v > 0 ? '▲ ' : '▼ ');
@@ -3475,13 +3542,18 @@
             }).join('');
         }
 
+        // Zeitraum geaendert: Vergleich UND Uebersicht neu aufbauen
+        function bwZeitraumGeaendert() {
+            bwZeichneKarten();
+            bwZeichneVergleich();
+        }
+
         function renderBewerber() {
             bwFuelleJahre();
             bwZeichneChips();
             bwZeichneGrafik();
             bwZeichneVergleich();
             bwZeichneKarten();
-            bwZeichneText();
         }
 
         // ---------- Kompakt-Tabellen ----------
@@ -3508,6 +3580,8 @@
         } else {
             renderBewerber();
         }
+
+        document.addEventListener('DOMContentLoaded', function() { chartTipVerbinden('bwCanvas', 'bw-tip', () => BW_PUNKTE); });
 
         // Beim Drehen des Handys die Grafik neu zeichnen
         let bwResizeTimer = null;
