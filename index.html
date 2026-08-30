@@ -1315,76 +1315,6 @@
             <p style="font-size: 12px; color: var(--text-muted); margin-top: 15px;">* Für diesen Studienort liegen aus dem Vergleichssemester keine Daten vor (z. B. weil er neu hinzugekommen ist). Er ist trotzdem mit aufgeführt und entsprechend gekennzeichnet.</p>
 
             <!-- Aus dem Tausch-Tab hierher verschoben: gehoert thematisch zur Beliebtheit -->
-            <div id="potenzial-block">
-            <h2 style="margin-top: 45px;">Tausch-Potenzial: Wie gefragt ist dieser Platz?</h2>
-            <div class="info-box">
-                <h3 style="color: var(--accent); margin-top: 0; font-size: 16px; margin-bottom: 8px;">Wie leicht lässt sich dieser Studienplatz wegtauschen?</h3>
-                <p style="margin-top: 5px; margin-bottom: 15px;">Diese Übersicht zeigt aus der Perspektive <strong>"Ich habe den Platz an dieser Uni"</strong>, wie hoch die allgemeine Nachfrage anderer Studierender nach diesem Ort ist. Beachtet, dass bei Modellstudiengängen der Tausch oft prinzipiell erschwert ist, selbst bei hoher Nachfrage.</p>
-                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                    <span class="badge score-5">Stufe 5 (Viel Nachfrage, Tausch leicht)</span>
-                    <span class="badge score-4">Stufe 4 (Gute Optionen)</span>
-                    <span class="badge score-3">Stufe 3 (Mittlere Nachfrage)</span>
-                    <span class="badge score-2">Stufe 2 (Wenig Nachfrage)</span>
-                    <span class="badge score-1">Stufe 1 (Sehr schlechte Nachfrage)</span>
-                </div>
-            </div>
-
-            <div class="table-wrapper wrapper-kompakt">
-                <table class="ranking-table kompakt">
-                    <thead>
-                        <tr>
-                            <th>Universität</th>
-                            <th>Tausch-Stufe</th>
-                            <th>Besonderheiten & Nachfrage</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="m-name" data-label="Universität">TH Aachen</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Augsburg</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Charité Berlin</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5 (1. FS)</span> <br><span class="badge score-2" style="margin-top:5px;">Stufe 2 (Später)</span></td><td class="m-block" data-label="Besonderheiten">1. FS extrem viel Nachfrage. Später sehr schwer wegen speziellem Modellstudiengang</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Bielefeld</td><td class="m-score" data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, sonst mäßig viel Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Bochum</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Viele suchen NRW-Unis, wird aber von manchen eher als Plan B gesehen</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Bonn</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td class="m-block" data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">MedU Lausitz</td><td class="m-score" data-label="Stufe"><span class="badge score-na">K.A.</span></td><td class="m-block" data-label="Besonderheiten">Keine Wertung möglich. Modellstudiengang, daher Tausch vermutlich schwerer</td></tr>
-                        <tr><td class="m-name" data-label="Universität">TU Dresden</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">TU Dresden / Chemnitz</td><td class="m-score" data-label="Stufe"><span class="badge score-na">K.A.</span></td><td class="m-block" data-label="Besonderheiten">Keine Wertung möglich. Modellstudiengang, daher Tausch vermutlich schwerer</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Duisburg-Essen</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Viele suchen NRW-Unis, wird aber von manchen eher als Plan B gesehen</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Düsseldorf</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Erlangen-Nürnberg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Erlangen / Bayreuth</td><td class="m-score" data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td class="m-block" data-label="Besonderheiten">Eher schlechter, aber Tauschoptionen sind vorhanden</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Frankfurt/Main</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td class="m-block" data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Freiburg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Gießen</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Göttingen</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Greifswald</td><td class="m-score" data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td class="m-block" data-label="Besonderheiten">Eher sehr wenig Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Halle-Wittenberg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">MedH Hannover</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Hamburg</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5 (1. FS)</span> <br><span class="badge score-3" style="margin-top:5px;">Stufe 3 (Später)</span></td><td class="m-block" data-label="Besonderheiten">Zum 1. FS sehr gute Nachfrage, ab höherem Semester Modellstudiengang (aber trotzdem gute Nachfrage)</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Heidelberg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Heidelberg-Mannheim</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Jena</td><td class="m-score" data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td class="m-block" data-label="Besonderheiten">Eher schlechte Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Kiel</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Köln</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Leipzig</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Lübeck</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Magdeburg</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Mainz</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Mainz MC Trier</td><td class="m-score" data-label="Stufe"><span class="badge score-na">K.A.</span></td><td class="m-block" data-label="Besonderheiten">Keine Wertung möglich</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Marburg</td><td class="m-score" data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td class="m-block" data-label="Besonderheiten">Eher wenig Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U München</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Eher gute Nachfrage, aber auch sehr viel Angebot vorhanden</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Münster</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td class="m-block" data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Oldenburg</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Regensburg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Regensburg MC Niederbayern</td><td class="m-score" data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td class="m-block" data-label="Besonderheiten">Eher schlechte Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Rostock</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Saarbrücken</td><td class="m-score" data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td class="m-block" data-label="Besonderheiten">Eher sehr schlechte Nachfrage</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Tübingen</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage / Optionen</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Ulm</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage / Optionen</td></tr>
-                        <tr><td class="m-name" data-label="Universität">U Würzburg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage / Optionen</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            </div>
         </div>
 
         <!-- =========================================================================
@@ -1574,9 +1504,74 @@
             </div>
 
             <div id="tsub-potenzial" class="tauschsub-content">
-                <!-- Wird beim Laden aus dem Beliebtheits-Reiter gespiegelt,
-                     damit die Daten nur an einer Stelle gepflegt werden. -->
-                <div id="potenzial-klon"></div>
+        <h2 style="margin-top: 45px;">Tausch-Potenzial: Wie gefragt ist dieser Platz?</h2>
+        <div class="info-box">
+            <h3 style="color: var(--accent); margin-top: 0; font-size: 16px; margin-bottom: 8px;">Wie leicht lässt sich dieser Studienplatz wegtauschen?</h3>
+            <p style="margin-top: 5px; margin-bottom: 15px;">Diese Übersicht zeigt aus der Perspektive <strong>"Ich habe den Platz an dieser Uni"</strong>, wie hoch die allgemeine Nachfrage anderer Studierender nach diesem Ort ist. Beachtet, dass bei Modellstudiengängen der Tausch oft prinzipiell erschwert ist, selbst bei hoher Nachfrage.</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <span class="badge score-5">Stufe 5 (Viel Nachfrage, Tausch leicht)</span>
+                <span class="badge score-4">Stufe 4 (Gute Optionen)</span>
+                <span class="badge score-3">Stufe 3 (Mittlere Nachfrage)</span>
+                <span class="badge score-2">Stufe 2 (Wenig Nachfrage)</span>
+                <span class="badge score-1">Stufe 1 (Sehr schlechte Nachfrage)</span>
+            </div>
+        </div>
+
+        <div class="table-wrapper wrapper-kompakt">
+            <table class="ranking-table kompakt">
+                <thead>
+                    <tr>
+                        <th>Universität</th>
+                        <th>Tausch-Stufe</th>
+                        <th>Besonderheiten & Nachfrage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="m-name" data-label="Universität">TH Aachen</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Augsburg</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">Charité Berlin</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5 (1. FS)</span> <br><span class="badge score-2" style="margin-top:5px;">Stufe 2 (Später)</span></td><td class="m-block" data-label="Besonderheiten">1. FS extrem viel Nachfrage. Später sehr schwer wegen speziellem Modellstudiengang</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Bielefeld</td><td class="m-score" data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, sonst mäßig viel Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Bochum</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Viele suchen NRW-Unis, wird aber von manchen eher als Plan B gesehen</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Bonn</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td class="m-block" data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">MedU Lausitz</td><td class="m-score" data-label="Stufe"><span class="badge score-na">K.A.</span></td><td class="m-block" data-label="Besonderheiten">Keine Wertung möglich. Modellstudiengang, daher Tausch vermutlich schwerer</td></tr>
+                    <tr><td class="m-name" data-label="Universität">TU Dresden</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">TU Dresden / Chemnitz</td><td class="m-score" data-label="Stufe"><span class="badge score-na">K.A.</span></td><td class="m-block" data-label="Besonderheiten">Keine Wertung möglich. Modellstudiengang, daher Tausch vermutlich schwerer</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Duisburg-Essen</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Viele suchen NRW-Unis, wird aber von manchen eher als Plan B gesehen</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Düsseldorf</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Erlangen-Nürnberg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Erlangen / Bayreuth</td><td class="m-score" data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td class="m-block" data-label="Besonderheiten">Eher schlechter, aber Tauschoptionen sind vorhanden</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Frankfurt/Main</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td class="m-block" data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Freiburg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Gießen</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Göttingen</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Greifswald</td><td class="m-score" data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td class="m-block" data-label="Besonderheiten">Eher sehr wenig Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Halle-Wittenberg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">MedH Hannover</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Hamburg</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5 (1. FS)</span> <br><span class="badge score-3" style="margin-top:5px;">Stufe 3 (Später)</span></td><td class="m-block" data-label="Besonderheiten">Zum 1. FS sehr gute Nachfrage, ab höherem Semester Modellstudiengang (aber trotzdem gute Nachfrage)</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Heidelberg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Heidelberg-Mannheim</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Jena</td><td class="m-score" data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td class="m-block" data-label="Besonderheiten">Eher schlechte Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Kiel</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Köln</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Leipzig</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Modellstudiengang, aber sonst gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Lübeck</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Magdeburg</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Mainz</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Mainz MC Trier</td><td class="m-score" data-label="Stufe"><span class="badge score-na">K.A.</span></td><td class="m-block" data-label="Besonderheiten">Keine Wertung möglich</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Marburg</td><td class="m-score" data-label="Stufe"><span class="badge score-2">Stufe 2</span></td><td class="m-block" data-label="Besonderheiten">Eher wenig Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U München</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Eher gute Nachfrage, aber auch sehr viel Angebot vorhanden</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Münster</td><td class="m-score" data-label="Stufe"><span class="badge score-5">Stufe 5</span></td><td class="m-block" data-label="Besonderheiten">Sehr gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Oldenburg</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Regensburg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Regensburg MC Niederbayern</td><td class="m-score" data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td class="m-block" data-label="Besonderheiten">Eher schlechte Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Rostock</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Saarbrücken</td><td class="m-score" data-label="Stufe"><span class="badge score-1">Stufe 1</span></td><td class="m-block" data-label="Besonderheiten">Eher sehr schlechte Nachfrage</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Tübingen</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage / Optionen</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Ulm</td><td class="m-score" data-label="Stufe"><span class="badge score-3">Stufe 3</span></td><td class="m-block" data-label="Besonderheiten">Mittlere Nachfrage / Optionen</td></tr>
+                    <tr><td class="m-name" data-label="Universität">U Würzburg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage / Optionen</td></tr>
+                </tbody>
+            </table>
+        </div>
             </div>
         </div>
 
@@ -3610,16 +3605,6 @@
             const tr = e.target.closest('table.ranking-table.kompakt tbody tr.hat-info');
             if (tr) tr.classList.toggle('offen');
         });
-        // Das Tausch-Potenzial soll in beiden Reitern stehen. Statt die 42 Zeilen
-        // doppelt zu pflegen, wird der Block hier einmal gespiegelt.
-        (function spiegelePotenzial() {
-            const quelle = document.getElementById('potenzial-block');
-            const ziel = document.getElementById('potenzial-klon');
-            if (quelle && ziel && !ziel.innerHTML.trim()) {
-                ziel.innerHTML = quelle.innerHTML;
-            }
-        })();
-
         initKompaktTabellen();
 
         // Der Bewerberzahlen-Reiter ist beim Laden bereits offen, deshalb hier
