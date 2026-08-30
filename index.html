@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -230,6 +231,8 @@
         .sub-tab-btn:hover { border-color: var(--accent); color: var(--text-main); }
         .sub-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
         .subtab-content { display: none; }
+        .tauschsub-content { display: none; }
+        .tauschsub-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
         .subtab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
 
         @media (max-width: 768px) {
@@ -478,6 +481,10 @@
            BEWERBERZAHLEN: Kennzahlen-Karten & Einordnung
            Auf dem Handy zwei Spalten, am Desktop vier.
            ========================================== */
+        /* Die ganze Kontakt-Box ist ein Link auf das Discord-Profil */
+        .discord-box { transition: background-color 0.2s, border-color 0.2s; }
+        .discord-box:hover { background-color: rgba(88, 101, 242, 0.22) !important; }
+
         /* Grafik-Container: Bezugspunkt fuer die Werteanzeige beim Antippen */
         .chart-box { position: relative; }
         .chart-tip {
@@ -798,7 +805,7 @@
     <div class="tab-nav">
         <button id="btn-tab-verfahren" class="tab-btn active" onclick="switchTab('verfahren')">Daten & Trends</button>
         <button id="btn-tab-adh" class="tab-btn" onclick="switchTab('adh')">AdH Simulator</button>
-        <button id="btn-tab-tausch" class="tab-btn" onclick="switchTab('tausch')">Studienplatztausch (Regeln)</button>
+        <button id="btn-tab-tausch" class="tab-btn" onclick="switchTab('tausch')">Studienplatztausch</button>
         <button id="btn-tab-ranking" class="tab-btn" onclick="switchTab('ranking')">Studienort-Ranking</button>
         <button id="btn-tab-ersti" class="tab-btn" onclick="switchTab('ersti')">Ersti-Guide</button>
     </div>
@@ -1115,22 +1122,22 @@
               Infos zum Vergabesystem, TMS-Trends)
              ========================================================================= -->
         <div id="tab-verfahren" class="tab-content text-content active">
-            <div style="background-color: rgba(88, 101, 242, 0.1); border: 1px solid #5865F2; border-left: 4px solid #5865F2; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; margin-top: 0; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+            <a href="https://discord.com/users/1391118461102592022" target="_blank" rel="noopener" class="discord-box" style="background-color: rgba(88, 101, 242, 0.1); border: 1px solid #5865F2; border-left: 4px solid #5865F2; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; margin-top: 0; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-decoration: none;">
                 <div style="background: #5865F2; color: white; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; flex-shrink: 0; box-shadow: 0 0 10px rgba(88, 101, 242, 0.5);">
                     <!-- Offizielles Discord Logo SVG -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 127.14 96.36" fill="currentColor"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.31,60,73.31,53s5-12.74,11.43-12.74S96.2,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>
                 </div>
                 <div style="line-height: 1.4;">
                     <div style="color: #f8fafc; font-weight: bold; font-size: 15px; margin-bottom: 4px;">Bei Fragen</div>
-                    <div style="color: var(--text-muted); font-size: 14px;">Schreib mir jederzeit direkt auf Discord: <strong style="color: white; background: #5865F2; padding: 3px 8px; border-radius: 6px; margin-left: 4px; font-family: monospace; font-size: 14px;">Flavio.ritsch</strong></div>
+                    <div style="color: var(--text-muted); font-size: 14px;">Schreib mir jederzeit direkt auf Discord: <strong style="display: inline-block; color: white; background: #5865F2; padding: 4px 10px; border-radius: 6px; margin-left: 4px; font-family: monospace; font-size: 14px; line-height: 20px;">Flavio.ritsch</strong></div>
                 </div>
-            </div>
+            </a>
 
             <div class="sub-tab-nav">
                 <button id="btn-subtab-bewerber" class="sub-tab-btn active" onclick="switchSubTab('bewerber')">Bewerberzahlen</button>
                 <button id="btn-subtab-trends" class="sub-tab-btn" onclick="switchSubTab('trends')">TMS-Zahlen</button>
-                <button id="btn-subtab-beliebtheit" class="sub-tab-btn" onclick="switchSubTab('beliebtheit')">Studienplatzbeliebtheit</button>
                 <button id="btn-subtab-nachruecken" class="sub-tab-btn" onclick="switchSubTab('nachruecken')">Nachrücker-Zahlen</button>
+                <button id="btn-subtab-beliebtheit" class="sub-tab-btn" onclick="switchSubTab('beliebtheit')">Studienplatzbeliebtheit</button>
             </div>
 
         <div id="subtab-nachruecken" class="subtab-content">
@@ -1312,6 +1319,7 @@
             <p style="font-size: 12px; color: var(--text-muted); margin-top: 15px;">* Für diesen Studienort liegen aus dem Vergleichssemester keine Daten vor (z. B. weil er neu hinzugekommen ist). Er ist trotzdem mit aufgeführt und entsprechend gekennzeichnet.</p>
 
             <!-- Aus dem Tausch-Tab hierher verschoben: gehoert thematisch zur Beliebtheit -->
+            <div id="potenzial-block">
             <h2 style="margin-top: 45px;">Tausch-Potenzial: Wie gefragt ist dieser Platz?</h2>
             <div class="info-box">
                 <h3 style="color: var(--accent); margin-top: 0; font-size: 16px; margin-bottom: 8px;">Wie leicht lässt sich dieser Studienplatz wegtauschen?</h3>
@@ -1379,6 +1387,7 @@
                         <tr><td class="m-name" data-label="Universität">U Würzburg</td><td class="m-score" data-label="Stufe"><span class="badge score-4">Stufe 4</span></td><td class="m-block" data-label="Besonderheiten">Gute Nachfrage / Optionen</td></tr>
                     </tbody>
                 </table>
+            </div>
             </div>
         </div>
 
@@ -1494,73 +1503,85 @@
              TAB 4: STUDIENPLATZTAUSCH
              ========================================================================= -->
         <div id="tab-tausch" class="tab-content text-content">
-            <h2>Studienplatztausch (1. FS)</h2>
-            <div class="info-box info-blue">
-                <p style="margin:0;">Die folgenden Daten basieren auf dem ausführlichen Studienplatztausch-Guide (Stand: WiSe 25/26) von <strong>Mona Jung</strong>. Für die kompletten und detaillierten Bedingungen, Fristen und Ausnahmeregelungen lest bitte unbedingt das Originaldokument!<br><br>👉 <a href="https://drive.google.com/file/d/1Tkk0hmLPE4p5BY8cvRw7EhwDNowFIYHn/view" target="_blank">Zum Studienplatztausch-Guide von Mona Jung</a></p>
+            <div class="sub-tab-nav">
+                <button id="btn-tsub-regeln" class="sub-tab-btn active" onclick="switchTauschTab('regeln')">Tausch-Regeln</button>
+                <button id="btn-tsub-potenzial" class="sub-tab-btn" onclick="switchTauschTab('potenzial')">Tausch-Potenzial</button>
             </div>
+
+            <div id="tsub-regeln" class="tauschsub-content active">
+                <h2>Studienplatztausch (1. FS)</h2>
+                <div class="info-box info-blue">
+                    <p style="margin:0;">Die folgenden Daten basieren auf dem ausführlichen Studienplatztausch-Guide (Stand: WiSe 25/26) von <strong>Mona Jung</strong>. Für die kompletten und detaillierten Bedingungen, Fristen und Ausnahmeregelungen lest bitte unbedingt das Originaldokument!<br><br>👉 <a href="https://drive.google.com/file/d/1Tkk0hmLPE4p5BY8cvRw7EhwDNowFIYHn/view" target="_blank">Zum Studienplatztausch-Guide von Mona Jung</a></p>
+                </div>
             
-            <p>Die Tabelle zeigt, ob ein Studienplatztausch zum ersten Fachsemester (1. FS) in Humanmedizin an der jeweiligen Universität grundsätzlich möglich ist.</p>
-            <ul>
-                <li><span class="badge badge-green">Ja</span> = Tausch zum 1. FS möglich (Quote in der Regel nicht relevant).</li>
-                <li><span class="badge badge-orange">Eingeschränkt</span> = Tausch nur unter sehr strengen Voraussetzungen (z.B. absolut identische Quote, sehr ähnliche Punkte/Noten) oder nur bei anerkanntem Härtefall möglich.</li>
-                <li><span class="badge badge-red">Nein</span> = Tausch zum 1. FS ist nicht möglich.</li>
-            </ul>
+                <p></p>
+                <ul>
+                    <li><span class="badge badge-green">Ja</span> = Tausch zum 1. FS möglich (Quote in der Regel nicht relevant).</li>
+                    <li><span class="badge badge-orange">Eingeschränkt</span> = Tausch nur unter sehr strengen Voraussetzungen (z.B. absolut identische Quote, sehr ähnliche Punkte/Noten) oder nur bei anerkanntem Härtefall möglich.</li>
+                    <li><span class="badge badge-red">Nein</span> = Tausch zum 1. FS ist nicht möglich.</li>
+                </ul>
 
-            <div class="table-wrapper wrapper-kompakt">
-                <table class="ranking-table kompakt">
-                    <thead>
-                        <tr>
-                            <th>Universität</th>
-                            <th>Tausch 1. FS?</th>
-                            <th>Hinweise / Ausnahmen</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="m-name" data-label="Universität">Aachen RWTH</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Augsburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td class="m-block" data-label="Hinweise">Zulassungskriterien (z.B. TMS, Abi) müssen sehr ähnlich sein. Sehr strenge Einzelfallprüfung.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Berlin Charité</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td class="m-block" data-label="Hinweise">Quote muss exakt übereinstimmen. Kein Tausch innerhalb der Vorabquoten.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Bielefeld U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Bochum U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ab WiSe 2025/2026 nicht mehr möglich.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Bonn U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Dresden TU</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Dresden/Chemnitz TU</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Duisburg-Essen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ab SoSe 2024 nicht mehr möglich.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Düsseldorf U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in begründeten, nachgewiesenen Härtefällen möglich.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Erlangen-Nürnberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Erlangen/Bayreuth U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Frankfurt am Main U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Freiburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Gießen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Göttingen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Tausch zwischen Ausländerquote und Bildungsinländern ist nicht möglich, sonst Quote egal.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Greifswald U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Halle-Wittenberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. <strong>Kein Ringtausch möglich!</strong></td></tr>
-                        <tr><td class="m-name" data-label="Universität">Hamburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Hannover MedH</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder Ortsbindung als Pflege in Region Hannover.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Heidelberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Heidelberg/Mannheim U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Jena U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Kiel U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. Ringtausch möglich.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Köln U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Leipzig U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Lübeck U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Magdeburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Mainz U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Mainz/MC Trier U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Marburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">München U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. Auch Landarztquote möglich.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Münster U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ausschließlich im höheren Fachsemester möglich.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Oldenburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder alleiniger Niedersachsen-Wohnsitz.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Regensburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Regensburg/MCN U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Rostock U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Saarbrücken U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Tübingen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Ulm U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
-                        <tr><td class="m-name" data-label="Universität">Würzburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
-                    </tbody>
-                </table>
+                <div class="table-wrapper wrapper-kompakt">
+                    <table class="ranking-table kompakt">
+                        <thead>
+                            <tr>
+                                <th>Universität</th>
+                                <th>Tausch 1. FS?</th>
+                                <th>Hinweise / Ausnahmen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="m-name" data-label="Universität">Aachen RWTH</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Augsburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td class="m-block" data-label="Hinweise">Zulassungskriterien (z.B. TMS, Abi) müssen sehr ähnlich sein. Sehr strenge Einzelfallprüfung.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Berlin Charité</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-orange">Eingeschränkt</span></td><td class="m-block" data-label="Hinweise">Quote muss exakt übereinstimmen. Kein Tausch innerhalb der Vorabquoten.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Bielefeld U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Bochum U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ab WiSe 2025/2026 nicht mehr möglich.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Bonn U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Dresden TU</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Dresden/Chemnitz TU</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Duisburg-Essen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ab SoSe 2024 nicht mehr möglich.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Düsseldorf U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in begründeten, nachgewiesenen Härtefällen möglich.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Erlangen-Nürnberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Erlangen/Bayreuth U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Frankfurt am Main U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Freiburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Gießen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Göttingen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Tausch zwischen Ausländerquote und Bildungsinländern ist nicht möglich, sonst Quote egal.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Greifswald U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Halle-Wittenberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. <strong>Kein Ringtausch möglich!</strong></td></tr>
+                            <tr><td class="m-name" data-label="Universität">Hamburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Hannover MedH</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder Ortsbindung als Pflege in Region Hannover.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Heidelberg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Heidelberg/Mannheim U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Jena U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Kiel U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. Ringtausch möglich.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Köln U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Leipzig U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Lübeck U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Magdeburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Mainz U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Mainz/MC Trier U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Marburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">München U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant. Auch Landarztquote möglich.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Münster U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Ausschließlich im höheren Fachsemester möglich.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Oldenburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Nur in Ausnahmen (Härtefälle) wie Krankheit, Kind oder alleiniger Niedersachsen-Wohnsitz.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Regensburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Regensburg/MCN U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Rostock U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Saarbrücken U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block m-hide-mobile" data-label="Hinweise">-</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Tübingen U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Ulm U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-red">Nein</span></td><td class="m-block" data-label="Hinweise">Tausch erst ab dem 2. Fachsemester.</td></tr>
+                            <tr><td class="m-name" data-label="Universität">Würzburg U</td><td class="m-score" data-label="Tausch 1. FS?"><span class="badge badge-green">Ja</span></td><td class="m-block" data-label="Hinweise">Quote nicht relevant.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
+            <div id="tsub-potenzial" class="tauschsub-content">
+                <!-- Wird beim Laden aus dem Beliebtheits-Reiter gespiegelt,
+                     damit die Daten nur an einer Stelle gepflegt werden. -->
+                <div id="potenzial-klon"></div>
+            </div>
         </div>
 
         <!-- =========================================================================
@@ -1873,6 +1894,17 @@
             } else {
                 container.style.maxWidth = '800px';
             }
+        }
+
+        // Unter-Reiter im Studienplatztausch-Tab (Regeln / Potenzial)
+        function switchTauschTab(subId) {
+            switchTab('tausch');
+            document.querySelectorAll('.tauschsub-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('#tab-tausch .sub-tab-btn').forEach(el => el.classList.remove('active'));
+            const inhalt = document.getElementById('tsub-' + subId);
+            const knopf = document.getElementById('btn-tsub-' + subId);
+            if (inhalt) inhalt.classList.add('active');
+            if (knopf) knopf.classList.add('active');
         }
 
         // Wechselt zwischen den Unter-Reitern innerhalb von "Verfahren & Zahlen"
@@ -2574,10 +2606,21 @@
             try {
                 const start = HEIMATORTE.find(o => o.name === 'München');
                 leafletMap = L.map('map').setView([start.lat, start.lon], 6);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; OpenStreetMap-Mitwirkende &copy; CARTO',
-                    subdomains: 'abcd', maxZoom: 19
-                }).addTo(leafletMap);
+                // OpenStreetMap statt CARTO: CARTO verlangt inzwischen einen
+                // API-Schluessel und liefert sonst Kacheln mit der Aufschrift
+                // "API key required". OSM funktioniert ohne Schluessel.
+                const kacheln = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap-Mitwirkende',
+                    maxZoom: 18
+                });
+                // Falls auch das nicht durchkommt, Karte lieber ganz ausblenden,
+                // als kaputte oder beschriftete Platzhalter-Kacheln zu zeigen.
+                let kachelFehler = 0;
+                kacheln.on('tileerror', function() {
+                    kachelFehler++;
+                    if (kachelFehler > 3) karteAusblenden(document.getElementById('map'));
+                });
+                kacheln.addTo(leafletMap);
                 homeMarker = L.marker([start.lat, start.lon]).addTo(leafletMap);
                 leafletMap.on('click', function(e) {
                     if (homeMarker) leafletMap.removeLayer(homeMarker);
@@ -3571,6 +3614,16 @@
             const tr = e.target.closest('table.ranking-table.kompakt tbody tr.hat-info');
             if (tr) tr.classList.toggle('offen');
         });
+        // Das Tausch-Potenzial soll in beiden Reitern stehen. Statt die 42 Zeilen
+        // doppelt zu pflegen, wird der Block hier einmal gespiegelt.
+        (function spiegelePotenzial() {
+            const quelle = document.getElementById('potenzial-block');
+            const ziel = document.getElementById('potenzial-klon');
+            if (quelle && ziel && !ziel.innerHTML.trim()) {
+                ziel.innerHTML = quelle.innerHTML;
+            }
+        })();
+
         initKompaktTabellen();
 
         // Der Bewerberzahlen-Reiter ist beim Laden bereits offen, deshalb hier
