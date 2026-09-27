@@ -831,7 +831,8 @@
             <div class="input-box" style="margin-bottom: 25px;">
                 <label>Bewerbungszeitraum (Semester auswählen)</label>
                 <select id="semester-select">
-                    <option value="SoSe26" selected>Sommersemester 2026</option>
+                    <option value="WS26" selected>Wintersemester 2026/27 (neu)</option>
+                    <option value="SoSe26">Sommersemester 2026</option>
                     <option value="WS25">Wintersemester 2025/26</option>
                 </select>
             </div>
@@ -960,7 +961,7 @@
             <canvas id="gaussCanvas" width="600" height="200" style="display: block;"></canvas>
             
             <div class="cutoff-info" id="cutoff-container" style="display: flex;">
-                <span>Grenzrang <span id="lbl-semester-display">SoSe 26</span>: <strong id="cutoff-val" style="color: #f8fafc;">0.00 Pkt</strong></span>
+                <span>Grenzrang <span id="lbl-semester-display">WS 26/27</span>: <strong id="cutoff-val" style="color: #f8fafc;">0.00 Pkt</strong></span>
                 <span id="cutoff-diff"><span class="diff-neg">-0.00 Pkt (Fehlen)</span></span>
             </div>
 
@@ -976,7 +977,7 @@
                 <p style="color: #ef4444; font-size: 12px; margin-top: 15px;"><em>Hinweis: Dies ist keine Prognose oder Garantie, ob es für einen Studienplatz reicht! Es ist ein Analyse-Tool, um die mathematische Realität der aktuellen Bewerbung zu entschlüsseln.</em></p>
             </div>
 
-            <div class="footer">Datenbasis: Offizielle AdH-Struktur 2025/2026 (Stiftung für Hochschulzulassung)</div>
+            <div class="footer">Datenbasis: Offizielle AdH-Struktur und Auswahlgrenzen WS 2025/26, SoSe 2026 und WS 2026/27 (Ende Koordinierungsphase, Stiftung für Hochschulzulassung)</div>
         </div>
 
         <!-- =========================================================================
@@ -2182,6 +2183,68 @@
          ========================================================================= -->
     <script>
         const DATA_VERSIONS = {
+            "WS26": {
+                "aachen_1": { name: "RWTH Aachen (AdH-1)", hzb: 95, tms: 5, ausb: 0, beruf: 0, dienst: 0, preis: 0, cutoff: 70.1 },
+                "aachen_2": { name: "RWTH Aachen (AdH-2)", hzb: 20, tms: 70, ausb: 0, beruf: 10, dienst: 0, preis: 0, cutoff: 67.5 },
+                "aachen_3": { name: "RWTH Aachen (AdH-3)", hzb: 50, tms: 0, ausb: 50, beruf: 0, dienst: 0, preis: 0, cutoff: 79.2 },
+                "augsburg_2": { name: "Uni Augsburg (AdH-2)", hzb: 25, tms: 70, ausb: 3, beruf: 0, dienst: 2, preis: 0, cutoff: 60.6 },
+                "charite": { name: "Charité Berlin", hzb: 20, tms: 60, ausb: 0, beruf: 0, dienst: 20, preis: 0, cutoff: 70.5 },
+                "bielefeld_1": { name: "Uni Bielefeld (AdH-1)", hzb: 90, tms: 0, ausb: 0, beruf: 10, dienst: 0, preis: 0, cutoff: 65.3 },
+                "bielefeld_2": { name: "Uni Bielefeld (AdH-2)", hzb: 80, tms: 0, ausb: 20, beruf: 0, dienst: 0, preis: 0, cutoff: 56.2 },
+                "bielefeld_3": { name: "Uni Bielefeld (AdH-3)", hzb: 50, tms: 50, ausb: 0, beruf: 0, dienst: 0, preis: 0, cutoff: 57.9 },
+                "bochum": { name: "Uni Bochum", hzb: 60, tms: 35, ausb: 3, beruf: 0, dienst: 2, preis: 0, cutoff: 54.6 },
+                "bonn": { name: "Uni Bonn", hzb: 60, tms: 35, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 57.6 },
+                "lausitz_1": { name: "MedU Lausitz (AdH-1)", hzb: 30, tms: 30, ausb: 30, beruf: 10, dienst: 0, preis: 0, cutoff: 66.7 },
+                "dresden_1": { name: "TU Dresden (AdH-1)", hzb: 30, tms: 20, ausb: 0, beruf: 0, dienst: 50, preis: 0, cutoff: 76.8 },
+                "dresden_2": { name: "TU Dresden (AdH-2)", hzb: 30, tms: 20, ausb: 50, beruf: 0, dienst: 0, preis: 0, cutoff: 75.4 },
+                "dresden_chem_1": { name: "TU Dresden/Chemnitz (AdH-1)", hzb: 65, tms: 30, ausb: 0, beruf: 0, dienst: 5, preis: 0, cutoff: 56.9 },
+                "dresden_chem_2": { name: "TU Dresden/Chemnitz (AdH-2)", hzb: 20, tms: 10, ausb: 0, beruf: 0, dienst: 0, preis: 0, cutoff: 70.5 },
+                "duisburg": { name: "Uni Duisburg-Essen", hzb: 40, tms: 40, ausb: 10, beruf: 0, dienst: 10, preis: 0, cutoff: 53.6 },
+                "duesseldorf_1": { name: "Uni Düsseldorf (AdH-1)", hzb: 48, tms: 48, ausb: 0, beruf: 0, dienst: 2, preis: 2, cutoff: 59.6 },
+                "duesseldorf_2": { name: "Uni Düsseldorf (AdH-2)", hzb: 24, tms: 24, ausb: 50, beruf: 0, dienst: 1, preis: 1, cutoff: 76.8 },
+                "erlangen": { name: "FAU Erlangen-Nürnberg", hzb: 60, tms: 35, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 56.7 },
+                "erlangen_bay": { name: "FAU Erlangen/Bayreuth", hzb: 60, tms: 35, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 55.2 },
+                "frankfurt": { name: "Uni Frankfurt/Main", hzb: 45, tms: 50, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 56.0 },
+                "freiburg": { name: "Uni Freiburg", hzb: 41, tms: 43, ausb: 10, beruf: 2, dienst: 2, preis: 2, cutoff: 55.5 },
+                "giessen": { name: "Uni Gießen", hzb: 49, tms: 41, ausb: 4, beruf: 2, dienst: 0, preis: 4, cutoff: 51.8 },
+                "goettingen_1": { name: "Uni Göttingen (AdH-1)", hzb: 60, tms: 30, ausb: 0, beruf: 0, dienst: 10, preis: 0, cutoff: 59.6 },
+                "goettingen_2": { name: "Uni Göttingen (AdH-2)", hzb: 60, tms: 10, ausb: 30, beruf: 0, dienst: 0, preis: 0, cutoff: 65.7 },
+                "greifswald_1": { name: "Uni Greifswald (AdH-1)", hzb: 10, tms: 20, ausb: 60, beruf: 10, dienst: 0, preis: 0, cutoff: 84.4 },
+                "halle_1": { name: "Uni Halle-Wittenberg (AdH-1)", hzb: 65, tms: 35, ausb: 0, beruf: 0, dienst: 0, preis: 0, cutoff: 59.0 },
+                "halle_2": { name: "Uni Halle-Wittenberg (AdH-2)", hzb: 40, tms: 40, ausb: 0, beruf: 20, dienst: 0, preis: 0, cutoff: 63.8 },
+                "hannover_1": { name: "MedH Hannover (AdH-1)", hzb: 30, tms: 50, ausb: 0, beruf: 20, dienst: 0, preis: 0, cutoff: 66.5 },
+                "hannover_2": { name: "MedH Hannover (AdH-2)", hzb: 30, tms: 50, ausb: 20, beruf: 0, dienst: 0, preis: 0, cutoff: 61.4 },
+                "hamburg": { name: "Uni Hamburg", hzb: 40, tms: 0, ausb: 0, beruf: 0, dienst: 0, preis: 0, hamnat: 40, hamsjt: 20, cutoff: 63.2 },
+                "heidelberg": { name: "Uni Heidelberg", hzb: 46, tms: 44, ausb: 4, beruf: 2, dienst: 2, preis: 2, cutoff: 63.8 },
+                "heid_mannheim": { name: "Uni Heidelberg/Mannheim", hzb: 46, tms: 44, ausb: 4, beruf: 2, dienst: 2, preis: 2, cutoff: 55.8 },
+                "jena_1": { name: "Uni Jena (AdH-1)", hzb: 85, tms: 10, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 58.1 },
+                "jena_2": { name: "Uni Jena (AdH-2)", hzb: 25, tms: 70, ausb: 5, beruf: 0, dienst: 0, preis: 0, cutoff: 59.6 },
+                "jena_3": { name: "Uni Jena (AdH-3)", hzb: 5, tms: 40, ausb: 55, beruf: 0, dienst: 0, preis: 0, cutoff: 78.7 },
+                "kiel": { name: "Uni Kiel", hzb: 60, tms: 30, ausb: 10, beruf: 0, dienst: 0, preis: 0, cutoff: 53.9 },
+                "koeln": { name: "Uni Köln", hzb: 45, tms: 45, ausb: 10, beruf: 0, dienst: 0, preis: 0, cutoff: 60.0 },
+                "leipzig": { name: "Uni Leipzig", hzb: 60, tms: 30, ausb: 10, beruf: 0, dienst: 0, preis: 0, cutoff: 56.8 },
+                "luebeck": { name: "Uni Lübeck", hzb: 50, tms: 35, ausb: 9, beruf: 0, dienst: 3, preis: 3, cutoff: 51.7 },
+                "magdeburg_1": { name: "Uni Magdeburg (AdH-1)", hzb: 95, tms: 0, ausb: 0, beruf: 0, dienst: 3, preis: 2, cutoff: 62.6 },
+                "magdeburg_2": { name: "Uni Magdeburg (Quote 2)", hzb: 45, tms: 0, ausb: 0, beruf: 0, dienst: 0, preis: 0, hamnat: 55, cutoff: 55.7 },
+                "magdeburg_3": { name: "Uni Magdeburg (Quote 3)", hzb: 30, tms: 0, ausb: 15, beruf: 0, dienst: 0, preis: 0, hamnat: 55, cutoff: 50.6 },
+                "mainz": { name: "Uni Mainz", hzb: 45, tms: 45, ausb: 5, beruf: 3, dienst: 0, preis: 2, cutoff: 55.8 },
+                "mainz_trier": { name: "Uni Mainz/Trier", hzb: 45, tms: 45, ausb: 5, beruf: 3, dienst: 0, preis: 2, cutoff: 54.8 },
+                "marburg": { name: "Uni Marburg", hzb: 50, tms: 40, ausb: 10, beruf: 0, dienst: 0, preis: 0, cutoff: 51.8 },
+                "muenchen": { name: "LMU München", hzb: 51, tms: 24, ausb: 10, beruf: 0, dienst: 8, preis: 7, cutoff: 48.6 },
+                "muenster": { name: "Uni Münster", hzb: 56, tms: 40, ausb: 0, beruf: 3, dienst: 1, preis: 0, cutoff: 67.5 },
+                "oldenburg_1": { name: "Uni Oldenburg (AdH-1)", hzb: 50, tms: 20, ausb: 30, beruf: 0, dienst: 0, preis: 0, cutoff: 62.8 },
+                "oldenburg_2": { name: "Uni Oldenburg (AdH-2)", hzb: 50, tms: 47, ausb: 0, beruf: 3, dienst: 0, preis: 0, cutoff: 58.8 },
+                "regensburg": { name: "Uni Regensburg", hzb: 60, tms: 30, ausb: 5, beruf: 0, dienst: 5, preis: 0, cutoff: 54.5 },
+                "regensburg_mcn": { name: "Uni Regensburg MCN", hzb: 55, tms: 5, ausb: 5, beruf: 0, dienst: 5, preis: 0, interview: 30, cutoff: 58.8 },
+                "rostock_1": { name: "Uni Rostock (AdH-1)", hzb: 48, tms: 46, ausb: 0, beruf: 0, dienst: 6, preis: 0, cutoff: 56.3 },
+                "rostock_2": { name: "Uni Rostock (AdH-2)", hzb: 34, tms: 33, ausb: 33, beruf: 0, dienst: 0, preis: 0, cutoff: 65.3 },
+                "saarbruecken_1": { name: "Uni Saarbrücken (AdH-1)", hzb: 90, tms: 10, ausb: 0, beruf: 0, dienst: 0, preis: 0, cutoff: 60.1 },
+                "saarbruecken_2": { name: "Uni Saarbrücken (AdH-2)", hzb: 40, tms: 40, ausb: 0, beruf: 20, dienst: 0, preis: 0, cutoff: 46.1 },
+                "saarbruecken_3": { name: "Uni Saarbrücken (AdH-3)", hzb: 0, tms: 60, ausb: 0, beruf: 20, dienst: 20, preis: 0, cutoff: 65.0 },
+                "tuebingen": { name: "Uni Tübingen", hzb: 44, tms: 43, ausb: 7, beruf: 0, dienst: 6, preis: 0, cutoff: 59.4 },
+                "ulm": { name: "Uni Ulm", hzb: 46, tms: 44, ausb: 6, beruf: 0, dienst: 2, preis: 2, cutoff: 52.9 },
+                "wuerzburg": { name: "Uni Würzburg", hzb: 60, tms: 30, ausb: 0, beruf: 0, dienst: 5, preis: 5, cutoff: 56.8 }
+            },
             "WS25": {
                 "aachen_1": { name: "RWTH Aachen (AdH-1)", hzb: 95, tms: 5, ausb: 0, beruf: 0, dienst: 0, preis: 0, cutoff: 69.8 },
                 "aachen_2": { name: "RWTH Aachen (AdH-2)", hzb: 20, tms: 70, ausb: 0, beruf: 10, dienst: 0, preis: 0, cutoff: 65.9 },
@@ -2375,7 +2438,7 @@
             document.getElementById('res-total').innerText = total.toFixed(2);
 
             const cutoffContainer = document.getElementById('cutoff-container');
-            document.getElementById('lbl-semester-display').innerText = semester === "SoSe26" ? "SoSe 26" : "WS 25/26";
+            document.getElementById('lbl-semester-display').innerText = ({ WS26: "WS 26/27", SoSe26: "SoSe 26", WS25: "WS 25/26" })[semester] || semester;
 
             let requiredHzb = null;
             if (uni.cutoff) {
